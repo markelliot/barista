@@ -22,8 +22,8 @@ public final class GreeterEndpoint implements Endpoints.Open<Request, Response> 
         return new Response("Hello " + request.name + "!");
     }
     
-    public Class<HelloWorldEndpoint.Request> requestClass() {
-        return HelloWorldEndpoint.Request.class;
+    public Class<Request> requestClass() {
+        return Request.class;
     }
     
     public String path() {
