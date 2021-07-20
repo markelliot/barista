@@ -6,6 +6,5 @@ com.google.guava:guava = 27.0.1-jre
 com.jakewharton.nopen:* = 1.0.1
 io.undertow:undertow-core = 2.1.0.Final
 org.assertj:assertj-core = 3.12.2
-org.immutables:* = 2.8.2
 org.junit:junit-bom = 5.7.2
 org.junit.jupiter:junit-jupiter-engine = 5.7.2
