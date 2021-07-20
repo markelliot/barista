@@ -1,0 +1,11 @@
+com.auth0:java-jwt = 3.16.0
+com.github.ben-manes.caffeine:caffeine = 3.0.2
+com.fasterxml.jackson.*:* = 2.12.2
+com.google.errorprone:error_prone_core = 2.7.1
+com.google.guava:guava = 27.0.1-jre
+com.jakewharton.nopen:* = 1.0.1
+io.undertow:undertow-core = 2.1.0.Final
+org.assertj:assertj-core = 3.12.2
+org.immutables:* = 2.8.2
+org.junit:junit-bom = 5.7.2
+org.junit.jupiter:junit-jupiter-engine = 5.7.2
