@@ -1,0 +1,23 @@
+name: Publish develop
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      packages: write 
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          java-version: '16'
+          distribution: 'adopt'
+      - name: Build
+        run: ./gradlew --no-daemon build
+      - name: Publish
+        run: ./gradlew --no-daemon publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
