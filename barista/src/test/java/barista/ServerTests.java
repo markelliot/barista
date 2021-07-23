@@ -15,10 +15,13 @@ final class ServerTests {
 
     @Test
     void smokeTest() throws IOException, InterruptedException {
-        Server.builder().port(8080).disableTls().endpoint(new HelloWorldEndpoint()).start();
+        Server server =
+                Server.builder().port(8080).disableTls().endpoint(new HelloWorldEndpoint()).start();
 
         assertResponse("http://localhost:8080/hello-world", 200, "\"Hello World\"");
         assertResponse("http://localhost:8080/missing", 404, "Unknown API Endpoint");
+
+        server.stop();
     }
 
     private void assertResponse(String uri, int statusCode, String expectedResponseText)

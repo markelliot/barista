@@ -44,5 +44,6 @@ final class Logging {
                 .add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef(STDOUT)));
 
         Configurator.initialize(builder.build());
+        // TODO(markelliot): we may want to stop the logging context on server shutdown
     }
 }

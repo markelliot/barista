@@ -6,6 +6,7 @@ import barista.handlers.DispatchFromIoThreadHandler;
 import barista.handlers.EndpointHandlerBuilder;
 import barista.handlers.HandlerChain;
 import barista.tls.TransportLayerSecurity;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import io.undertow.Undertow;
 import java.nio.file.Paths;
@@ -24,6 +25,18 @@ public final class Server {
 
     private void start() {
         undertow.start();
+    }
+
+    /**
+     * Manually stop the server.
+     *
+     * <p>This is a test-only method because the expected use of this framework is for the server to
+     * run the lifetime of the process, and a shutdown hook to stop the server is included
+     * automatically.
+     */
+    @VisibleForTesting
+    void stop() {
+        undertow.stop();
     }
 
     public static Builder builder() {
