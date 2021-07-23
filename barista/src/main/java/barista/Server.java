@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import io.undertow.Undertow;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public final class Server {
@@ -31,42 +32,49 @@ public final class Server {
 
     public static final class Builder {
         private int port = 8443;
-        private Set<Endpoints.Open<?, ?>> openEndpoints = new LinkedHashSet<>();
-        private Set<Endpoints.VerifiedAuth<?, ?>> authEndpoints = new LinkedHashSet<>();
-        private Set<String> allowedOrigins = new LinkedHashSet<>();
+        private final Set<Endpoints.Open<?, ?>> openEndpoints = new LinkedHashSet<>();
+        private final Set<Endpoints.VerifiedAuth<?, ?>> authEndpoints = new LinkedHashSet<>();
+        private final Set<String> allowedOrigins = new LinkedHashSet<>();
         private SerDe serde = new SerDe.ObjectMapperSerDe();
-        private Authz authz = null;
+        private Authz authz = Authz.denyAll();
         private boolean tls = true;
 
         private Builder() {}
 
         public Builder port(int port) {
+            Preconditions.checkArgument(
+                    0 < port && port < 65536, "Port must be in range [1, 65535]");
             this.port = port;
             return this;
         }
 
         public <Request, Response> Builder endpoint(Endpoints.Open<Request, Response> endpoint) {
+            Objects.requireNonNull(endpoint);
             openEndpoints.add(endpoint);
             return this;
         }
 
         public <Request, Response> Builder endpoint(
                 Endpoints.VerifiedAuth<Request, Response> endpoint) {
+            Objects.requireNonNull(endpoint);
             authEndpoints.add(endpoint);
             return this;
         }
 
         public Builder allowOrigin(String origin) {
+            Objects.requireNonNull(origin);
             allowedOrigins.add(origin);
             return this;
         }
 
         public Builder serde(SerDe serde) {
+            Objects.requireNonNull(serde);
             this.serde = serde;
             return this;
         }
 
         public Builder authz(Authz authz) {
+            Objects.requireNonNull(authz);
             this.authz = authz;
             return this;
         }
@@ -77,6 +85,8 @@ public final class Server {
         }
 
         public Server start() {
+            Logging.configure();
+
             Preconditions.checkNotNull(authz);
 
             EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);

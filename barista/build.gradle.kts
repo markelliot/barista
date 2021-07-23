@@ -16,6 +16,12 @@ dependencies {
     implementation("com.google.guava:guava")
     implementation("io.undertow:undertow-core")
 
+    implementation("org.apache.logging.log4j:log4j-core")
+    implementation("org.apache.logging.log4j:log4j-jul")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl")
+    // users of this library should have access to the slf4j api for their own logging
+    api("org.slf4j:slf4j-api")
+
     testImplementation(platform("org.junit:junit-bom"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.assertj:assertj-core")
@@ -29,7 +35,6 @@ tasks.test {
 }
 
 java {
-    withJavadocJar()
     withSourcesJar()
 }
 
