@@ -98,8 +98,6 @@ public final class Server {
         }
 
         public Server start() {
-            Logging.configure();
-
             Preconditions.checkNotNull(authz);
 
             EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);

@@ -1,49 +1,63 @@
 package barista;
 
+import java.net.URI;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Filter.Result;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Order;
 import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
-import org.apache.logging.log4j.core.config.builder.api.FilterComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 
-final class Logging {
+@Plugin(name = "BaristaLogging", category = ConfigurationFactory.CATEGORY)
+@Order(1_000_000)
+final class Logging extends ConfigurationFactory {
+
     private static final String STDOUT = "stdout";
+    public static final String[] SUPPORTED_TYPES = {"*"};
 
-    public static void configure() {
-        ConfigurationBuilder<BuiltConfiguration> builder =
-                ConfigurationBuilderFactory.newConfigurationBuilder()
-                        .setStatusLevel(Level.ERROR)
-                        .setConfigurationName("barista");
+    static BuiltConfiguration createConfiguration(
+            String name, ConfigurationBuilder<BuiltConfiguration> builder) {
+        builder.setStatusLevel(Level.ERROR);
+        builder.setConfigurationName(name);
 
         LayoutComponentBuilder layout =
                 builder.newLayout("PatternLayout")
                         .addAttribute("pattern", "%d [%t] %-5level: %msg%n%throwable");
-        FilterComponentBuilder filter =
-                builder.newFilter("MarkerFilter", Result.DENY, Result.NEUTRAL)
-                        .addAttribute("marker", "FLOW");
 
         AppenderComponentBuilder appenderBuilder =
                 builder.newAppender(STDOUT, "CONSOLE")
                         .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
-                        .add(layout)
-                        .add(filter);
+                        .add(layout);
 
-        LoggerComponentBuilder logger =
-                builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
-                        .add(builder.newAppenderRef(STDOUT))
-                        .addAttribute("additivity", false);
+        builder.add(appenderBuilder);
+        builder.add(
+                builder.newRootLogger(Level.INFO)
+                        .add(builder.newAppenderRef(appenderBuilder.getName())));
 
-        builder.add(appenderBuilder)
-                .add(logger)
-                .add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef(STDOUT)));
+        return builder.build();
+    }
 
-        Configurator.initialize(builder.build());
-        // TODO(markelliot): we may want to stop the logging context on server shutdown
+    @Override
+    public Configuration getConfiguration(
+            final LoggerContext loggerContext, final ConfigurationSource source) {
+        return getConfiguration(loggerContext, source.toString(), null);
+    }
+
+    @Override
+    public Configuration getConfiguration(
+            final LoggerContext loggerContext, final String name, final URI configLocation) {
+        ConfigurationBuilder<BuiltConfiguration> builder = newConfigurationBuilder();
+        return createConfiguration(name, builder);
+    }
+
+    @Override
+    protected String[] getSupportedTypes() {
+        return SUPPORTED_TYPES;
     }
 }
