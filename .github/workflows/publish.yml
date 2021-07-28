@@ -20,4 +20,5 @@ jobs:
       - name: Publish
         run: ./gradlew --no-daemon publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+	  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_READ_PACKAGES_TOKEN: ${{ secrets.GH_READ_PACKAGES_TOKEN }}

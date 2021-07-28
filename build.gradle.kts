@@ -34,7 +34,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/markelliot/barista-tracing")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+                password = System.getenv("GH_READ_PACKAGES_TOKEN")
             }
         }
         mavenCentral()
