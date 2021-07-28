@@ -28,7 +28,7 @@ final class Logging extends ConfigurationFactory {
 
         LayoutComponentBuilder layout =
                 builder.newLayout("PatternLayout")
-                        .addAttribute("pattern", "%d [%t] %-5level: %msg%n%throwable");
+                        .addAttribute("pattern", "%d [%t] %level: %msg%n%throwable");
 
         AppenderComponentBuilder appenderBuilder =
                 builder.newAppender(STDOUT, "CONSOLE")
