@@ -5,7 +5,9 @@ import barista.handlers.CorsHandler;
 import barista.handlers.DispatchFromIoThreadHandler;
 import barista.handlers.EndpointHandlerBuilder;
 import barista.handlers.HandlerChain;
+import barista.handlers.TracingHandler;
 import barista.tls.TransportLayerSecurity;
+import barista.tracing.Spans;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import io.undertow.Undertow;
@@ -13,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Server {
     private final Undertow undertow;
@@ -51,6 +55,7 @@ public final class Server {
         private SerDe serde = new SerDe.ObjectMapperSerDe();
         private Authz authz = Authz.denyAll();
         private boolean tls = true;
+        private double tracingRate = 0.2;
 
         private Builder() {}
 
@@ -97,8 +102,29 @@ public final class Server {
             return this;
         }
 
+        /**
+         * Sets the sample rate to run tracing for incoming requests without a traceId header.
+         *
+         * <p>A value of 1.0 means trace every request.
+         *
+         * <p>A value of 0.0 means trace no requests.
+         */
+        public Builder tracingRate(double rate) {
+            if (rate < 0.0 || rate > 1.0) {
+                throw new IllegalArgumentException("Cannot set a rate outside of range [0, 1]");
+            }
+            this.tracingRate = rate;
+            return this;
+        }
+
         public Server start() {
             Preconditions.checkNotNull(authz);
+
+            if (tracingRate > 0.0) {
+                // TODO(markelliot): use a custom format, perhaps emit to a specific log file
+                Logger tracing = LoggerFactory.getLogger("tracing");
+                Spans.register("barista", span -> tracing.info("TRACING {}", span));
+            }
 
             EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);
             Undertow.Builder builder =
@@ -106,6 +132,7 @@ public final class Server {
                             .setHandler(
                                     HandlerChain.of(DispatchFromIoThreadHandler::new)
                                             .then(h -> new CorsHandler(allowedOrigins, h))
+                                            .then(h -> new TracingHandler(tracingRate, h))
                                             .last(handler.build(authEndpoints, openEndpoints)));
             if (tls) {
                 builder.addHttpsListener(

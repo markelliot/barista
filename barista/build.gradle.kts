@@ -14,6 +14,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.google.guava:guava")
+    implementation("io.github.markelliot.barista-tracing:barista-tracing")
     implementation("io.undertow:undertow-core")
 
     implementation("org.apache.logging.log4j:log4j-core")
