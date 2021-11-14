@@ -84,13 +84,7 @@ public final class TransportLayerSecurity {
                     "-----BEGIN CERTIFICATE-----\n?(.+?)\n?-----END CERTIFICATE-----",
                     Pattern.DOTALL);
 
-    private static final FileFilter VISIBLE_FILE_FILTER =
-            new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return !pathname.isHidden();
-                }
-            };
+    private static final FileFilter VISIBLE_FILE_FILTER = pathname -> !pathname.isHidden();
 
     public static SSLContext createSslContext(Path securityDir) {
         TrustManagerFactory trustManagerFactory =

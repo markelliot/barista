@@ -19,7 +19,7 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 final class Logging extends ConfigurationFactory {
 
     private static final String STDOUT = "stdout";
-    public static final String[] SUPPORTED_TYPES = {"*"};
+    private static final String[] SUPPORTED_TYPES = {"*"};
 
     static BuiltConfiguration createConfiguration(
             String name, ConfigurationBuilder<BuiltConfiguration> builder) {

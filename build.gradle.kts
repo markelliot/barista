@@ -3,15 +3,15 @@ import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     idea
-    id("com.diffplug.spotless") version "5.12.5"
-    id("com.google.cloud.tools.jib") version "3.1.1" apply false
-    id("com.palantir.consistent-versions") version "1.30.0"
-    id("net.ltgt.errorprone") version "2.0.1" apply false
-    id("org.inferred.processors") version "3.3.0" apply false
+    id("com.diffplug.spotless") version "6.0.0"
+    id("com.google.cloud.tools.jib") version "3.1.4" apply false
+    id("com.palantir.consistent-versions") version "2.0.0"
+    id("net.ltgt.errorprone") version "2.0.2" apply false
+    id("org.inferred.processors") version "3.6.0" apply false
 }
 
 version = "git describe --tags".runCommand().trim() +
-        (if (!"git status -s".runCommand().isEmpty()) ".dirty" else "")
+    (if (!"git status -s".runCommand().isEmpty()) ".dirty" else "")
 
 task("printVersion") {
     doLast {
@@ -46,7 +46,7 @@ allprojects {
         val imageName = "${project.name}:${project.version}"
         configure<JibExtension> {
             from {
-                image = "azul/zulu-openjdk:16"
+                image = "azul/zulu-openjdk:17"
             }
             to {
                 image = imageName
@@ -96,9 +96,9 @@ fun booleanEnv(envVar: String): Boolean? {
 
 fun String.runCommand(): String {
     val proc = ProcessBuilder(*split(" ").toTypedArray())
-            .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .redirectError(ProcessBuilder.Redirect.INHERIT)
-            .start()
+        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+        .redirectError(ProcessBuilder.Redirect.INHERIT)
+        .start()
     proc.waitFor(10, TimeUnit.SECONDS)
     return proc.inputStream.bufferedReader().readText()
 }
