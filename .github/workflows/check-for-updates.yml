@@ -1,0 +1,53 @@
+name: Update Deps
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 0/6 * * *'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_READ_PACKAGES_TOKEN: ${{ secrets.GH_READ_PACKAGES_TOKEN }}
+      COMMIT_USERNAME: "markelliot"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
+      - uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - name: Check for new versions
+        run: ./gradlew --no-daemon checkNewVersions
+      - name: Apply version updates
+        run: ./gradlew --no-daemon updateVersionsProps updatePlugins
+      - name: Write lockfile
+        run: ./gradlew --no-daemon --write-locks
+      - name: Create branch and commit changes
+        run: |
+          git checkout -B auto/versions
+          git add .
+
+          # only commit if there are changes
+          if [ -z "$(git status --porcelain)" ]; then
+            exit 0
+          fi
+          git config --local user.name "Version Updates"
+          git config --local user.email "${COMMIT_USERNAME}@users.noreply.github.com"
+          git commit -m "Auto-update dependencies and plugins"
+
+          # only push changes if different
+          if [ -n "$(git ls-remote --exit-code origin auto/versions)" && -z "$(git diff origin/auto/versions)" ]; then
+            exit 0
+          fi
+          git push origin -f auto/versions
+      - name: pull-request
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "auto/versions"
+          destination_branch: "develop"
+          github_token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
+          pr_allow_empty: false
+          pr_title: "Version Updates"
+
