@@ -1,5 +1,5 @@
 # Run ./gradlew --write-locks to regenerate this file
-com.auth0:java-jwt:3.18.1 (1 constraints: 3f054e3b)
+com.auth0:java-jwt:3.18.2 (1 constraints: 40054f3b)
 com.fasterxml.jackson:jackson-bom:2.13.0 (7 constraints: 4a9286b9)
 com.fasterxml.jackson.core:jackson-annotations:2.13.0 (3 constraints: a837f0ff)
 com.fasterxml.jackson.core:jackson-core:2.13.0 (6 constraints: 0c7c7a51)
