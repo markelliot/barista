@@ -7,9 +7,6 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    env:
-      GH_READ_PACKAGES_TOKEN: ${{ secrets.GH_READ_PACKAGES_TOKEN }}
-      COMMIT_USERNAME: "markelliot"
     steps:
       - uses: actions/checkout@v2
         with:
