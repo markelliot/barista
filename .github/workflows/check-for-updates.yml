@@ -20,7 +20,7 @@ jobs:
           distribution: 'zulu'
       - uses: markelliot/update-gradle-deps@v1
         with:
-          push-to-repo-token: ${{ secretst.GH_PUSH_TO_REPO_TOKEN }}
+          push-to-repo-token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
           commit-user: markelliot
           commit-email: markelliot@users.noreply.github.com
 
