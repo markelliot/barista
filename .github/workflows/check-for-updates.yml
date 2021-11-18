@@ -18,36 +18,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-      - name: Check for new versions
-        run: ./gradlew --no-daemon checkNewVersions
-      - name: Apply version updates
-        run: ./gradlew --no-daemon updateVersionsProps updatePlugins
-      - name: Write lockfile
-        run: ./gradlew --no-daemon --write-locks
-      - name: Create branch and commit changes
-        run: |
-          git checkout -B auto/versions
-          git add .
-
-          # only commit if there are changes
-          if [ -z "$(git status --porcelain)" ]; then
-            exit 0
-          fi
-          git config --local user.name "Version Updates"
-          git config --local user.email "${COMMIT_USERNAME}@users.noreply.github.com"
-          git commit -m "Auto-update dependencies and plugins"
-
-          # only push changes if different
-          if [ -n "$(git ls-remote --exit-code origin auto/versions)" && -z "$(git diff origin/auto/versions)" ]; then
-            exit 0
-          fi
-          git push origin -f auto/versions
-      - name: pull-request
-        uses: repo-sync/pull-request@v2
+      - uses: markelliot/update-gradle-deps@v1
         with:
-          source_branch: "auto/versions"
-          destination_branch: "develop"
-          github_token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
-          pr_allow_empty: false
-          pr_title: "Version Updates"
+          push-to-repo-token: ${{ secretst.GH_PUSH_TO_REPO_TOKEN }}
+          commit-user: markelliot
+          commit-email: markelliot@users.noreply.github.com
 
