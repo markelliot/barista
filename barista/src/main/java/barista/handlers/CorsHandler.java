@@ -29,20 +29,24 @@ public record CorsHandler(Set<String> allowedOrigins, HttpHandler delegate) impl
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        if (allowedOrigins.contains(exchange.getRequestHeaders().getFirst(Headers.ORIGIN))) {
-            exchange.getResponseHeaders()
-                    .add(ACCESS_CONTROL_ALLOW_ORIGIN, ORIGIN_ALL)
-                    .add(ACCESS_CONTROL_ALLOW_METHODS, ALLOWED_METHODS)
-                    .add(ACCESS_CONTROL_MAX_AGE, ONE_DAY_IN_SECONDS);
+        String origin = exchange.getRequestHeaders().getFirst(Headers.ORIGIN);
+        if (!allowedOrigins.contains(origin)) {
+            exchange.setStatusCode(403)
+                    .getResponseSender()
+                    .send("Origin '" + origin + "' not allowed.");
+            return;
+        }
 
-            if (exchange.getRequestHeaders().contains(ACCESS_CONTROL_REQUEST_HEADERS)) {
-                String allowedHeaders =
-                        Joiner.on(',')
-                                .join(
-                                        exchange.getRequestHeaders()
-                                                .get(ACCESS_CONTROL_REQUEST_HEADERS));
-                exchange.getResponseHeaders().add(ACCESS_CONTROL_ALLOW_HEADERS, allowedHeaders);
-            }
+        exchange.getResponseHeaders()
+                .add(ACCESS_CONTROL_ALLOW_ORIGIN, ORIGIN_ALL)
+                .add(ACCESS_CONTROL_ALLOW_METHODS, ALLOWED_METHODS)
+                .add(ACCESS_CONTROL_MAX_AGE, ONE_DAY_IN_SECONDS);
+
+        if (exchange.getRequestHeaders().contains(ACCESS_CONTROL_REQUEST_HEADERS)) {
+            String allowedHeaders =
+                    Joiner.on(',')
+                            .join(exchange.getRequestHeaders().get(ACCESS_CONTROL_REQUEST_HEADERS));
+            exchange.getResponseHeaders().add(ACCESS_CONTROL_ALLOW_HEADERS, allowedHeaders);
         }
 
         // swallow the request if it's an OPTIONS request
