@@ -16,7 +16,12 @@ final class ServerTests {
     @Test
     void smokeTest() throws IOException, InterruptedException {
         Server server =
-                Server.builder().port(8080).disableTls().endpoint(new HelloWorldEndpoint()).start();
+                Server.builder()
+                        .allowOrigin("localhost:8181")
+                        .port(8080)
+                        .disableTls()
+                        .endpoint(new HelloWorldEndpoint())
+                        .start();
 
         assertResponse("http://localhost:8080/hello-world", 200, "\"Hello World\"");
         assertResponse("http://localhost:8080/missing", 404, "Unknown API Endpoint");
@@ -28,7 +33,11 @@ final class ServerTests {
             throws IOException, InterruptedException {
         HttpResponse<String> helloWorldResult =
                 CLIENT.send(
-                        HttpRequest.newBuilder().uri(URI.create(uri)).GET().build(),
+                        HttpRequest.newBuilder()
+                                .uri(URI.create(uri))
+                                .header("origin", "localhost:8181")
+                                .GET()
+                                .build(),
                         BodyHandlers.ofString());
         assertThat(helloWorldResult.statusCode()).isEqualTo(statusCode);
         assertThat(helloWorldResult.body()).isEqualTo(expectedResponseText);
