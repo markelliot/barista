@@ -8,7 +8,7 @@ io.github.markelliot.barista-tracing:barista-tracing = 0.2.0
 io.undertow:undertow-core = 2.2.13.Final
 org.apache.logging.log4j:* = 2.14.1
 org.assertj:assertj-core = 3.21.0
-org.junit:junit-bom = 5.8.1
-org.junit.jupiter:junit-jupiter-engine = 5.7.2
+org.junit:junit-bom = 5.8.2
+org.junit.jupiter:junit-jupiter-engine = 5.8.2
 org.slf4j:* = 1.7.32
 
