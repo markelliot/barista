@@ -1,5 +1,5 @@
 com.auth0:java-jwt = 3.18.2
-com.github.ben-manes.caffeine:caffeine = 3.0.4
+com.github.ben-manes.caffeine:caffeine = 3.0.5
 com.fasterxml.jackson.*:* = 2.13.0
 com.google.errorprone:error_prone_core = 2.10.0
 com.google.guava:guava = 31.0.1-jre
