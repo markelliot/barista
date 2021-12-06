@@ -9,8 +9,6 @@ jobs:
     permissions: 
       contents: read
       packages: write 
-    env:
-      GH_READ_PACKAGES_TOKEN: ${{ secrets.GH_READ_PACKAGES_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v2
@@ -20,7 +18,10 @@ jobs:
       - name: Build
         run: ./gradlew --no-daemon build
       - name: Publish
-        run: ./gradlew --no-daemon publish
+        run: ./gradlew --no-daemon publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_CENTRAL_USER: ${{ secrets.MAVEN_CENTRAL_USER }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 

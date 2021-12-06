@@ -1,12 +1,5 @@
 /*
- * This file is directly derived from:
- * https://github.com/palantir/conjure-java-runtime/blob/\
- * 27be7573c5b0e9d09e5b0a4ed10e882f969330a9/\keystores/src/main/java/\
- * com/palantir/conjure/java/config/ssl/pkcs1/Pkcs1PrivateKeyReader.java
- *
- * Such derivations are subject to the following copyright and license:
- *
- * (c) Copyright 2019 Palantir Technologies Inc. All rights reserved.
+ * (c) Copyright 2021 Mark Elliot. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * This file is directly derived from:
+ * https://github.com/palantir/conjure-java-runtime/blob/\
+ * 27be7573c5b0e9d09e5b0a4ed10e882f969330a9/\keystores/src/main/java/\
+ * com/palantir/conjure/java/config/ssl/pkcs1/Pkcs1PrivateKeyReader.java
+ */
 
-package barista.tls;
+package com.markelliot.barista.tls;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;

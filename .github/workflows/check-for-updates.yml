@@ -7,9 +7,6 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    env:
-      # used by Gradle to read packages published by other repos
-      GH_READ_PACKAGES_TOKEN: ${{ secrets.GH_READ_PACKAGES_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:

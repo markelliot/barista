@@ -7,6 +7,7 @@ plugins {
     id("com.google.cloud.tools.jib") version "3.1.4" apply false
     id("com.palantir.consistent-versions") version "2.3.0"
     id("com.markelliot.versions") version "0.1.11"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("net.ltgt.errorprone") version "2.0.2" apply false
     id("org.inferred.processors") version "3.6.0" apply false
 }
@@ -21,7 +22,7 @@ task("printVersion") {
 }
 
 allprojects {
-    group = "io.github.markelliot.barista"
+    group = "com.markelliot.barista"
     version = rootProject.version
 }
 
@@ -32,13 +33,6 @@ allprojects {
 
     // lives in allprojects because of consistent-versions
     repositories {
-        maven {
-            url = uri("https://maven.pkg.github.com/markelliot/barista-tracing")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GH_READ_PACKAGES_TOKEN")
-            }
-        }
         mavenCentral()
     }
 
@@ -103,4 +97,15 @@ fun String.runCommand(): String {
         .start()
     proc.waitFor(10, TimeUnit.SECONDS)
     return proc.inputStream.bufferedReader().readText()
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(System.getenv("MAVEN_CENTRAL_USER"))
+            password.set(System.getenv("MAVEN_CENTRAL_PASSWORD"))
+        }
+    }
 }
