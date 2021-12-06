@@ -1,8 +1,7 @@
-import java.net.URI
-
 plugins {
     `java-library`
     `maven-publish`
+    `signing`
 }
 
 dependencies {
@@ -14,7 +13,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.google.guava:guava")
-    implementation("io.github.markelliot.barista-tracing:barista-tracing")
+    implementation("com.markelliot.barista.tracing:barista-tracing")
     implementation("io.undertow:undertow-core")
 
     implementation("org.apache.logging.log4j:log4j-core")
@@ -39,26 +38,46 @@ tasks.test {
 }
 
 java {
+    withJavadocJar()
     withSourcesJar()
 }
 
 publishing {
     publications {
-        create<MavenPublication>("library") {
+        create<MavenPublication>("mavenJava") {
             from(components["java"])
-        }
-    }
-
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = URI.create("https://maven.pkg.github.com/markelliot/barista")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+            suppressPomMetadataWarningsFor("javadocElements")
+            pom {
+                name.set("barista")
+                description.set("an opinionated java server library.")
+                url.set("https://github.com/markelliot/barista")
+                licenses {
+                    license {
+                        name.set("Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("markelliot")
+                        name.set("Mark Elliot")
+                        email.set("markelliot@users.noreply.github.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/markelliot/barista.git")
+                    developerConnection.set("scm:git:https://github.com/markelliot/barista.git")
+                    url.set("https://github.com/markelliot/barista")
+                }
             }
         }
     }
 }
 
-tasks["publishLibraryPublicationToGitHubPackagesRepository"].enabled = System.getenv("GITHUB_ACTOR") != null
+configure<SigningExtension> {
+    val key = System.getenv("SIGNING_KEY")
+    val password = System.getenv("SIGNING_PASSWORD")
+    val publishing: PublishingExtension by project
+    useInMemoryPgpKeys(key, password)
+    sign(publishing.publications)
+}
