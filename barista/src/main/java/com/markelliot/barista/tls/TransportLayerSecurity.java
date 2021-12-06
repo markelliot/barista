@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package com.markelliot.barista.tls;
+
 /*
  * Some of the code in this file is directly derived from:
  * https://github.com/palantir/conjure-java-runtime/blob/\
  * 27be7573c5b0e9d09e5b0a4ed10e882f969330a9/\keystores/src/main/java/\
  * com/palantir/conjure/java/config/ssl/KeyStores.java
  */
-
-package com.markelliot.barista.tls;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;

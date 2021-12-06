@@ -66,6 +66,7 @@ allprojects {
         spotless {
             java {
                 googleJavaFormat("1.10.0").aosp()
+                licenseHeaderFile("${rootProject.projectDir}/.spotless/java-license-header.txt")
             }
         }
 
