@@ -74,7 +74,9 @@ allprojects {
             options.errorprone.disable("UnusedVariable")
         }
 
-        the<JavaPluginExtension>().sourceCompatibility = JavaVersion.VERSION_16
+        the<JavaPluginExtension>().sourceCompatibility = JavaVersion.VERSION_17
+
+        tasks["check"].dependsOn("spotlessCheck")
     }
 
     spotless {
@@ -83,7 +85,6 @@ allprojects {
         }
     }
 
-    tasks["check"].dependsOn("spotlessCheck")
     tasks.register("format").get().dependsOn("spotlessApply")
 }
 
