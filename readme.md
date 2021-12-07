@@ -5,6 +5,8 @@ logic instead of server configuration and setup. By default, Barista listens on 
 enables TLS, using `var/security/key.pem` as the private key and `var/security/trust.pem` as the
 trust store and CA certificates.
 
+Depend on barista via Maven Central at coordinates `com.markelliot.barista:barista:<version>`.
+
 ## Authoring Endpoints
 Endpoints implement either the `Endpoints.VerifiedAuth` or `Endpoints.Open` classes. The former
 causes Barista to validate and pass as an argument the authz token for the request and the latter 
