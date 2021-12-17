@@ -3,6 +3,7 @@ on: [pull_request]
 
 jobs:
   build:
+    name: Check PR
     runs-on: ubuntu-latest
     permissions: 
       contents: read
