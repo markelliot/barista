@@ -33,7 +33,7 @@ org.wildfly.common:wildfly-common:1.5.2.Final (3 constraints: c62f0652)
 org.yaml:snakeyaml:1.28 (1 constraints: 7317fb27)
 
 [Test dependencies]
-org.assertj:assertj-core:3.21.0 (1 constraints: 38053c3b)
+org.assertj:assertj-core:3.22.0 (1 constraints: 39053f3b)
 org.junit:junit-bom:5.8.2 (5 constraints: 9b4843a6)
 org.junit.jupiter:junit-jupiter-api:5.8.2 (2 constraints: c419c1f4)
 org.junit.jupiter:junit-jupiter-engine:5.8.2 (2 constraints: 260e7a59)
