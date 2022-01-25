@@ -4,7 +4,7 @@ import net.ltgt.gradle.errorprone.errorprone
 plugins {
     idea
     id("com.diffplug.spotless") version "6.2.0"
-    id("com.google.cloud.tools.jib") version "3.1.4" apply false
+    id("com.google.cloud.tools.jib") version "3.2.0" apply false
     id("com.palantir.consistent-versions") version "2.6.0"
     id("com.markelliot.versions") version "0.1.12"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
