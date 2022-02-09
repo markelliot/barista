@@ -22,6 +22,8 @@ import com.markelliot.barista.authz.AuthToken;
 import com.markelliot.barista.authz.AuthTokens;
 import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.authz.VerifiedAuthToken;
+import com.markelliot.barista.endpoints.EndpointHandler;
+import com.markelliot.barista.endpoints.EndpointRuntime;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
@@ -43,10 +45,15 @@ public final class EndpointHandlerBuilder {
 
     public HttpHandler build(
             Set<Endpoints.VerifiedAuth<?, ?>> authEndpoints,
-            Set<Endpoints.Open<?, ?>> openEndpoints) {
+            Set<Endpoints.Open<?, ?>> openEndpoints,
+            Set<EndpointHandler> endpointHandlers) {
+        EndpointRuntime runtime = new EndpointRuntime(serde, authz);
         RoutingHandler router = new RoutingHandler();
+        // TODO(markelliot): remove authEndpoints and openEndpoints in a future version
         authEndpoints.forEach(e -> router.add(e.method().method(), e.path(), authEndpoint(e)));
         openEndpoints.forEach(e -> router.add(e.method().method(), e.path(), openEndpoint(e)));
+        endpointHandlers.forEach(
+                e -> router.add(e.method().method(), e.route(), e.handler(runtime)));
         router.setFallbackHandler(
                 exchange ->
                         exchange.setStatusCode(404)

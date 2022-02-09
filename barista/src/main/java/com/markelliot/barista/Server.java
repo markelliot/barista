@@ -16,9 +16,9 @@
 
 package com.markelliot.barista;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.markelliot.barista.authz.Authz;
+import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.handlers.CorsHandler;
 import com.markelliot.barista.handlers.DispatchFromIoThreadHandler;
 import com.markelliot.barista.handlers.EndpointHandlerBuilder;
@@ -50,12 +50,11 @@ public final class Server {
     /**
      * Manually stop the server.
      *
-     * <p>This is a test-only method because the expected use of this framework is for the server to
-     * run the lifetime of the process, and a shutdown hook to stop the server is included
-     * automatically.
+     * <p>It's uncommon to invoke this method because the expected use of this framework is for the
+     * server to run for the lifetime of the process, and a shutdown hook to stop the server is
+     * included automatically.
      */
-    @VisibleForTesting
-    void stop() {
+    public void stop() {
         undertow.stop();
     }
 
@@ -67,6 +66,7 @@ public final class Server {
         private int port = 8443;
         private final Set<Endpoints.Open<?, ?>> openEndpoints = new LinkedHashSet<>();
         private final Set<Endpoints.VerifiedAuth<?, ?>> authEndpoints = new LinkedHashSet<>();
+        private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
         private SerDe serde = new SerDe.ObjectMapperSerDe();
         private Authz authz = Authz.denyAll();
@@ -82,16 +82,26 @@ public final class Server {
             return this;
         }
 
+        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
+        @Deprecated
         public <Request, Response> Builder endpoint(Endpoints.Open<Request, Response> endpoint) {
             Objects.requireNonNull(endpoint);
             openEndpoints.add(endpoint);
             return this;
         }
 
+        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
+        @Deprecated
         public <Request, Response> Builder endpoint(
                 Endpoints.VerifiedAuth<Request, Response> endpoint) {
             Objects.requireNonNull(endpoint);
             authEndpoints.add(endpoint);
+            return this;
+        }
+
+        public Builder endpoints(com.markelliot.barista.endpoints.Endpoints resource) {
+            Objects.requireNonNull(resource);
+            endpointHandlers.addAll(resource.endpoints());
             return this;
         }
 
@@ -149,7 +159,11 @@ public final class Server {
                                     HandlerChain.of(DispatchFromIoThreadHandler::new)
                                             .then(h -> new CorsHandler(allowedOrigins, h))
                                             .then(h -> new TracingHandler(tracingRate, h))
-                                            .last(handler.build(authEndpoints, openEndpoints)));
+                                            .last(
+                                                    handler.build(
+                                                            authEndpoints,
+                                                            openEndpoints,
+                                                            endpointHandlers)));
             if (tls) {
                 builder.addHttpsListener(
                         port,

@@ -5,3 +5,5 @@ build
 *.iws
 out
 
+generated_*
+

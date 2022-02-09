@@ -25,7 +25,6 @@ package com.markelliot.barista.tls;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.common.base.Throwables;
 import com.google.common.io.BaseEncoding;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -102,7 +101,7 @@ public final class TransportLayerSecurity {
             sslContext.init(keyManagers, trustManagers, null);
             return sslContext;
         } catch (GeneralSecurityException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -126,7 +125,7 @@ public final class TransportLayerSecurity {
             trustManagerFactory.init(keyStore);
             return trustManagerFactory;
         } catch (GeneralSecurityException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -187,7 +186,7 @@ public final class TransportLayerSecurity {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
         } catch (GeneralSecurityException | IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
         return keyStore;
     }
@@ -239,7 +238,7 @@ public final class TransportLayerSecurity {
 
             return keyStore;
         } catch (GeneralSecurityException | IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
