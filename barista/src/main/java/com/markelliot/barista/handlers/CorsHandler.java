@@ -46,7 +46,7 @@ public record CorsHandler(Set<String> allowedOrigins, HttpHandler delegate) impl
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String origin = exchange.getRequestHeaders().getFirst(Headers.ORIGIN);
-        if (!allowedOrigins.contains(origin)) {
+        if (origin != null && !allowedOrigins.contains(origin)) {
             exchange.setStatusCode(403)
                     .getResponseSender()
                     .send("Origin '" + origin + "' not allowed.");
