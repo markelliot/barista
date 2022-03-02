@@ -75,6 +75,29 @@ final class GreeterResource {
 }
 ```
 
+## Integrating with Conjure
+
+Barista is compatible with [https://github.com/palantir/conjure], and conjure-undertow generated
+endpoint classes. To use Conjure endpoints, take an additional dependency on `barista-conjure`:
+
+```gradle
+dependencies {
+    implementation "com.markelliot.barista:barista-conjure"
+}
+```
+
+And use the `ConjureAdapter` class to go from conjure-undertow generated classes to
+Barista-compatible endpoints:
+
+```java
+UndertowRuntime conjureRuntime = ConjureUndertowRuntime.builder().build();
+Endpoints endpoints = ConjureAdapter.adapt(
+        SampleServiceEndpoints.of(new DefaultSampleService()), conjureRuntime);
+Server.builder()
+        .endpoints(endpoints)
+        ...
+```
+
 ## Creating and Starting the Server
 
 Then, to create and start the server, one can use the `Server` builder to register the endpoint,
