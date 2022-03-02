@@ -70,6 +70,7 @@ public final class Server {
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
         private SerDe serde = new SerDe.ObjectMapperSerDe();
         private Authz authz = Authz.denyAll();
+        private boolean allowAllOrigins = false;
         private boolean tls = true;
         private double tracingRate = 0.2;
 
@@ -108,6 +109,11 @@ public final class Server {
         public Builder allowOrigin(String origin) {
             Objects.requireNonNull(origin);
             allowedOrigins.add(origin);
+            return this;
+        }
+
+        public Builder allowAllOrigins() {
+            allowAllOrigins = true;
             return this;
         }
 
@@ -157,7 +163,12 @@ public final class Server {
                     Undertow.builder()
                             .setHandler(
                                     HandlerChain.of(DispatchFromIoThreadHandler::new)
-                                            .then(h -> new CorsHandler(allowedOrigins, h))
+                                            .then(
+                                                    h ->
+                                                            new CorsHandler(
+                                                                    allowAllOrigins,
+                                                                    allowedOrigins,
+                                                                    h))
                                             .then(h -> new TracingHandler(tracingRate, h))
                                             .last(
                                                     handler.build(
