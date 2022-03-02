@@ -77,7 +77,7 @@ final class GreeterResource {
 
 ## Integrating with Conjure
 
-Barista is compatible with [https://github.com/palantir/conjure], and conjure-undertow generated
+Barista is compatible with [Conjure](https://github.com/palantir/conjure), and conjure-undertow generated
 endpoint classes. To use Conjure endpoints, take an additional dependency on `barista-conjure`:
 
 ```gradle
