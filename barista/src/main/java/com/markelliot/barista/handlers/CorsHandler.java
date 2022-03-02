@@ -23,9 +23,10 @@ import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /** An {@link HttpHandler} that returns reasonable CORS allow headers for {@code allowedOrigins}. */
-public record CorsHandler(Set<String> allowedOrigins, HttpHandler delegate) implements HttpHandler {
+public final class CorsHandler implements HttpHandler {
     private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN =
             new HttpString("Access-Control-Allow-Origin");
     private static final String ORIGIN_ALL = "*";
@@ -43,10 +44,21 @@ public record CorsHandler(Set<String> allowedOrigins, HttpHandler delegate) impl
     private static final HttpString ACCESS_CONTROL_ALLOW_HEADERS =
             new HttpString("Access-Control-Allow-Headers");
 
+    private final Set<String> allowedOrigins;
+    private final HttpHandler delegate;
+    private final Predicate<String> originCheck;
+
+    public CorsHandler(boolean allowAllOrigins, Set<String> allowedOrigins, HttpHandler delegate) {
+        this.originCheck = allowAllOrigins ? origin -> true : this::checkAllowedOrigin;
+        this.allowedOrigins = allowedOrigins;
+        this.delegate = delegate;
+    }
+
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         String origin = exchange.getRequestHeaders().getFirst(Headers.ORIGIN);
-        if (origin != null && !allowedOrigins.contains(origin)) {
+        if (!originCheck.test(origin)) {
+            // not an allowed origin, hard deny
             exchange.setStatusCode(403)
                     .getResponseSender()
                     .send("Origin '" + origin + "' not allowed.");
@@ -69,5 +81,10 @@ public record CorsHandler(Set<String> allowedOrigins, HttpHandler delegate) impl
         if (!exchange.getRequestMethod().equals(Methods.OPTIONS)) {
             delegate.handleRequest(exchange);
         }
+    }
+
+    /** Returns true if origin is null or if origin is in the allowedOrigins set. */
+    private boolean checkAllowedOrigin(String origin) {
+        return origin == null || allowedOrigins.contains(origin);
     }
 }
