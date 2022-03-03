@@ -60,6 +60,7 @@ public final class ConjureAdapter {
                     case "GET" -> HttpMethod.GET;
                     case "PUT" -> HttpMethod.PUT;
                     case "POST" -> HttpMethod.POST;
+                    case "DELETE" -> HttpMethod.DELETE;
                     default -> throw new IllegalStateException(
                             "Unsupported HTTP method " + endpoint.method());
                 };
