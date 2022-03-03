@@ -66,7 +66,8 @@ public final class EndpointHandlerBuilder {
             Endpoints.VerifiedAuth<Request, Response> endpoint) {
         return switch (endpoint.method()) {
             case GET -> exchange -> authNoBody(endpoint, exchange);
-            case PUT, POST -> withBody((exchange, body) -> authWithBody(endpoint, exchange, body));
+            case PUT, POST, DELETE -> withBody(
+                    (exchange, body) -> authWithBody(endpoint, exchange, body));
         };
     }
 
@@ -74,7 +75,8 @@ public final class EndpointHandlerBuilder {
             Endpoints.Open<Request, Response> endpoint) {
         return switch (endpoint.method()) {
             case GET -> exchange -> openNoBody(endpoint, exchange);
-            case PUT, POST -> withBody((exchange, body) -> openWithBody(endpoint, exchange, body));
+            case PUT, POST, DELETE -> withBody(
+                    (exchange, body) -> openWithBody(endpoint, exchange, body));
         };
     }
 
