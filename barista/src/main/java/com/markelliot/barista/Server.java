@@ -25,6 +25,8 @@ import com.markelliot.barista.handlers.DispatchFromIoThreadHandler;
 import com.markelliot.barista.handlers.EndpointHandlerBuilder;
 import com.markelliot.barista.handlers.HandlerChain;
 import com.markelliot.barista.handlers.TracingHandler;
+import com.markelliot.barista.oauth2.OAuth2ClientBlocking;
+import com.markelliot.barista.oauth2.OAuth2Configuration;
 import com.markelliot.barista.tls.TransportLayerSecurity;
 import com.markelliot.barista.tracing.Spans;
 import io.undertow.Undertow;
@@ -34,6 +36,7 @@ import io.undertow.server.HttpHandler;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
@@ -77,11 +80,14 @@ public final class Server {
         private final Set<Bundle> bundles = new LinkedHashSet<>();
         private SerDe serde = new SerDe.ObjectMapperSerDe();
         private Authz authz = Authz.denyAll();
+        private Optional<OAuth2Configuration> oauth2Configuration = Optional.empty();
+        private Optional<OAuth2ClientBlocking> oauth2Client = Optional.empty();
         private boolean allowAllOrigins = false;
         private boolean tls = true;
         private double tracingRate = 0.2;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public Builder port(int port) {
             Preconditions.checkArgument(
@@ -90,7 +96,9 @@ public final class Server {
             return this;
         }
 
-        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
+        /**
+         * Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}.
+         */
         @Deprecated
         public <Request, Response> Builder endpoint(Endpoints.Open<Request, Response> endpoint) {
             Objects.requireNonNull(endpoint);
@@ -98,7 +106,9 @@ public final class Server {
             return this;
         }
 
-        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
+        /**
+         * Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}.
+         */
         @Deprecated
         public <Request, Response> Builder endpoint(
                 Endpoints.VerifiedAuth<Request, Response> endpoint) {
@@ -136,6 +146,12 @@ public final class Server {
             return this;
         }
 
+        public Builder oauth2(OAuth2Configuration oauth2Config) {
+            Objects.requireNonNull(oauth2Config);
+            this.oauth2Configuration = Optional.of(oauth2Config);
+            return this;
+        }
+
         public Builder disableTls() {
             this.tls = false;
             return this;
@@ -163,6 +179,9 @@ public final class Server {
 
         public Server start() {
             Preconditions.checkNotNull(authz);
+            Preconditions.checkArgument(
+                    oauth2Client.isPresent() == oauth2Configuration.isPresent(),
+                    "OAuth2 has been partially configured.");
 
             if (tracingRate > 0.0) {
                 // TODO(markelliot): use a custom format, perhaps emit to a specific log file
