@@ -18,6 +18,12 @@ package com.markelliot.barista;
 
 import com.markelliot.barista.authz.VerifiedAuthToken;
 
+/**
+ * @deprecated Prefer using Barista's annotation processors, which generate {@link
+ *     com.markelliot.barista.endpoints.Endpoints} implementations, or Barista's Conjure
+ *     integration, which also generates {@link com.markelliot.barista.endpoints.Endpoints}
+ *     implementations.
+ */
 @Deprecated
 public final class Endpoints {
     private interface Endpoint<Request> {
@@ -28,10 +34,24 @@ public final class Endpoints {
         HttpMethod method();
     }
 
+    /**
+     * @deprecated Prefer using Barista's annotation processors, which generate {@link
+     *     com.markelliot.barista.endpoints.Endpoints} implementations, or Barista's Conjure
+     *     integration, which also generates {@link com.markelliot.barista.endpoints.Endpoints}
+     *     implementations.
+     */
+    @Deprecated
     public interface VerifiedAuth<Request, Response> extends Endpoint<Request> {
         Response call(VerifiedAuthToken authToken, Request request);
     }
 
+    /**
+     * @deprecated Prefer using Barista's annotation processors, which generate {@link
+     *     com.markelliot.barista.endpoints.Endpoints} implementations, or Barista's Conjure
+     *     integration, which also generates {@link com.markelliot.barista.endpoints.Endpoints}
+     *     implementations.
+     */
+    @Deprecated
     public interface Open<Request, Response> extends Endpoint<Request> {
         Response call(Request request);
     }
