@@ -36,7 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OAuth2CookieHandlerTest {
+public final class AuthDelegatingHandlerTest {
 
     private static final BearerToken BEARER_TOKEN = BearerToken.valueOf("test-token");
     private static final String REQUEST_URI = "https://test-uri";
@@ -58,9 +58,7 @@ public final class OAuth2CookieHandlerTest {
 
     @Mock private CookieManager cookieManager;
 
-    @Mock private Supplier<HttpServerExchange> exchangeSupplier;
-
-    private OAuth2CookieHandler handler;
+    private AuthDelegatingHandler handler;
 
     @Before
     public void before() {
@@ -80,18 +78,16 @@ public final class OAuth2CookieHandlerTest {
         when(request.getQueryString()).thenReturn(QUERY_STRING);
 
         handler =
-                OAuth2CookieHandler.of(
-                        cookieAuthFilter,
+                new AuthDelegatingHandler(
                         COOKIE_PATH,
+                        cookieAuthFilter,
                         oauth2StateSerde,
-                        cookieManager,
-                        exchangeSupplier);
+                        cookieManager);
     }
 
     @Test
     public void test_redirect_filterChainStopped() throws Exception {
         HttpServerExchange exchange = new HttpServerExchange(null);
-        when(exchangeSupplier.get()).thenReturn(exchange);
         when(cookieManager.getTokenCookie(exchange)).thenReturn(Optional.empty());
         handler.handleRequest(request, response, chain);
         verify(chain, never()).doFilter(request, response);
