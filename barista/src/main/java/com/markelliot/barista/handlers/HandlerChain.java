@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import io.undertow.server.HttpHandler;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Set;
 
 /**
  * Creates a sequence of delegating handlers that apply in first-then..-last order.
@@ -38,25 +38,32 @@ import java.util.function.Function;
  * </code>
  */
 public final class HandlerChain {
-    private final List<Function<HttpHandler, HttpHandler>> handlers = new ArrayList<>();
+    private final List<DelegatingHandler> handlers = new ArrayList<>();
 
-    private HandlerChain(Function<HttpHandler, HttpHandler> first) {
+    private HandlerChain(DelegatingHandler first) {
         handlers.add(first);
     }
 
-    public static HandlerChain of(Function<HttpHandler, HttpHandler> first) {
+    public static HandlerChain of(DelegatingHandler first) {
         return new HandlerChain(first);
     }
 
-    public HandlerChain then(Function<HttpHandler, HttpHandler> next) {
+    public HandlerChain then(DelegatingHandler next) {
         handlers.add(next);
+        return this;
+    }
+
+    public HandlerChain then(Set<DelegatingHandler> next) {
+        for (DelegatingHandler fn : next) {
+            then(fn);
+        }
         return this;
     }
 
     public HttpHandler last(HttpHandler last) {
         HttpHandler current = last;
-        for (Function<HttpHandler, HttpHandler> fn : Lists.reverse(handlers)) {
-            current = fn.apply(current);
+        for (DelegatingHandler fn : Lists.reverse(handlers)) {
+            current = fn.handler(current);
         }
         return current;
     }
