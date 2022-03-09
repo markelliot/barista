@@ -53,7 +53,7 @@ public final class OAuth2CookieHandler implements HttpHandler {
 
     public static HttpHandler of(
             HttpHandler next,
-            OAuth2ClientBlocking client,
+            OAuth2Client client,
             Supplier<OAuth2Configuration> config) {
         return of(next, "", client, config, new OAuth2StateSerdeImpl());
     }
@@ -61,13 +61,13 @@ public final class OAuth2CookieHandler implements HttpHandler {
     public static HttpHandler of(
             HttpHandler next,
             String cookiePath,
-            OAuth2ClientBlocking client,
+            OAuth2Client client,
             Supplier<OAuth2Configuration> config,
             OAuth2StateSerde oauth2StateSerde) {
         return of(
                 next,
                 cookiePath,
-                new OAuth2CookieFilter(OAuth2Client.of(client), config),
+                new OAuth2CookieFilter(client, config),
                 oauth2StateSerde,
                 CookieManagerImpl.INSTANCE);
     }

@@ -20,7 +20,7 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305")
     implementation("com.google.errorprone:error_prone_annotations")
     implementation("com.google.guava:guava")
-    implementation("com.palantir.safe-logging:preconditions")
+    implementation("com.palantir.dialogue:dialogue-clients")
     implementation("com.palantir.safe-logging:safe-logging")
     implementation("org.apache.httpcomponents.core5:httpcore5")
     implementation("org.slf4j:slf4j-api")

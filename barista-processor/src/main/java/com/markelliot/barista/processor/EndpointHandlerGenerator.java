@@ -300,8 +300,8 @@ public final class EndpointHandlerGenerator {
             EMPTY,
             OBJECT,
             BYTE_STREAM,
-            REDIRECT
-            // TODO(markelliot): RESULT?
+            REDIRECT,
+            //RESULT
         }
     }
 

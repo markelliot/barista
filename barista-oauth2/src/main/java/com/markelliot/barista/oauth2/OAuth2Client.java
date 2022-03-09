@@ -19,7 +19,7 @@ package com.markelliot.barista.oauth2;
 import com.palantir.tokens.auth.AuthHeader;
 
 /** Internal interface which represents an oauth2 client. */
-interface OAuth2Client {
+public interface OAuth2Client {
     OAuth2Credentials createToken(CreateTokenRequest createTokenRequest);
 
     void checkToken(AuthHeader authHeader);

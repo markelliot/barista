@@ -24,10 +24,11 @@ import com.palantir.tokens.auth.BearerToken;
 import java.util.Optional;
 import org.immutables.value.Value;
 
+@Value.Immutable
+@ImmutablesStyle
 @JsonDeserialize(as = ImmutableOAuth2Credentials.class)
 @JsonSerialize(as = ImmutableOAuth2Credentials.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Value.Immutable
 public interface OAuth2Credentials {
 
     @JsonProperty("access_token")
