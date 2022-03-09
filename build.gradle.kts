@@ -74,6 +74,10 @@ allprojects {
             options.errorprone.disable("UnusedVariable")
         }
 
+        tasks.withType<Javadoc> {
+            (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:-missing")
+        }
+
         the<JavaPluginExtension>().sourceCompatibility = JavaVersion.VERSION_17
 
         tasks["check"].dependsOn("spotlessCheck")
