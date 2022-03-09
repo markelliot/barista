@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.handlers.CorsHandler;
+import com.markelliot.barista.handlers.DelegatingHandler;
 import com.markelliot.barista.handlers.DispatchFromIoThreadHandler;
 import com.markelliot.barista.handlers.EndpointHandlerBuilder;
 import com.markelliot.barista.handlers.HandlerChain;
@@ -27,14 +28,19 @@ import com.markelliot.barista.handlers.TracingHandler;
 import com.markelliot.barista.tls.TransportLayerSecurity;
 import com.markelliot.barista.tracing.Spans;
 import io.undertow.Undertow;
+import io.undertow.Undertow.ListenerBuilder;
+import io.undertow.Undertow.ListenerType;
+import io.undertow.server.HttpHandler;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class Server {
+    private static final Logger log = LoggerFactory.getLogger(Server.class);
     private final Undertow undertow;
 
     private Server(Undertow undertow) {
@@ -68,6 +74,7 @@ public final class Server {
         private final Set<Endpoints.VerifiedAuth<?, ?>> authEndpoints = new LinkedHashSet<>();
         private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
+        private final Set<Bundle> bundles = new LinkedHashSet<>();
         private SerDe serde = new SerDe.ObjectMapperSerDe();
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
@@ -134,6 +141,11 @@ public final class Server {
             return this;
         }
 
+        public Builder bundle(Bundle bundle) {
+            bundles.add(bundle);
+            return this;
+        }
+
         /**
          * Sets the sample rate to run tracing for incoming requests without a traceId header.
          *
@@ -158,34 +170,37 @@ public final class Server {
                 Spans.register("barista", span -> tracing.info("TRACING {}", span));
             }
 
-            EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);
-            Undertow.Builder builder =
-                    Undertow.builder()
-                            .setHandler(
-                                    HandlerChain.of(DispatchFromIoThreadHandler::new)
-                                            .then(
-                                                    h ->
-                                                            new CorsHandler(
-                                                                    allowAllOrigins,
-                                                                    allowedOrigins,
-                                                                    h))
-                                            .then(h -> new TracingHandler(tracingRate, h))
-                                            .last(
-                                                    handler.build(
-                                                            authEndpoints,
-                                                            openEndpoints,
-                                                            endpointHandlers)));
-            if (tls) {
-                builder.addHttpsListener(
-                        port,
-                        "0.0.0.0",
-                        TransportLayerSecurity.createSslContext(Paths.get("var", "security")));
-            } else {
-                builder.addHttpListener(port, "0.0.0.0");
+            Set<DelegatingHandler> bundleGlobalHandlers = new LinkedHashSet<>();
+            for (Bundle bundle : bundles) {
+                log.info("Installing bundle '{}'", bundle);
+                endpoints(bundle.endpoints());
+                bundle.handler().ifPresent(bundleGlobalHandlers::add);
             }
-            Server server = new Server(builder.build());
+
+            EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);
+            HttpHandler handlerChain =
+                    HandlerChain.of(DispatchFromIoThreadHandler::new)
+                            .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
+                            .then(h -> new TracingHandler(tracingRate, h))
+                            .then(bundleGlobalHandlers)
+                            .last(handler.build(authEndpoints, openEndpoints, endpointHandlers));
+            Undertow undertow =
+                    Undertow.builder().setHandler(handlerChain).addListener(listener()).build();
+            Server server = new Server(undertow);
             server.start();
             return server;
+        }
+
+        private ListenerBuilder listener() {
+            ListenerBuilder lb = new ListenerBuilder().setPort(port).setHost("0.0.0.0");
+            if (tls) {
+                SSLContext sslContext =
+                        TransportLayerSecurity.createSslContext(Paths.get("var", "security"));
+                lb.setType(ListenerType.HTTPS).setSslContext(sslContext);
+            } else {
+                lb.setType(ListenerType.HTTP);
+            }
+            return lb;
         }
     }
 }

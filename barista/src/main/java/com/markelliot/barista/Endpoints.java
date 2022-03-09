@@ -18,6 +18,7 @@ package com.markelliot.barista;
 
 import com.markelliot.barista.authz.VerifiedAuthToken;
 
+@Deprecated
 public final class Endpoints {
     private interface Endpoint<Request> {
         Class<Request> requestClass();
