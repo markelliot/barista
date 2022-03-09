@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.markelliot.barista.endpoints.HttpRedirect;
 import com.palantir.tokens.auth.BearerToken;
 import io.undertow.server.HttpServerExchange;
 import java.net.URI;
@@ -32,8 +33,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,13 +63,17 @@ public class AuthRedirectResourceTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private OAuth2ClientBlocking oauth2Client;
 
-    @Mock private CookieManager cookieManager;
+    @Mock
+    private CookieManager cookieManager;
 
-    @Mock private UriInfo uriInfo;
+    @Mock
+    private UriInfo uriInfo;
 
-    @Mock private ContainerRequestContext containerRequestContext;
+    @Mock
+    private ContainerRequestContext containerRequestContext;
 
-    @Mock private Supplier<HttpServerExchange> exchangeSupplier;
+    @Mock
+    private Supplier<HttpServerExchange> exchangeSupplier;
 
     private AuthRedirectResource authRedirectResource;
 
@@ -93,7 +96,7 @@ public class AuthRedirectResourceTest {
                 oAuth2StateSerde.encodeRedirectUrlToState(URI.create(redirectBackToWithoutHost));
         authRedirectResource =
                 new AuthRedirectResource(
-                        Optional.of(COOKIE_PATH),
+                        COOKIE_PATH,
                         OAuth2Client.of(oauth2Client),
                         () -> CONFIG,
                         oAuth2StateSerde,
@@ -108,9 +111,7 @@ public class AuthRedirectResourceTest {
         when(cookieManager.hasStateCookie(exchange, stateWithHost)).thenReturn(false);
 
         assertThatThrownBy(
-                        () ->
-                                authRedirectResource.handle(
-                                        "", stateWithHost, CODE, uriInfo, containerRequestContext))
+                () -> authRedirectResource.handle(Optional.empty(), stateWithHost, CODE, Optional.empty()))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessageContaining("Login state is invalid, try logging in again");
 
@@ -126,11 +127,11 @@ public class AuthRedirectResourceTest {
         when(cookieManager.hasStateCookie(exchange, stateWithHost)).thenReturn(false);
         when(uriInfo.getRequestUri()).thenReturn(URI.create(CONFIG.redirectUri()));
 
-        Response response =
+        HttpRedirect response =
                 authRedirectResource.handle(
-                        "", stateWithHost, CODE, uriInfo, containerRequestContext);
+                        Optional.empty(), stateWithHost, CODE, Optional.empty());
 
-        assertThat(response.getHeaderString(HttpHeaders.LOCATION))
+        assertThat(response.location().toString())
                 .isEqualTo(
                         OAuthRedirects.getAuthorizeRedirectUri(
                                 Optional.empty(), stateWithHost, CONFIG));
@@ -144,11 +145,11 @@ public class AuthRedirectResourceTest {
         when(exchangeSupplier.get()).thenReturn(exchange);
         when(cookieManager.hasStateCookie(exchange, stateWithoutHost)).thenReturn(false);
 
-        Response response =
+        HttpRedirect response =
                 authRedirectResource.handle(
-                        "", stateWithoutHost, CODE, uriInfo, containerRequestContext);
+                        Optional.empty(), stateWithoutHost, CODE, Optional.empty());
 
-        assertThat(response.getHeaderString(HttpHeaders.LOCATION))
+        assertThat(response.location().toString())
                 .isEqualTo(
                         OAuthRedirects.getAuthorizeRedirectUri(
                                 Optional.empty(), stateWithoutHost, CONFIG));
@@ -163,10 +164,10 @@ public class AuthRedirectResourceTest {
         when(exchangeSupplier.get()).thenReturn(exchange);
         when(cookieManager.hasStateCookie(exchange, stateWithHost)).thenReturn(true);
 
-        Response response =
+        HttpRedirect response =
                 authRedirectResource.handle(
-                        "", stateWithHost, CODE, uriInfo, containerRequestContext);
-        assertThat(response.getLocation()).isEqualTo(new URI(redirectBackToWithHost));
+                        Optional.empty(), stateWithHost, CODE, Optional.empty());
+        assertThat(response.location()).isEqualTo(new URI(redirectBackToWithHost));
         verify(cookieManager).setTokenCookie(exchange, COOKIE_PATH, TOKEN, EXPIRES_IN);
         verify(cookieManager).deleteStateCookie(exchange, COOKIE_PATH, stateWithHost);
     }
@@ -178,22 +179,22 @@ public class AuthRedirectResourceTest {
         when(exchangeSupplier.get()).thenReturn(exchange);
         when(cookieManager.hasStateCookie(exchange, stateWithoutHost)).thenReturn(true);
 
-        Response response =
+        HttpRedirect response =
                 authRedirectResource.handle(
-                        "", stateWithoutHost, CODE, uriInfo, containerRequestContext);
-        assertThat(response.getLocation()).isEqualTo(new URI(redirectBackToWithoutHost));
+                        Optional.empty(), stateWithoutHost, CODE, Optional.empty());
+        assertThat(response.location()).isEqualTo(new URI(redirectBackToWithoutHost));
         verify(cookieManager).setTokenCookie(exchange, COOKIE_PATH, TOKEN, EXPIRES_IN);
         verify(cookieManager).deleteStateCookie(exchange, COOKIE_PATH, stateWithoutHost);
     }
 
     private void expectCreateTokenCall() {
         when(oauth2Client.createToken(
-                        CreateTokenRequest.builder()
-                                .grantType("authorization_code")
-                                .authorizationCode(CODE)
-                                .callbackUrl(CONFIG.redirectUri().toString())
-                                .authorization(CONFIG.oauth2Authorization())
-                                .build()))
+                CreateTokenRequest.builder()
+                        .grantType("authorization_code")
+                        .authorizationCode(CODE)
+                        .callbackUrl(CONFIG.redirectUri().toString())
+                        .authorization(CONFIG.oauth2Authorization())
+                        .build()))
                 .thenReturn(
                         new OAuth2Credentials.Builder()
                                 .bearerToken(TOKEN)
