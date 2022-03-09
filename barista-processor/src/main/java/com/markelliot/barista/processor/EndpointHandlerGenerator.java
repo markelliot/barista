@@ -152,6 +152,15 @@ public final class EndpointHandlerGenerator {
                                     argumentList(definition),
                                     "exchange")
                             .build();
+                    case RESULT -> CodeBlock.builder()
+                            .addStatement(
+                                    "$N.response(() -> $N.$N($L), $N",
+                                    "runtime",
+                                    "delegate",
+                                    definition.methodName(),
+                                    argumentList(definition),
+                                    "exchange")
+                            .build();
                 };
 
         CodeBlock.Builder handler = CodeBlock.builder();
@@ -229,7 +238,7 @@ public final class EndpointHandlerGenerator {
                         isOptional(param.className())
                                 ? param.className()
                                 : ParameterizedTypeName.get(
-                                        ClassName.get(Optional.class), param.className()),
+                                ClassName.get(Optional.class), param.className()),
                         param.argumentName(),
                         "runtime",
                         methodName,
@@ -250,7 +259,7 @@ public final class EndpointHandlerGenerator {
                                             default -> isOptional(param.className())
                                                     ? CodeBlock.of("$N", param.argumentName())
                                                     : CodeBlock.of(
-                                                            "$N.get()", param.argumentName());
+                                                    "$N.get()", param.argumentName());
                                         })
                         .collect(Collectors.toList()),
                 ", ");
@@ -301,7 +310,7 @@ public final class EndpointHandlerGenerator {
             OBJECT,
             BYTE_STREAM,
             REDIRECT,
-            //RESULT
+            RESULT
         }
     }
 

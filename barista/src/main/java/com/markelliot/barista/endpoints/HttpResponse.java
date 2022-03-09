@@ -40,5 +40,5 @@ public record HttpResponse(HttpStatus status, String bytes, Map<String, String> 
         }
     }
 
-    public record Cookie(String name, String value, Duration lifetime) {}
+    public record Cookie(String name, String value, String path, Duration lifetime, String sameSiteMode) {}
 }

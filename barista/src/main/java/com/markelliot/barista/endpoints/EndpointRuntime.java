@@ -23,8 +23,10 @@ import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.authz.VerifiedAuthToken;
 import com.markelliot.result.Result;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.CookieImpl;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 import java.util.Deque;
 import java.util.Optional;
 import java.util.UUID;
@@ -146,9 +148,16 @@ public final class EndpointRuntime {
     private static void response(HttpResponse response, HttpServerExchange exchange) {
         exchange.setStatusCode(response.status().statusCode());
         for (HttpResponse.Cookie cookie : response.cookies()) {
-            // set cookie
+            exchange.setResponseCookie(new CookieImpl(cookie.name(), cookie.value())
+                    .setMaxAge(Math.toIntExact(cookie.lifetime().toSeconds()))
+                    .setPath(cookie.path())
+                    .setSameSiteMode(cookie.sameSiteMode())
+                    .setSecure(true)
+                    .setHttpOnly(true));
         }
         // set headers
+        response.headers().forEach((headerName, headerValue) ->
+                exchange.getResponseHeaders().add(HttpString.tryFromString(headerName), headerValue));
         exchange.getResponseSender().send(response.bytes());
     }
 
@@ -170,5 +179,6 @@ public final class EndpointRuntime {
                 .map(Deque::getFirst);
     }
 
-    record ServerError(String errorId, String message) {}
+    record ServerError(String errorId, String message) {
+    }
 }
