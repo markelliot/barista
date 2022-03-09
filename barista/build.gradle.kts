@@ -15,7 +15,6 @@ dependencies {
     implementation("com.google.guava:guava")
     implementation("com.markelliot.barista.tracing:barista-tracing")
     implementation("com.markelliot.result:result")
-    implementation(project(":barista-oauth2"))
 
     // users of this library may need to implement HttpHandler
     api("io.undertow:undertow-core")

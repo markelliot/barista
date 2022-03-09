@@ -33,6 +33,7 @@ dependencies {
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("org.apache.commons:commons-lang3")
     implementation(project(":barista-annotations"))
+    implementation(project(":barista"))
 
     testImplementation("com.palantir.conjure.java.runtime:keystores")
     testImplementation("com.palantir.conjure.java.runtime:okhttp-clients")

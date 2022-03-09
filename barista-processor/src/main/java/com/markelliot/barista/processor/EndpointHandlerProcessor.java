@@ -24,6 +24,7 @@ import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
 import com.markelliot.barista.annotations.Param;
 import com.markelliot.barista.authz.VerifiedAuthToken;
 import com.markelliot.barista.endpoints.HttpRedirect;
+import com.markelliot.barista.endpoints.HttpResponse;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition.HttpMethod;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition.ReturnType;
@@ -216,6 +217,9 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
     private static ReturnType toReturnType(TypeName returnType) {
         if (returnType.equals(ClassName.get(HttpRedirect.class))) {
             return ReturnType.REDIRECT;
+        }
+        if (returnType.equals(ClassName.get(HttpResponse.class))) {
+            return ReturnType.RESULT;
         }
         if (returnType.equals(ClassName.VOID)) {
             return ReturnType.EMPTY;

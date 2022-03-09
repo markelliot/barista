@@ -17,38 +17,28 @@
 package com.markelliot.barista.oauth2;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.markelliot.barista.annotations.Http;
+import com.markelliot.barista.annotations.Param;
+import com.markelliot.barista.endpoints.HttpRedirect;
 import io.undertow.server.HttpServerExchange;
 import java.net.URI;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path(AuthRedirectResource.REDIRECT_RESOURCE_PATH)
 public final class AuthRedirectResource {
-
     public static final String REDIRECT_RESOURCE_PATH = "/redirect";
 
     private static final Logger log = LoggerFactory.getLogger(AuthRedirectResource.class);
 
     private final OAuth2Client oauth2Client;
     private final Supplier<OAuth2Configuration> config;
-    private final Optional<String> cookiePath;
+    private final String cookiePath;
     private final OAuth2StateSerde oauth2StateSerde;
     private final CookieManager cookieManager;
     private final Supplier<HttpServerExchange> exchangeSupplier;
@@ -56,9 +46,9 @@ public final class AuthRedirectResource {
     /**
      * Preferred constructor.
      *
-     * @param cookiePath cookie path, usually install.contextPath()
-     * @param oauth2Client client
-     * @param config config
+     * @param cookiePath       cookie path, usually install.contextPath()
+     * @param oauth2Client     client
+     * @param config           config
      * @param oauth2StateSerde serde
      */
     public AuthRedirectResource(
@@ -66,11 +56,11 @@ public final class AuthRedirectResource {
             OAuth2ClientBlocking oauth2Client,
             Supplier<OAuth2Configuration> config,
             OAuth2StateSerde oauth2StateSerde) {
-        this(Optional.of(cookiePath), OAuth2Client.of(oauth2Client), config, oauth2StateSerde);
+        this(cookiePath, OAuth2Client.of(oauth2Client), config, oauth2StateSerde);
     }
 
     AuthRedirectResource(
-            Optional<String> cookiePath,
+            String cookiePath,
             OAuth2Client oauth2Client,
             Supplier<OAuth2Configuration> config,
             OAuth2StateSerde oauth2StateSerde) {
@@ -85,7 +75,7 @@ public final class AuthRedirectResource {
 
     @VisibleForTesting
     AuthRedirectResource(
-            Optional<String> cookiePath,
+            String cookiePath,
             OAuth2Client oauth2Client,
             Supplier<OAuth2Configuration> config,
             OAuth2StateSerde oauth2StateSerde,
@@ -99,14 +89,13 @@ public final class AuthRedirectResource {
         this.exchangeSupplier = exchangeSupplier;
     }
 
-    @GET
-    public Response handle(
-            @DefaultValue("") @QueryParam("error") String error,
-            @NotNull @QueryParam("state") String urlState,
-            @NotNull @QueryParam("code") String code,
-            @Context UriInfo uriInfo,
-            @Context ContainerRequestContext containerRequestContext) {
-        if (!error.isEmpty()) {
+    @Http.Get(REDIRECT_RESOURCE_PATH)
+    HttpRedirect redirect(
+            @Param.Query("error") Optional<String> error,
+            @Param.Query("state") String urlState,
+            @Param.Query("code") String code,
+            @Param.Header(PalantirHeaders.EXTERNAL_HOST_HEADER) Optional<String> externalHostHeader) {
+        if (error.isPresent()) {
             throw new WebApplicationException(
                     "An error occurred during login: " + error, Status.FORBIDDEN);
         }
@@ -117,22 +106,16 @@ public final class AuthRedirectResource {
                         .orElseThrow(
                                 () -> new BadRequestException("Unable to decode login response"));
 
-        Optional<String> externalHostHeader =
-                Optional.ofNullable(
-                        containerRequestContext.getHeaderString(
-                                PalantirHeaders.EXTERNAL_HOST_HEADER));
-
         HttpServerExchange exchange = exchangeSupplier.get();
-
         if (!cookieManager.hasStateCookie(exchange, urlState)) {
-            if (!isLocalRedirectUri(redirectUri, uriInfo)) {
+            if (!isLocalRedirectUri(redirectUri)) {
                 throw throwForBadCookieState();
             }
-            return retryOauthAuthorizeResponse(exchange, externalHostHeader, uriInfo, redirectUri);
+            return retryOauthAuthorizeResponse(exchange, externalHostHeader, redirectUri);
         }
 
         return successfulRedirectResponse(
-                exchange, code, externalHostHeader, uriInfo, urlState, redirectUri);
+                exchange, code, externalHostHeader, urlState, redirectUri);
     }
 
     private static ForbiddenException throwForBadCookieState() {
@@ -140,9 +123,8 @@ public final class AuthRedirectResource {
         throw new ForbiddenException("Login state is invalid, try logging in again");
     }
 
-    private boolean isLocalRedirectUri(URI uri, UriInfo uriInfo) {
-        String resolvedCookiePath = getCookiePath(uriInfo);
-        if (uri.getScheme() == null
+    private boolean isLocalRedirectUri(URI uri) {
+        return uri.getScheme() == null
                 && uri.getHost() == null
                 && uri.getPort() == -1
                 && uri.getPath() != null
@@ -152,16 +134,7 @@ public final class AuthRedirectResource {
                 // reverse proxies for request smuggling, however for now
                 // this should be sufficient -- the host/scheme/port check
                 // is the most important piece.
-                && uri.getPath().startsWith(resolvedCookiePath)) {
-            return true;
-        }
-        // Fall back to check against the detected request URI
-        URI currentUri = uriInfo.getRequestUri();
-        return currentUri != null
-                && Objects.equals(uri.getScheme(), currentUri.getScheme())
-                && Objects.equals(uri.getHost(), currentUri.getHost())
-                && uri.getPath() != null
-                && uri.getPath().startsWith(resolvedCookiePath);
+                && uri.getPath().startsWith(cookiePath);
     }
 
     private OAuth2Credentials exchangeCode(String code, Optional<String> externalHostHeader) {
@@ -181,22 +154,21 @@ public final class AuthRedirectResource {
      * token, set it as a cookie, and redirect the user back to the application uri that was encoded
      * in the oauth state.
      */
-    private Response successfulRedirectResponse(
+    private HttpRedirect successfulRedirectResponse(
             HttpServerExchange exchange,
             String code,
             Optional<String> externalHostHeader,
-            UriInfo uriInfo,
             String state,
             URI redirectUri) {
         // success, issue a redirect and set the received token into a cookie
         OAuth2Credentials credentials = exchangeCode(code, externalHostHeader);
         cookieManager.setTokenCookie(
                 exchange,
-                getCookiePath(uriInfo),
+                cookiePath,
                 credentials.bearerToken(),
                 credentials.expiresIn());
-        cookieManager.deleteStateCookie(exchange, getCookiePath(uriInfo), state);
-        return Response.temporaryRedirect(redirectUri).build();
+        cookieManager.deleteStateCookie(exchange, cookiePath, state);
+        return HttpRedirect.temporary(redirectUri);
     }
 
     /**
@@ -204,26 +176,17 @@ public final class AuthRedirectResource {
      * oauth state cookie has expired. Force the user to redo the auth flow with the specified
      * redirectUri.
      */
-    private Response retryOauthAuthorizeResponse(
+    private HttpRedirect retryOauthAuthorizeResponse(
             HttpServerExchange exchange,
             Optional<String> externalHostHeader,
-            UriInfo uriInfo,
             URI redirectUri) {
-        log.info(
-                "URL state parameter didn't match state from cookie. Redirecting user back to authorize uri");
+        log.info("URL state parameter didn't match state from cookie. Redirecting user back to authorize uri");
 
         String newEncodedState = oauth2StateSerde.encodeRedirectUrlToState(redirectUri);
-        cookieManager.setStateCookie(exchange, getCookiePath(uriInfo), newEncodedState);
-
-        return Response.status(Status.TEMPORARY_REDIRECT)
-                .header(
-                        HttpHeaders.LOCATION,
-                        OAuthRedirects.getAuthorizeRedirectUri(
-                                externalHostHeader, newEncodedState, config.get()))
-                .build();
+        cookieManager.setStateCookie(exchange, cookiePath, newEncodedState);
+        return HttpRedirect.temporary(
+                OAuthRedirects.getAuthorizeRedirectUri(
+                        externalHostHeader, newEncodedState, config.get()));
     }
 
-    private String getCookiePath(UriInfo uriInfo) {
-        return cookiePath.orElseGet(() -> uriInfo.getBaseUri().getPath());
-    }
 }
