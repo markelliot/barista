@@ -29,7 +29,6 @@ allprojects {
 allprojects {
     apply(plugin = "idea")
     apply(plugin = "com.diffplug.spotless")
-    apply(plugin = "com.markelliot.versions")
 
     // lives in allprojects because of consistent-versions
     repositories {
