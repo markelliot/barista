@@ -95,6 +95,18 @@ public final class EndpointRuntime {
         redirect(redirect, exchange);
     }
 
+    public void response(Callable<HttpResponse> callable, HttpServerExchange exchange) {
+        HttpResponse response;
+        try {
+            response = callable.call();
+        } catch (Exception e) {
+            writeError(e, exchange);
+            return;
+        }
+
+        response(response, exchange);
+    }
+
     public void error(HttpError error, HttpServerExchange exchange) {
         exchange.setStatusCode(error.statusCode());
         exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
@@ -129,6 +141,15 @@ public final class EndpointRuntime {
     private static void redirect(HttpRedirect redirect, HttpServerExchange exchange) {
         exchange.setStatusCode(redirect.type().statusCode());
         exchange.getResponseHeaders().add(Headers.LOCATION, redirect.location().toString());
+    }
+
+    private static void response(HttpResponse response, HttpServerExchange exchange) {
+        exchange.setStatusCode(response.status().statusCode());
+        for (HttpResponse.Cookie cookie : response.cookies()) {
+            // set cookie
+        }
+        // set headers
+        exchange.getResponseSender().send(response.bytes());
     }
 
     public static Optional<String> pathParameter(String parameter, HttpServerExchange exchange) {
