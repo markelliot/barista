@@ -54,26 +54,15 @@ public final class AuthDelegatingHandlerTest {
 
     @Mock private OAuth2StateSerde oauth2StateSerde;
 
-    private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
-
     @Mock private ServerConnection connection;
+
+    private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
 
     private HttpServerExchange exchange;
     private HttpHandler handler;
-    private Cookie cookie;
 
     @BeforeEach
     public void before() {
-        when(cookieAuthFilter.shouldDoOauth2Flow(
-                        REQUEST_PATH_INFO, Optional.of(BEARER_TOKEN.getToken())))
-                .thenReturn(false);
-        when(cookieAuthFilter.shouldDoOauth2Flow(REQUEST_PATH_INFO, Optional.empty()))
-                .thenReturn(true);
-        when(oauth2StateSerde.encodeRedirectUrlToState(
-                        URI.create(String.format("/?%s", QUERY_STRING))))
-                .thenReturn(SIGNED_STATE);
-        when(cookieAuthFilter.getAuthorizeRedirectUri(Optional.empty(), SIGNED_STATE))
-                .thenReturn(SIGNED_REDIRECT_URI);
         when(connection.getUndertowOptions()).thenReturn(OptionMap.EMPTY);
 
         exchange = new HttpServerExchange(connection);
@@ -85,29 +74,43 @@ public final class AuthDelegatingHandlerTest {
                 new AuthDelegatingHandler(
                                 COOKIE_PATH, cookieAuthFilter, oauth2StateSerde, cookieManager)
                         .handler(next);
-
-        cookie = new CookieImpl(SIGNED_STATE, Cookies.OAUTH_STATE);
-        cookie.setPath(Cookies.getSafeCookiePath(COOKIE_PATH));
-        cookie.setMaxAge(Cookies.OAUTH_STATE_MAX_AGE);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
     }
 
     @Test
     public void test_redirect_filterChainStopped() throws Exception {
+        when(cookieAuthFilter.shouldDoOauth2Flow(REQUEST_PATH_INFO, Optional.empty()))
+                .thenReturn(true);
+        when(cookieAuthFilter.getAuthorizeRedirectUri(Optional.empty(), SIGNED_STATE))
+                .thenReturn(SIGNED_REDIRECT_URI);
+        when(oauth2StateSerde.encodeRedirectUrlToState(
+                URI.create(String.format("/?%s", QUERY_STRING))))
+                .thenReturn(SIGNED_STATE);
+
         assertThat(cookieManager.getTokenCookie(exchange)).isEmpty();
         handler.handleRequest(exchange);
         verify(next, never()).handleRequest(exchange);
         assertThat(exchange.getResponseHeaders().getFirst(HttpHeaders.LOCATION))
                 .isEqualTo(SIGNED_REDIRECT_URI);
-        assertThat(exchange.responseCookies()).contains(cookie);
+        assertThat(exchange.responseCookies()).contains(buildCookie(SIGNED_STATE, Cookies.OAUTH_STATE));
     }
 
     @Test
     public void test_goodCookie_filterChainContinued() throws Exception {
-        cookieManager.setTokenCookie(
-                exchange, COOKIE_PATH, BEARER_TOKEN, Cookies.OAUTH_STATE_MAX_AGE);
+        when(cookieAuthFilter.shouldDoOauth2Flow(
+                REQUEST_PATH_INFO, Optional.of(BEARER_TOKEN.getToken())))
+                .thenReturn(false);
+        exchange.setRequestCookie(buildCookie(Cookies.TOKEN_COOKIE_NAME, BEARER_TOKEN.getToken()));
+        assertThat(cookieManager.getTokenCookie(exchange)).contains(BEARER_TOKEN.getToken());
         handler.handleRequest(exchange);
         verify(next).handleRequest(exchange);
+    }
+
+    private static Cookie buildCookie(String key, String value) {
+        Cookie cookie = new CookieImpl(key, value);
+        cookie.setPath(Cookies.getSafeCookiePath(COOKIE_PATH));
+        cookie.setMaxAge(Cookies.OAUTH_STATE_MAX_AGE);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 }

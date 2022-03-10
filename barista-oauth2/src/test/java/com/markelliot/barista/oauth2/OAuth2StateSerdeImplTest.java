@@ -33,34 +33,30 @@ public final class OAuth2StateSerdeImplTest {
     private static final Pattern VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY =
             Pattern.compile("^[0-9a-zA-Z+/\\-_]+$");
     private static final int NUM_ITER = 100;
-    private final Stream<URI> generator = generator();
+    private static final Random RANDOM = new Random();
 
     @Test
     public void urlIsPreservedAfterSerializationAndDeserialization() {
-        generator
-                .limit(NUM_ITER)
-                .forEach(
-                        url -> {
-                            String encoded =
-                                    new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
-                            Optional<URI> decoded =
-                                    new OAuth2StateSerdeImpl().decodeRedirectUrlFromState(encoded);
-                            assertThat(decoded).contains(url);
-                        });
+        generator().forEach(
+                url -> {
+                    String encoded =
+                            new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
+                    Optional<URI> decoded =
+                            new OAuth2StateSerdeImpl().decodeRedirectUrlFromState(encoded);
+                    assertThat(decoded).contains(url);
+                });
     }
 
     @Test
     public void encodedStateIsAsciiSafe() {
-        generator
-                .limit(NUM_ITER)
-                .forEach(
-                        url -> {
-                            String encoded =
-                                    new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
-                            assertThat(encoded)
-                                    .containsPattern(
-                                            VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY);
-                        });
+        generator().forEach(
+                url -> {
+                    String encoded =
+                            new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
+                    assertThat(encoded)
+                            .containsPattern(
+                                    VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY);
+                });
     }
 
     @Test
@@ -69,16 +65,14 @@ public final class OAuth2StateSerdeImplTest {
     }
 
     private static Stream<URI> generator() {
-        Random random = new Random();
-        byte[] byteBuffer = new byte[16];
-        return LongStream.generate(() -> 0L)
+        byte[] byteBuffer = new byte[32];
+        return LongStream.range(0, NUM_ITER)
                 .mapToObj(
                         _unused -> {
                             while (true) {
                                 try {
-                                    random.nextBytes(byteBuffer);
-                                    return new URI(
-                                            new String(byteBuffer, StandardCharsets.US_ASCII));
+                                    RANDOM.nextBytes(byteBuffer);
+                                    return new URI(new String(byteBuffer, StandardCharsets.UTF_8));
                                 } catch (URISyntaxException e) {
                                     // Try again
                                 }
