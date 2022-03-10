@@ -19,14 +19,9 @@ jakarta.ws.rs:jakarta.ws.rs-api = 2.1.6
 org.apache.commons:commons-lang3 = 3.12.0
 org.apache.logging.log4j:* = 2.17.2
 org.assertj:assertj-core = 3.22.0
+org.awaitility:awaitility = 4.2.0
 org.immutables:* = 2.8.8
 org.junit:junit-bom = 5.8.2
 org.junit.jupiter:junit-jupiter-engine = 5.8.2
+org.mockito:* = 4.4.0
 org.slf4j:* = 1.7.36
-
-#test deps
-com.pholser:junit-quickcheck-core = 0.7
-com.pholser:junit-quickcheck-generators = 0.7
-junit:junit = 4.13.2
-org.awaitility:awaitility = 4.2.0
-org.mockito:* = 4.3.1

@@ -32,10 +32,12 @@ import java.util.Optional;
 import javax.ws.rs.core.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.xnio.OptionMap;
 
+@ExtendWith(MockitoExtension.class)
 public final class AuthDelegatingHandlerTest {
 
     private static final BearerToken BEARER_TOKEN = BearerToken.valueOf("test-token");
@@ -46,19 +48,15 @@ public final class AuthDelegatingHandlerTest {
     private static final String SIGNED_REDIRECT_URI = "signed-redirect-uri";
     private static final String SIGNED_STATE = "signed-state";
 
-    @Mock
-    private HttpHandler next;
+    @Mock private HttpHandler next;
 
-    @Mock
-    private OAuth2CookieFilter cookieAuthFilter;
+    @Mock private OAuth2CookieFilter cookieAuthFilter;
 
-    @Mock
-    private OAuth2StateSerde oauth2StateSerde;
+    @Mock private OAuth2StateSerde oauth2StateSerde;
 
     private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
 
-    @Mock
-    private ServerConnection connection;
+    @Mock private ServerConnection connection;
 
     private HttpServerExchange exchange;
     private HttpHandler handler;
@@ -67,12 +65,12 @@ public final class AuthDelegatingHandlerTest {
     @BeforeEach
     public void before() {
         when(cookieAuthFilter.shouldDoOauth2Flow(
-                REQUEST_PATH_INFO, Optional.of(BEARER_TOKEN.getToken())))
+                        REQUEST_PATH_INFO, Optional.of(BEARER_TOKEN.getToken())))
                 .thenReturn(false);
         when(cookieAuthFilter.shouldDoOauth2Flow(REQUEST_PATH_INFO, Optional.empty()))
                 .thenReturn(true);
         when(oauth2StateSerde.encodeRedirectUrlToState(
-                URI.create(String.format("/?%s", QUERY_STRING))))
+                        URI.create(String.format("/?%s", QUERY_STRING))))
                 .thenReturn(SIGNED_STATE);
         when(cookieAuthFilter.getAuthorizeRedirectUri(Optional.empty(), SIGNED_STATE))
                 .thenReturn(SIGNED_REDIRECT_URI);
@@ -83,11 +81,10 @@ public final class AuthDelegatingHandlerTest {
         exchange.setRequestPath(REQUEST_PATH_INFO);
         exchange.setQueryString(QUERY_STRING);
 
-        handler = new AuthDelegatingHandler(
-                COOKIE_PATH,
-                cookieAuthFilter,
-                oauth2StateSerde,
-                cookieManager).handler(next);
+        handler =
+                new AuthDelegatingHandler(
+                                COOKIE_PATH, cookieAuthFilter, oauth2StateSerde, cookieManager)
+                        .handler(next);
 
         cookie = new CookieImpl(SIGNED_STATE, Cookies.OAUTH_STATE);
         cookie.setPath(Cookies.getSafeCookiePath(COOKIE_PATH));
@@ -101,13 +98,15 @@ public final class AuthDelegatingHandlerTest {
         assertThat(cookieManager.getTokenCookie(exchange)).isEmpty();
         handler.handleRequest(exchange);
         verify(next, never()).handleRequest(exchange);
-        assertThat(exchange.getResponseHeaders().getFirst(HttpHeaders.LOCATION)).isEqualTo(SIGNED_REDIRECT_URI);
+        assertThat(exchange.getResponseHeaders().getFirst(HttpHeaders.LOCATION))
+                .isEqualTo(SIGNED_REDIRECT_URI);
         assertThat(exchange.responseCookies()).contains(cookie);
     }
 
     @Test
     public void test_goodCookie_filterChainContinued() throws Exception {
-        cookieManager.setTokenCookie(exchange, COOKIE_PATH, BEARER_TOKEN, Cookies.OAUTH_STATE_MAX_AGE);
+        cookieManager.setTokenCookie(
+                exchange, COOKIE_PATH, BEARER_TOKEN, Cookies.OAUTH_STATE_MAX_AGE);
         handler.handleRequest(exchange);
         verify(next).handleRequest(exchange);
     }

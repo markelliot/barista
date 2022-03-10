@@ -148,16 +148,20 @@ public final class EndpointRuntime {
     private static void response(HttpResponse response, HttpServerExchange exchange) {
         exchange.setStatusCode(response.status().statusCode());
         for (HttpResponse.Cookie cookie : response.cookies()) {
-            exchange.setResponseCookie(new CookieImpl(cookie.name(), cookie.value())
-                    .setMaxAge(Math.toIntExact(cookie.lifetime().toSeconds()))
-                    .setPath(cookie.path())
-                    .setSameSiteMode(cookie.sameSiteMode())
-                    .setSecure(true)
-                    .setHttpOnly(true));
+            exchange.setResponseCookie(
+                    new CookieImpl(cookie.name(), cookie.value())
+                            .setMaxAge(Math.toIntExact(cookie.lifetime().toSeconds()))
+                            .setPath(cookie.path())
+                            .setSameSiteMode(cookie.sameSiteMode())
+                            .setSecure(true)
+                            .setHttpOnly(true));
         }
         // set headers
-        response.headers().forEach((headerName, headerValue) ->
-                exchange.getResponseHeaders().add(HttpString.tryFromString(headerName), headerValue));
+        response.headers()
+                .forEach(
+                        (headerName, headerValue) ->
+                                exchange.getResponseHeaders()
+                                        .add(HttpString.tryFromString(headerName), headerValue));
         exchange.getResponseSender().send(response.bytes());
     }
 
@@ -179,6 +183,5 @@ public final class EndpointRuntime {
                 .map(Deque::getFirst);
     }
 
-    record ServerError(String errorId, String message) {
-    }
+    record ServerError(String errorId, String message) {}
 }

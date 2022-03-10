@@ -44,8 +44,7 @@ public final class CookieManagerImplTest {
     private static final String STATE = "state";
     private static final BearerToken TOKEN = BearerToken.valueOf("token");
     private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
-    @Mock
-    private ServerConnection serverConnection;
+    @Mock private ServerConnection serverConnection;
     private HttpServerExchange exchange;
 
     private static Cookie getResponseCookie(HttpServerExchange exchange, String name) {

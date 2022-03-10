@@ -24,5 +24,6 @@ public interface AuthToken {
         return new AuthToken.Simple(token);
     }
 
-    record Simple(String token) implements AuthToken {};
+    record Simple(String token) implements AuthToken {}
+    ;
 }

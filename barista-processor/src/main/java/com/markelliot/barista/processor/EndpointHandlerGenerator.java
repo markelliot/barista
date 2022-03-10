@@ -238,7 +238,7 @@ public final class EndpointHandlerGenerator {
                         isOptional(param.className())
                                 ? param.className()
                                 : ParameterizedTypeName.get(
-                                ClassName.get(Optional.class), param.className()),
+                                        ClassName.get(Optional.class), param.className()),
                         param.argumentName(),
                         "runtime",
                         methodName,
@@ -259,7 +259,7 @@ public final class EndpointHandlerGenerator {
                                             default -> isOptional(param.className())
                                                     ? CodeBlock.of("$N", param.argumentName())
                                                     : CodeBlock.of(
-                                                    "$N.get()", param.argumentName());
+                                                            "$N.get()", param.argumentName());
                                         })
                         .collect(Collectors.toList()),
                 ", ");

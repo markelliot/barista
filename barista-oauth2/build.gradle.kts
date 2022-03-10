@@ -35,16 +35,12 @@ dependencies {
     implementation(project(":barista-annotations"))
     implementation(project(":barista"))
 
-    testImplementation("com.palantir.conjure.java.runtime:keystores")
-    testImplementation("com.palantir.conjure.java.runtime:okhttp-clients")
-//    testImplementation("com.pholser:junit-quickcheck-core")
-//    testImplementation("com.pholser:junit-quickcheck-generators")
     testImplementation(platform("org.junit:junit-bom"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.awaitility:awaitility")
     testImplementation("org.mockito:mockito-core")
-    testImplementation(project(":barista"))
+    testImplementation("org.mockito:mockito-junit-jupiter")
 
     annotationProcessor(project(":barista-processor"))
 

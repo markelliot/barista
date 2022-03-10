@@ -60,17 +60,13 @@ public class AuthRedirectResourceTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private OAuth2ClientBlocking oauth2Client;
 
-    @Mock
-    private CookieManager cookieManager;
+    @Mock private CookieManager cookieManager;
 
-    @Mock
-    private UriInfo uriInfo;
+    @Mock private UriInfo uriInfo;
 
-    @Mock
-    private ContainerRequestContext containerRequestContext;
+    @Mock private ContainerRequestContext containerRequestContext;
 
-    @Mock
-    private Supplier<HttpServerExchange> exchangeSupplier;
+    @Mock private Supplier<HttpServerExchange> exchangeSupplier;
 
     private AuthRedirectResource authRedirectResource;
 
@@ -108,7 +104,9 @@ public class AuthRedirectResourceTest {
         when(cookieManager.hasStateCookie(exchange, stateWithHost)).thenReturn(false);
 
         assertThatThrownBy(
-                () -> authRedirectResource.handle(Optional.empty(), stateWithHost, CODE, Optional.empty()))
+                        () ->
+                                authRedirectResource.handle(
+                                        Optional.empty(), stateWithHost, CODE, Optional.empty()))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessageContaining("Login state is invalid, try logging in again");
 
@@ -186,12 +184,12 @@ public class AuthRedirectResourceTest {
 
     private void expectCreateTokenCall() {
         when(oauth2Client.createToken(
-                CreateTokenRequest.builder()
-                        .grantType("authorization_code")
-                        .authorizationCode(CODE)
-                        .callbackUrl(CONFIG.redirectUri().toString())
-                        .authorization(CONFIG.oauth2Authorization())
-                        .build()))
+                        CreateTokenRequest.builder()
+                                .grantType("authorization_code")
+                                .authorizationCode(CODE)
+                                .callbackUrl(CONFIG.redirectUri().toString())
+                                .authorization(CONFIG.oauth2Authorization())
+                                .build()))
                 .thenReturn(
                         new OAuth2Credentials.Builder()
                                 .bearerToken(TOKEN)

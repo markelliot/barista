@@ -51,36 +51,40 @@ public final class AuthDelegatingHandler implements DelegatingHandler {
     }
 
     public static DelegatingHandler of(
-            String cookiePath,
-            OAuth2Client client,
-            Supplier<OAuth2Configuration> config) {
+            String cookiePath, OAuth2Client client, Supplier<OAuth2Configuration> config) {
         return new AuthDelegatingHandler(
-                cookiePath, new OAuth2CookieFilter(client, config), new OAuth2StateSerdeImpl(), CookieManagerImpl.INSTANCE);
+                cookiePath,
+                new OAuth2CookieFilter(client, config),
+                new OAuth2StateSerdeImpl(),
+                CookieManagerImpl.INSTANCE);
     }
 
     @Override
     public HttpHandler handler(HttpHandler next) {
         // Must run on the task pool, authentication client blocks until completion.
-        return new BlockingHandler(exchange -> {
-            String requestPath = exchange.getRequestPath().substring(cookiePath.length());
+        return new BlockingHandler(
+                exchange -> {
+                    String requestPath = exchange.getRequestPath().substring(cookiePath.length());
 
-            Optional<String> token = cookieManager.getTokenCookie(exchange);
-            if (auth.shouldDoOauth2Flow(requestPath, token)) {
-                String encodedState =
-                        oauth2StateSerde.encodeRedirectUrlToState(getUriWithQueryParameters(exchange));
-                cookieManager.setStateCookie(exchange, cookiePath, encodedState);
+                    Optional<String> token = cookieManager.getTokenCookie(exchange);
+                    if (auth.shouldDoOauth2Flow(requestPath, token)) {
+                        String encodedState =
+                                oauth2StateSerde.encodeRedirectUrlToState(
+                                        getUriWithQueryParameters(exchange));
+                        cookieManager.setStateCookie(exchange, cookiePath, encodedState);
 
-                Optional<String> host = PalantirHeaders.getExternalHostHeader(exchange);
-                String authorizeRedirectUri = auth.getAuthorizeRedirectUri(host, encodedState);
+                        Optional<String> host = PalantirHeaders.getExternalHostHeader(exchange);
+                        String authorizeRedirectUri =
+                                auth.getAuthorizeRedirectUri(host, encodedState);
 
-                exchange.setStatusCode(StatusCodes.TEMPORARY_REDIRECT);
-                exchange.getResponseHeaders().put(Headers.LOCATION, authorizeRedirectUri);
+                        exchange.setStatusCode(StatusCodes.TEMPORARY_REDIRECT);
+                        exchange.getResponseHeaders().put(Headers.LOCATION, authorizeRedirectUri);
 
-                // do not continue to process the handler chain
-                return;
-            }
-            next.handleRequest(exchange);
-        });
+                        // do not continue to process the handler chain
+                        return;
+                    }
+                    next.handleRequest(exchange);
+                });
     }
 
     private static URI getUriWithQueryParameters(HttpServerExchange exchange) {

@@ -81,8 +81,7 @@ public final class Server {
         private boolean tls = true;
         private double tracingRate = 0.2;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public Builder port(int port) {
             Preconditions.checkArgument(
@@ -91,9 +90,7 @@ public final class Server {
             return this;
         }
 
-        /**
-         * Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}.
-         */
+        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
         @Deprecated
         public <Request, Response> Builder endpoint(Endpoints.Open<Request, Response> endpoint) {
             Objects.requireNonNull(endpoint);
@@ -101,9 +98,7 @@ public final class Server {
             return this;
         }
 
-        /**
-         * Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}.
-         */
+        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
         @Deprecated
         public <Request, Response> Builder endpoint(
                 Endpoints.VerifiedAuth<Request, Response> endpoint) {

@@ -37,22 +37,30 @@ public final class OAuth2StateSerdeImplTest {
 
     @Test
     public void urlIsPreservedAfterSerializationAndDeserialization() {
-        generator.limit(NUM_ITER)
-                .forEach(url -> {
-                    String encoded = new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
-                    Optional<URI> decoded = new OAuth2StateSerdeImpl().decodeRedirectUrlFromState(encoded);
-                    assertThat(decoded).contains(url);
-                });
+        generator
+                .limit(NUM_ITER)
+                .forEach(
+                        url -> {
+                            String encoded =
+                                    new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
+                            Optional<URI> decoded =
+                                    new OAuth2StateSerdeImpl().decodeRedirectUrlFromState(encoded);
+                            assertThat(decoded).contains(url);
+                        });
     }
 
     @Test
     public void encodedStateIsAsciiSafe() {
-        generator.limit(NUM_ITER)
-                .forEach(url -> {
-                    String encoded = new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
-                    assertThat(encoded)
-                            .containsPattern(VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY);
-                });
+        generator
+                .limit(NUM_ITER)
+                .forEach(
+                        url -> {
+                            String encoded =
+                                    new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
+                            assertThat(encoded)
+                                    .containsPattern(
+                                            VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY);
+                        });
     }
 
     @Test
@@ -64,15 +72,17 @@ public final class OAuth2StateSerdeImplTest {
         Random random = new Random();
         byte[] byteBuffer = new byte[16];
         return LongStream.generate(() -> 0L)
-                .mapToObj(_unused -> {
-                    while (true) {
-                        try {
-                            random.nextBytes(byteBuffer);
-                            return new URI(new String(byteBuffer, StandardCharsets.US_ASCII));
-                        } catch (URISyntaxException e) {
-                            // Try again
-                        }
-                    }
-                });
+                .mapToObj(
+                        _unused -> {
+                            while (true) {
+                                try {
+                                    random.nextBytes(byteBuffer);
+                                    return new URI(
+                                            new String(byteBuffer, StandardCharsets.US_ASCII));
+                                } catch (URISyntaxException e) {
+                                    // Try again
+                                }
+                            }
+                        });
     }
 }

@@ -20,7 +20,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
-public record HttpResponse(HttpStatus status, String bytes, Map<String, String> headers, Set<Cookie> cookies) {
+public record HttpResponse(
+        HttpStatus status, String bytes, Map<String, String> headers, Set<Cookie> cookies) {
     public enum HttpStatus {
         OK(200),
         OK_EMPTY(201),
@@ -40,5 +41,6 @@ public record HttpResponse(HttpStatus status, String bytes, Map<String, String> 
         }
     }
 
-    public record Cookie(String name, String value, String path, Duration lifetime, String sameSiteMode) {}
+    public record Cookie(
+            String name, String value, String path, Duration lifetime, String sameSiteMode) {}
 }
