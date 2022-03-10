@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.markelliot.barista.oauth2;
+package com.markelliot.barista.oauth2.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

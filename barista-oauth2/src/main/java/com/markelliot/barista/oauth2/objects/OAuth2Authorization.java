@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.markelliot.barista.oauth2;
+package com.markelliot.barista.oauth2.objects;
 
 import org.immutables.value.Value;
 
 @Value.Immutable
 @ImmutablesStagedStyle
-interface CreateTokenRequest {
-    String grantType();
+public interface OAuth2Authorization {
 
-    String authorizationCode();
+    @Value.Redacted
+    String clientId();
 
-    String callbackUrl();
+    @Value.Redacted
+    String clientSecret();
 
-    OAuth2Authorization authorization();
-
-    static ImmutableCreateTokenRequest.GrantTypeBuildStage builder() {
-        return ImmutableCreateTokenRequest.builder();
+    static ImmutableOAuth2Authorization.ClientIdBuildStage builder() {
+        return ImmutableOAuth2Authorization.builder();
     }
 }

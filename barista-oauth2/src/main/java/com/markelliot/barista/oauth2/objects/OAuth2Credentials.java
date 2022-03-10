@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.markelliot.barista.oauth2;
+package com.markelliot.barista.oauth2.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.markelliot.barista.oauth2.objects.ImmutableOAuth2Credentials;
+import com.markelliot.barista.oauth2.objects.ImmutablesStyle;
 import com.palantir.tokens.auth.BearerToken;
 import java.util.Optional;
 import org.immutables.value.Value;

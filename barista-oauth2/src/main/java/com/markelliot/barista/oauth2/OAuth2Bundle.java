@@ -19,6 +19,7 @@ package com.markelliot.barista.oauth2;
 import com.markelliot.barista.Bundle;
 import com.markelliot.barista.endpoints.Endpoints;
 import com.markelliot.barista.handlers.DelegatingHandler;
+import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
 import java.util.Optional;
 
 public final class OAuth2Bundle implements Bundle {

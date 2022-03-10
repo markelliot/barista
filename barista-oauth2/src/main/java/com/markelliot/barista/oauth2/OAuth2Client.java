@@ -16,25 +16,12 @@
 
 package com.markelliot.barista.oauth2;
 
+import com.markelliot.barista.oauth2.objects.CreateTokenRequest;
+import com.markelliot.barista.oauth2.objects.OAuth2Credentials;
 import com.palantir.tokens.auth.AuthHeader;
 
-/** Internal interface which represents an oauth2 client. */
 public interface OAuth2Client {
     OAuth2Credentials createToken(CreateTokenRequest createTokenRequest);
 
     void checkToken(AuthHeader authHeader);
-
-    static OAuth2Client of(OAuth2ClientBlocking blocking) {
-        return new OAuth2Client() {
-            @Override
-            public OAuth2Credentials createToken(CreateTokenRequest request) {
-                return blocking.createToken(request);
-            }
-
-            @Override
-            public void checkToken(AuthHeader authHeader) {
-                blocking.checkToken(authHeader);
-            }
-        };
-    }
 }

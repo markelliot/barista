@@ -17,6 +17,7 @@
 package com.markelliot.barista.oauth2;
 
 import com.google.common.base.Strings;
+import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
 import com.palantir.logsafe.exceptions.SafeRuntimeException;
 import java.net.URI;
 import java.net.URISyntaxException;

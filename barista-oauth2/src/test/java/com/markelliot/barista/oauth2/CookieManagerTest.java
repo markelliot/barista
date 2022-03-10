@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.xnio.OptionMap;
 
 @ExtendWith(MockitoExtension.class)
-public final class CookieManagerImplTest {
+public final class CookieManagerTest {
 
     private static final String SAME_SITE_NONE_COMPATIBLE_USER_AGENT = "userAgent";
     private static final String SAME_SITE_NONE_INCOMPATIBLE_USER_AGENT =
@@ -46,7 +46,7 @@ public final class CookieManagerImplTest {
     private static final int MAX_AGE = 3600;
     private static final String STATE = "state";
     private static final BearerToken TOKEN = BearerToken.valueOf("token");
-    private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
+    private final CookieManager cookieManager = CookieManager.buildDefault();
     @Mock private ServerConnection serverConnection;
     private HttpServerExchange exchange;
 
@@ -74,7 +74,7 @@ public final class CookieManagerImplTest {
 
         Cookie cookie = getResponseCookie(exchange, STATE);
         assertThat(cookie.getName()).isEqualTo(STATE);
-        assertThat(cookie.getValue()).isEqualTo(Cookies.OAUTH_STATE);
+        assertThat(cookie.getValue()).isEqualTo(Cookies.OAUTH_STATE_COOKIE_VALUE);
         assertThat(cookie.getPath()).isEqualTo(CONTEXT_PATH);
         assertThat(cookie.getMaxAge()).isEqualTo(3600);
         assertThat(cookie.isSecure()).isTrue();
@@ -91,7 +91,7 @@ public final class CookieManagerImplTest {
 
         Cookie cookie = getResponseCookie(exchange, STATE);
         assertThat(cookie.getName()).isEqualTo(STATE);
-        assertThat(cookie.getValue()).isEqualTo(Cookies.OAUTH_STATE);
+        assertThat(cookie.getValue()).isEqualTo(Cookies.OAUTH_STATE_COOKIE_VALUE);
         assertThat(cookie.getPath()).isEqualTo(CONTEXT_PATH);
         assertThat(cookie.getMaxAge()).isEqualTo(3600);
         assertThat(cookie.isSecure()).isTrue();
@@ -184,7 +184,7 @@ public final class CookieManagerImplTest {
 
     @Test
     public void hasStateCookie_present() {
-        Cookie cookie = new CookieImpl(STATE, Cookies.OAUTH_STATE);
+        Cookie cookie = new CookieImpl(STATE, Cookies.OAUTH_STATE_COOKIE_VALUE);
         exchange.setRequestCookie(cookie);
 
         boolean hasStateCookie = cookieManager.hasStateCookie(exchange, STATE);

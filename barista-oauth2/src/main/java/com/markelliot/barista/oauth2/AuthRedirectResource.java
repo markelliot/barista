@@ -20,6 +20,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.markelliot.barista.annotations.Http;
 import com.markelliot.barista.annotations.Param;
 import com.markelliot.barista.endpoints.HttpRedirect;
+import com.markelliot.barista.oauth2.objects.CreateTokenRequest;
+import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
+import com.markelliot.barista.oauth2.objects.OAuth2Credentials;
 import io.undertow.server.HttpServerExchange;
 import java.net.URI;
 import java.util.Optional;
@@ -53,14 +56,6 @@ public final class AuthRedirectResource {
      */
     public AuthRedirectResource(
             String cookiePath,
-            OAuth2ClientBlocking oauth2Client,
-            Supplier<OAuth2Configuration> config,
-            OAuth2StateSerde oauth2StateSerde) {
-        this(cookiePath, OAuth2Client.of(oauth2Client), config, oauth2StateSerde);
-    }
-
-    AuthRedirectResource(
-            String cookiePath,
             OAuth2Client oauth2Client,
             Supplier<OAuth2Configuration> config,
             OAuth2StateSerde oauth2StateSerde) {
@@ -69,7 +64,7 @@ public final class AuthRedirectResource {
                 oauth2Client,
                 config,
                 oauth2StateSerde,
-                CookieManagerImpl.INSTANCE,
+                CookieManager.buildDefault(),
                 ServletExchangeSupplier.INSTANCE);
     }
 
@@ -94,8 +89,7 @@ public final class AuthRedirectResource {
             @Param.Query("error") Optional<String> error,
             @Param.Query("state") String urlState,
             @Param.Query("code") String code,
-            @Param.Header(PalantirHeaders.EXTERNAL_HOST_HEADER)
-                    Optional<String> externalHostHeader) {
+            @Param.Header(PalantirHeaders.EXTERNAL_HOST_HEADER) Optional<String> externalHostHeader) {
         if (error.isPresent()) {
             throw new WebApplicationException(
                     "An error occurred during login: " + error, Status.FORBIDDEN);

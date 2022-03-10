@@ -20,6 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.google.common.collect.ImmutableMap;
+import com.markelliot.barista.oauth2.objects.CreateTokenRequest;
+import com.markelliot.barista.oauth2.objects.OAuth2Authorization;
+import com.markelliot.barista.oauth2.objects.OAuth2Credentials;
 import com.palantir.conjure.java.api.errors.RemoteException;
 import com.palantir.tokens.auth.AuthHeader;
 import com.palantir.tokens.auth.BearerToken;
@@ -70,6 +74,21 @@ public final class OAuth2ClientTest {
         //                                                            .build(),
         //                                                    exchange);
         //                                });
+    }
+
+    @Test
+    public void testFormEncoding() {
+        assertThat(DefaultOAuth2Client.formEncodedBody(
+                ImmutableMap.of("token", "foo", "TOKEN2", "bar", "", "", "empty", "")))
+                .isEqualTo("token=foo&TOKEN2=bar&=&empty=");
+    }
+
+    @Test
+    public void testFormEncodingSpecialCharacters() {
+        assertThat(DefaultOAuth2Client.formEncodedBody(
+                ImmutableMap.of("key!@#$%^&*()_+-= ", "value!@#$%^&*()_+-= ")))
+                .isEqualTo(
+                        "key%21%40%23%24%25%5E%26*%28%29_%2B-%3D+=value%21%40%23%24%25%5E%26*%28%29_%2B-%3D+");
     }
 
     @Test

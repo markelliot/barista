@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.markelliot.barista.oauth2.tokens;
+package com.markelliot.barista.oauth2.objects;
 
 import com.markelliot.barista.authz.AuthToken;
 import com.palantir.tokens.auth.BearerToken;

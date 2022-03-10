@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.markelliot.barista.oauth2;
+package com.markelliot.barista.oauth2.objects;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.ws.rs.NameBinding;
+import org.immutables.value.Value;
 
-/**
- * When {@code OAuth2Feature} is installed, resource methods and classes marked with {@code
- * DisableCookieAuth} won't require a valid PALANTIR_TOKEN cookie to access. The annotation must be
- * placed on the implementation, not on the interface.
- */
-@NameBinding
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface DisableCookieAuth {}
+@Target({ElementType.PACKAGE, ElementType.TYPE})
+@Retention(RetentionPolicy.SOURCE)
+@Value.Style(
+        visibility = Value.Style.ImplementationVisibility.PACKAGE,
+        overshadowImplementation = true,
+        jdkOnly = true,
+        get = {"get*", "is*"})
+@interface ImmutablesStyle {}

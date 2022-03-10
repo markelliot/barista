@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.markelliot.barista.oauth2;
+package com.markelliot.barista.oauth2.objects;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import org.immutables.value.Value;
 
-@Value.Immutable
-@ImmutablesStagedStyle
-public interface OAuth2Authorization {
-
-    @Value.Redacted
-    String clientId();
-
-    @Value.Redacted
-    String clientSecret();
-
-    static ImmutableOAuth2Authorization.ClientIdBuildStage builder() {
-        return ImmutableOAuth2Authorization.builder();
-    }
-}
+@Target({ElementType.PACKAGE, ElementType.TYPE})
+@Retention(RetentionPolicy.SOURCE)
+@Value.Style(
+        visibility = Value.Style.ImplementationVisibility.PACKAGE,
+        overshadowImplementation = true,
+        jdkOnly = true,
+        get = {"get*", "is*"},
+        stagedBuilder = true)
+@interface ImmutablesStagedStyle {}

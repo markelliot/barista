@@ -24,6 +24,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.markelliot.barista.endpoints.HttpRedirect;
+import com.markelliot.barista.oauth2.objects.CreateTokenRequest;
+import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
+import com.markelliot.barista.oauth2.objects.OAuth2Credentials;
 import com.palantir.tokens.auth.BearerToken;
 import io.undertow.server.HttpServerExchange;
 import java.net.URI;
@@ -61,7 +64,7 @@ public final class AuthRedirectResourceTest {
                     .build();
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private OAuth2ClientBlocking oauth2Client;
+    private OAuth2Client oauth2Client;
 
     @Mock private CookieManager cookieManager;
 
@@ -93,7 +96,7 @@ public final class AuthRedirectResourceTest {
         authRedirectResource =
                 new AuthRedirectResource(
                         COOKIE_PATH,
-                        OAuth2Client.of(oauth2Client),
+                        oauth2Client,
                         () -> CONFIG,
                         oAuth2StateSerde,
                         cookieManager,

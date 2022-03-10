@@ -21,14 +21,28 @@ import io.undertow.server.HttpServerExchange;
 import java.util.Optional;
 
 interface CookieManager {
+    default void setStateCookie(HttpServerExchange exchange, String path, String state) {
+        Cookies.setStateCookie(exchange, path, state);
+    }
 
-    void setStateCookie(HttpServerExchange exchange, String path, String state);
+    default void deleteStateCookie(HttpServerExchange exchange, String path, String state) {
+        Cookies.deleteStateCookie(exchange, path, state);
+    }
 
-    void deleteStateCookie(HttpServerExchange exchange, String path, String state);
+    default void setTokenCookie(
+            HttpServerExchange exchange, String path, BearerToken token, int maxAge) {
+        Cookies.setTokenCookie(exchange, path, token, maxAge);
+    }
 
-    void setTokenCookie(HttpServerExchange exchange, String path, BearerToken token, int maxAge);
+    default Optional<String> getTokenCookie(HttpServerExchange exchange) {
+        return Cookies.getTokenCookie(exchange);
+    }
 
-    Optional<String> getTokenCookie(HttpServerExchange exchange);
+    default boolean hasStateCookie(HttpServerExchange exchange, String state) {
+        return Cookies.hasStateCookie(exchange, state);
+    }
 
-    boolean hasStateCookie(HttpServerExchange exchange, String state);
+    static CookieManager buildDefault() { return new DefaultCookieManager(); }
+
+    final class DefaultCookieManager implements CookieManager {}
 }

@@ -56,8 +56,7 @@ public final class AuthDelegatingHandlerTest {
 
     @Mock private ServerConnection connection;
 
-    private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
-
+    private final CookieManager cookieManager = CookieManager.buildDefault();
     private HttpServerExchange exchange;
     private HttpHandler handler;
 
@@ -91,7 +90,7 @@ public final class AuthDelegatingHandlerTest {
         verify(next, never()).handleRequest(exchange);
         assertThat(exchange.getResponseHeaders().getFirst(HttpHeaders.LOCATION))
                 .isEqualTo(SIGNED_REDIRECT_URI);
-        assertThat(exchange.responseCookies()).contains(buildCookie(SIGNED_STATE, Cookies.OAUTH_STATE));
+        assertThat(exchange.responseCookies()).contains(buildCookie(SIGNED_STATE, Cookies.OAUTH_STATE_COOKIE_VALUE));
     }
 
     @Test

@@ -18,6 +18,7 @@ package com.markelliot.barista.oauth2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
 import java.net.URI;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;

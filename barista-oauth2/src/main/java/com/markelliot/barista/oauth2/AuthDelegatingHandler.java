@@ -18,6 +18,7 @@ package com.markelliot.barista.oauth2;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.markelliot.barista.handlers.DelegatingHandler;
+import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.BlockingHandler;
@@ -56,7 +57,7 @@ public final class AuthDelegatingHandler implements DelegatingHandler {
                 cookiePath,
                 new OAuth2CookieFilter(client, config),
                 new OAuth2StateSerdeImpl(),
-                CookieManagerImpl.INSTANCE);
+                CookieManager.buildDefault());
     }
 
     @Override
