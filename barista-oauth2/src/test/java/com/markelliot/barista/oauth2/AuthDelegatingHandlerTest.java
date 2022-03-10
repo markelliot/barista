@@ -16,11 +16,13 @@
 
 package com.markelliot.barista.oauth2;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.palantir.tokens.auth.BearerToken;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import java.net.URI;
 import java.util.Optional;
@@ -46,11 +48,9 @@ public final class AuthDelegatingHandlerTest {
     private static final String SIGNED_STATE = "signed-state";
     private static final String COOKIE_PATH = "/cookie-path";
 
-    @Mock private HttpServletRequest request;
+    @Mock private HttpServerExchange exchange;
 
-    @Mock private HttpServletResponse response;
-
-    @Mock private FilterChain chain;
+    @Mock private HttpHandler next;
 
     @Mock private OAuth2CookieFilter cookieAuthFilter;
 
@@ -73,12 +73,12 @@ public final class AuthDelegatingHandlerTest {
         when(cookieAuthFilter.getAuthorizeRedirectUri(Optional.empty(), SIGNED_STATE))
                 .thenReturn(SIGNED_REDIRECT_URI);
 
-        when(request.getRequestURI()).thenReturn(REQUEST_URI);
-        when(request.getPathInfo()).thenReturn(REQUEST_PATH_INFO);
-        when(request.getQueryString()).thenReturn(QUERY_STRING);
+        exchange = new HttpServerExchange(null);
+        exchange.setRequestURI(REQUEST_URI);
+        exchange.setRequestPath(REQUEST_PATH_INFO);
+        exchange.setQueryString(QUERY_STRING);
 
-        handler =
-                new AuthDelegatingHandler(
+        handler = new AuthDelegatingHandler(
                         COOKIE_PATH,
                         cookieAuthFilter,
                         oauth2StateSerde,
@@ -87,21 +87,18 @@ public final class AuthDelegatingHandlerTest {
 
     @Test
     public void test_redirect_filterChainStopped() throws Exception {
-        HttpServerExchange exchange = new HttpServerExchange(null);
         when(cookieManager.getTokenCookie(exchange)).thenReturn(Optional.empty());
-        handler.handleRequest(request, response, chain);
-        verify(chain, never()).doFilter(request, response);
-        verify(response).setHeader(HttpHeaders.LOCATION, SIGNED_REDIRECT_URI);
+        handler.handler(next).handleRequest(exchange);
+        verify(next, never()).handleRequest(exchange);
+        assertThat(exchange.getResponseHeaders().getFirst(HttpHeaders.LOCATION)).isEqualTo(SIGNED_REDIRECT_URI);
         verify(cookieManager).setStateCookie(exchange, COOKIE_PATH, SIGNED_STATE);
     }
 
     @Test
     public void test_goodCookie_filterChainContinued() throws Exception {
-        HttpServerExchange exchange = new HttpServerExchange(null);
-        when(exchangeSupplier.get()).thenReturn(exchange);
         when(cookieManager.getTokenCookie(exchange))
                 .thenReturn(Optional.of(BEARER_TOKEN.getToken()));
-        handler.handleRequest(request, response, chain);
-        verify(chain).doFilter(request, response);
+        handler.handler(next).handleRequest(exchange);
+        verify(next).handleRequest(exchange);
     }
 }

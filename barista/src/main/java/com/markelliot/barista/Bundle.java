@@ -27,7 +27,7 @@ import java.util.Optional;
  * build target and not within an application. At the time of authoring, the only intended library
  * is an OAuth2 filter handler and redirect endpoint.
  */
-interface Bundle {
+public interface Bundle {
     /** A human-readable and safe-to-log name for this bundle. */
     String name();
 

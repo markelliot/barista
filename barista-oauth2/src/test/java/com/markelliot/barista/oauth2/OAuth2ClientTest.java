@@ -42,36 +42,37 @@ public class OAuth2ClientTest {
     private static final int EXPIRES_IN = 3600;
 
     private static OAuth2Client createClient() {
-        Endpoint endpoint =
-                Endpoint.builder()
-                        .method(Methods.POST)
-                        .template("/oauth2/token")
-                        .name("createToken")
-                        .serviceName("OAuth2Service")
-                        .handler(
-                                exchange -> {
-                                    // Return the form encoded
-                                    // request body as the
-                                    // 'refreshToken' so the client
-                                    // may validate.
-                                    byte[] contents =
-                                            ByteStreams.toByteArray(exchange.getInputStream());
-                                    conjureRuntime
-                                            .bodySerDe()
-                                            .serializer(new TypeMarker<OAuth2Credentials>() {})
-                                            .serialize(
-                                                    OAuth2Credentials.builder()
-                                                            .bearerToken(
-                                                                    VALID_AUTH_HEADER
-                                                                            .getBearerToken())
-                                                            .refreshToken(
-                                                                    new String(
-                                                                            contents,
-                                                                            StandardCharsets.UTF_8))
-                                                            .expiresIn(EXPIRES_IN)
-                                                            .build(),
-                                                    exchange);
-                                });
+        return null;
+//        Endpoint endpoint =
+//                Endpoint.builder()
+//                        .method(Methods.POST)
+//                        .template("/oauth2/token")
+//                        .name("createToken")
+//                        .serviceName("OAuth2Service")
+//                        .handler(
+//                                exchange -> {
+//                                    // Return the form encoded
+//                                    // request body as the
+//                                    // 'refreshToken' so the client
+//                                    // may validate.
+//                                    byte[] contents =
+//                                            ByteStreams.toByteArray(exchange.getInputStream());
+//                                    conjureRuntime
+//                                            .bodySerDe()
+//                                            .serializer(new TypeMarker<OAuth2Credentials>() {})
+//                                            .serialize(
+//                                                    OAuth2Credentials.builder()
+//                                                            .bearerToken(
+//                                                                    VALID_AUTH_HEADER
+//                                                                            .getBearerToken())
+//                                                            .refreshToken(
+//                                                                    new String(
+//                                                                            contents,
+//                                                                            StandardCharsets.UTF_8))
+//                                                            .expiresIn(EXPIRES_IN)
+//                                                            .build(),
+//                                                    exchange);
+//                                });
     }
 
     @Test
