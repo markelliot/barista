@@ -17,10 +17,12 @@
 package com.markelliot.barista.oauth2;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.markelliot.barista.handlers.DelegatingHandler;
 import com.palantir.tokens.auth.BearerToken;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -48,8 +50,6 @@ public final class AuthDelegatingHandlerTest {
     private static final String SIGNED_STATE = "signed-state";
     private static final String COOKIE_PATH = "/cookie-path";
 
-    @Mock private HttpServerExchange exchange;
-
     @Mock private HttpHandler next;
 
     @Mock private OAuth2CookieFilter cookieAuthFilter;
@@ -58,7 +58,8 @@ public final class AuthDelegatingHandlerTest {
 
     @Mock private CookieManager cookieManager;
 
-    private AuthDelegatingHandler handler;
+    private HttpServerExchange exchange;
+    private HttpHandler handler;
 
     @Before
     public void before() {
@@ -82,13 +83,13 @@ public final class AuthDelegatingHandlerTest {
                         COOKIE_PATH,
                         cookieAuthFilter,
                         oauth2StateSerde,
-                        cookieManager);
+                        cookieManager).innerHandler(next);
     }
 
     @Test
     public void test_redirect_filterChainStopped() throws Exception {
         when(cookieManager.getTokenCookie(exchange)).thenReturn(Optional.empty());
-        handler.handler(next).handleRequest(exchange);
+        handler.handleRequest(exchange);
         verify(next, never()).handleRequest(exchange);
         assertThat(exchange.getResponseHeaders().getFirst(HttpHeaders.LOCATION)).isEqualTo(SIGNED_REDIRECT_URI);
         verify(cookieManager).setStateCookie(exchange, COOKIE_PATH, SIGNED_STATE);
@@ -98,7 +99,7 @@ public final class AuthDelegatingHandlerTest {
     public void test_goodCookie_filterChainContinued() throws Exception {
         when(cookieManager.getTokenCookie(exchange))
                 .thenReturn(Optional.of(BEARER_TOKEN.getToken()));
-        handler.handler(next).handleRequest(exchange);
+        handler.handleRequest(exchange);
         verify(next).handleRequest(exchange);
     }
 }
