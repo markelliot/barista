@@ -25,7 +25,7 @@ import com.palantir.tokens.auth.AuthHeader;
 import com.palantir.tokens.auth.BearerToken;
 import org.junit.jupiter.api.Test;
 
-public class OAuth2ClientTest {
+public final class OAuth2ClientTest {
 
     private static final int PORT = 8034;
     private static final String SERVICE = "oauth2";

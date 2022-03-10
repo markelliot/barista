@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CookiesTest {
+public final class CookiesTest {
     @Test
     public void getSafeCookiePath() throws Exception {
         Assertions.assertThat(Cookies.getSafeCookiePath(null)).isEqualTo("/");

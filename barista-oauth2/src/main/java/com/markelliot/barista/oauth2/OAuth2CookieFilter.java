@@ -30,7 +30,7 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-class OAuth2CookieFilter {
+final class OAuth2CookieFilter {
 
     private final Supplier<OAuth2Configuration> config;
     private final LoadingCache<String, Boolean> tokenValidityCache;

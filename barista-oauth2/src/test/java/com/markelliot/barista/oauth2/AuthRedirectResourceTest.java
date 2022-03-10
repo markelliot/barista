@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;
 
-public class AuthRedirectResourceTest {
+public final class AuthRedirectResourceTest {
 
     private static final String CODE = "code";
     private static final BearerToken TOKEN =

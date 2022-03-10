@@ -71,6 +71,8 @@ allprojects {
 
         tasks.withType<JavaCompile> {
             options.errorprone.disable("UnusedVariable")
+            options.errorprone.disableWarningsInGeneratedCode
+            options.errorprone.excludedPaths.set(".*/build/generated/.*")
         }
 
         tasks.withType<Javadoc> {
