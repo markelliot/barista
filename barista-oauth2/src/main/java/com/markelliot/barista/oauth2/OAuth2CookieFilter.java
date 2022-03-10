@@ -19,6 +19,7 @@ package com.markelliot.barista.oauth2;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
+import com.jakewharton.nopen.annotation.Open;
 import com.palantir.dialogue.DialogueException;
 import com.palantir.logsafe.SafeArg;
 import com.palantir.logsafe.exceptions.SafeRuntimeException;
@@ -30,6 +31,7 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Open
 class OAuth2CookieFilter {
 
     private final Supplier<OAuth2Configuration> config;
