@@ -43,7 +43,7 @@ public final class AuthDelegatingHandlerTest {
     private static final BearerToken BEARER_TOKEN = BearerToken.valueOf("test-token");
     private static final String COOKIE_PATH = "/cookie-path";
     private static final String REQUEST_URI = "https://test-uri";
-    private static final String REQUEST_PATH_INFO = COOKIE_PATH + "/baz";
+    private static final String REQUEST_PATH_INFO = "/baz";
     private static final String QUERY_STRING = "foo=bar";
     private static final String SIGNED_REDIRECT_URI = "signed-redirect-uri";
     private static final String SIGNED_STATE = "signed-state";
@@ -78,7 +78,7 @@ public final class AuthDelegatingHandlerTest {
 
         exchange = new HttpServerExchange(connection);
         exchange.setRequestURI(REQUEST_URI);
-        exchange.setRequestPath(REQUEST_PATH_INFO);
+        exchange.setRequestPath(COOKIE_PATH + REQUEST_PATH_INFO);
         exchange.setQueryString(QUERY_STRING);
 
         handler =
