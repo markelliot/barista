@@ -98,10 +98,10 @@ public final class EndpointHandlerGenerator {
                         MethodSpec.methodBuilder("method")
                                 .addAnnotation(Override.class)
                                 .addModifiers(Modifier.PUBLIC)
-                                .returns(ClassName.get(HttpMethod.class))
+                                .returns(ClassName.get(com.markelliot.barista.HttpMethod.class))
                                 .addStatement(
                                         "return $T.$N",
-                                        HttpMethod.class,
+                                        com.markelliot.barista.HttpMethod.class,
                                         definition.httpMethod().toString())
                                 .build())
                 .addMethod(
