@@ -22,7 +22,7 @@ import com.google.common.collect.ImmutableMap;
 import com.palantir.dialogue.RequestBody;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class FormUrlEncodedRequestBodyTest {
 

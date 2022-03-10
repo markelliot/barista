@@ -18,61 +18,61 @@ package com.markelliot.barista.oauth2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.pholser.junit.quickcheck.From;
-import com.pholser.junit.quickcheck.Property;
-import com.pholser.junit.quickcheck.generator.GenerationStatus;
-import com.pholser.junit.quickcheck.generator.Generator;
-import com.pholser.junit.quickcheck.random.SourceOfRandomness;
-import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Pattern;
-import org.junit.runner.RunWith;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnitQuickcheck.class)
 public final class OAuth2StateSerdeImplTest {
 
     private static final Pattern VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY =
             Pattern.compile("^[0-9a-zA-Z+/\\-_]+$");
+    private static final int NUM_ITER = 100;
+    private final Stream<URI> generator = generator();
 
-    public static final class UriGenerator extends Generator<URI> {
-        public UriGenerator(Class<URI> type) {
-            super(type);
-        }
-
-        @Override
-        public URI generate(SourceOfRandomness random, GenerationStatus status) {
-            Generator<String> stringGenerator = gen().type(String.class);
-            while (true) {
-                try {
-                    return new URI(stringGenerator.generate(random, status));
-                } catch (URISyntaxException e) {
-                    // Try again
-                }
-            }
-        }
+    @Test
+    public void urlIsPreservedAfterSerializationAndDeserialization() {
+        generator.limit(NUM_ITER)
+                .forEach(url -> {
+                    String encoded = new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
+                    Optional<URI> decoded = new OAuth2StateSerdeImpl().decodeRedirectUrlFromState(encoded);
+                    assertThat(decoded).contains(url);
+                });
     }
 
-    @Property
-    public void urlIsPreservedAfterSerializationAndDeserialization(
-            @From(UriGenerator.class) URI url) {
-        String encoded = new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
-        Optional<URI> decoded = new OAuth2StateSerdeImpl().decodeRedirectUrlFromState(encoded);
-
-        assertThat(decoded).contains(url);
+    @Test
+    public void encodedStateIsAsciiSafe() {
+        generator.limit(NUM_ITER)
+                .forEach(url -> {
+                    String encoded = new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
+                    assertThat(encoded)
+                            .containsPattern(VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY);
+                });
     }
 
-    @Property
-    public void encodedStateIsAsciiSafe(@From(UriGenerator.class) URI url) {
-        String encoded = new OAuth2StateSerdeImpl().encodeRedirectUrlToState(url);
-
-        assertThat(encoded)
-                .containsPattern(VALID_BASE_64_WITH_UNDERSCORE_INSTEAD_OF_EQUALS_FOR_URL_SAFETY);
+    @Test
+    public void returnsEmptyWhenUndecodable() {
+        assertThat(new OAuth2StateSerdeImpl().decodeRedirectUrlFromState("encodedUrl")).isEmpty();
     }
 
-    @Property
-    public void returnsEmptyWhenUndecodable(String encodedUrl) {
-        assertThat(new OAuth2StateSerdeImpl().decodeRedirectUrlFromState(encodedUrl)).isEmpty();
+    private static Stream<URI> generator() {
+        Random random = new Random();
+        byte[] byteBuffer = new byte[16];
+        return LongStream.generate(() -> 0L)
+                .mapToObj(_unused -> {
+                    while (true) {
+                        try {
+                            random.nextBytes(byteBuffer);
+                            return new URI(new String(byteBuffer, StandardCharsets.US_ASCII));
+                        } catch (URISyntaxException e) {
+                            // Try again
+                        }
+                    }
+                });
     }
 }

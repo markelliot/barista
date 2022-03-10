@@ -90,7 +90,7 @@ public final class AuthRedirectResource {
     }
 
     @Http.Get(REDIRECT_RESOURCE_PATH)
-    HttpRedirect handle(
+    public HttpRedirect handle(
             @Param.Query("error") Optional<String> error,
             @Param.Query("state") String urlState,
             @Param.Query("code") String code,

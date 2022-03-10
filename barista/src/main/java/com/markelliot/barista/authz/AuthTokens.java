@@ -24,10 +24,10 @@ public final class AuthTokens {
     private AuthTokens() {}
 
     public static AuthToken fromAuthorizationHeader(String headerValue) {
-        return new AuthToken(BEARER.matcher(headerValue).replaceFirst(""));
+        return AuthToken.of(BEARER.matcher(headerValue).replaceFirst(""));
     }
 
     public static AuthToken of(String token) {
-        return new AuthToken(token);
+        return new AuthToken.Simple(token);
     }
 }

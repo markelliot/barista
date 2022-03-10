@@ -17,4 +17,12 @@
 package com.markelliot.barista.authz;
 
 /** Type-specific alias for an auth authToken. */
-public record AuthToken(String token) {}
+public interface AuthToken {
+    String token();
+
+    static AuthToken of(String token) {
+        return new AuthToken.Simple(token);
+    }
+
+    record Simple(String token) implements AuthToken {};
+}

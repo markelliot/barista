@@ -61,12 +61,7 @@ public final class AuthDelegatingHandler implements DelegatingHandler {
     @Override
     public HttpHandler handler(HttpHandler next) {
         // Must run on the task pool, authentication client blocks until completion.
-        return new BlockingHandler(innerHandler(next));
-    }
-
-    @VisibleForTesting
-    HttpHandler innerHandler(HttpHandler next) {
-        return exchange -> {
+        return new BlockingHandler(exchange -> {
             String requestPath = exchange.getRequestPath().substring(cookiePath.length());
 
             Optional<String> token = cookieManager.getTokenCookie(exchange);
@@ -85,7 +80,7 @@ public final class AuthDelegatingHandler implements DelegatingHandler {
                 return;
             }
             next.handleRequest(exchange);
-        };
+        });
     }
 
     private static URI getUriWithQueryParameters(HttpServerExchange exchange) {

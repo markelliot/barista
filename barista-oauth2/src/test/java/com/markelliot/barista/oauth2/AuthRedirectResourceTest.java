@@ -34,14 +34,11 @@ import java.util.function.Supplier;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.UriInfo;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
 public class AuthRedirectResourceTest {
 
     private static final String CODE = "code";
@@ -84,7 +81,7 @@ public class AuthRedirectResourceTest {
     private String stateWithHost;
     private String stateWithoutHost;
 
-    @Before
+    @BeforeEach
     public void before() {
         uuidForTesting = UUID.randomUUID();
         oAuth2StateSerde = new OAuth2StateSerdeImpl(() -> this.uuidForTesting);

@@ -28,14 +28,11 @@ import io.undertow.server.handlers.CookieSameSiteMode;
 import io.undertow.util.Headers;
 import java.util.Objects;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.xnio.OptionMap;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class CookieManagerImplTest {
 
     private static final String SAME_SITE_NONE_COMPATIBLE_USER_AGENT = "userAgent";
@@ -46,14 +43,21 @@ public final class CookieManagerImplTest {
     private static final int MAX_AGE = 3600;
     private static final String STATE = "state";
     private static final BearerToken TOKEN = BearerToken.valueOf("token");
-
-    @Mock private ServerConnection serverConnection;
-
     private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
-
+    @Mock
+    private ServerConnection serverConnection;
     private HttpServerExchange exchange;
 
-    @Before
+    private static Cookie getResponseCookie(HttpServerExchange exchange, String name) {
+        for (Cookie cookie : exchange.responseCookies()) {
+            if (Objects.equals(name, cookie.getName())) {
+                return cookie;
+            }
+        }
+        throw new IllegalStateException("Failed to find cookie with name: " + name);
+    }
+
+    @BeforeEach
     public void before() {
         when(serverConnection.getUndertowOptions()).thenReturn(OptionMap.EMPTY);
 
@@ -201,14 +205,5 @@ public final class CookieManagerImplTest {
         boolean hasStateCookie = cookieManager.hasStateCookie(exchange, STATE);
 
         assertThat(hasStateCookie).isFalse();
-    }
-
-    private static Cookie getResponseCookie(HttpServerExchange exchange, String name) {
-        for (Cookie cookie : exchange.responseCookies()) {
-            if (Objects.equals(name, cookie.getName())) {
-                return cookie;
-            }
-        }
-        throw new IllegalStateException("Failed to find cookie with name: " + name);
     }
 }

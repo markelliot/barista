@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.net.URI;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class OAuthRedirectsTest {
     public static final OAuth2Configuration SPP_CONFIG =
@@ -43,24 +43,24 @@ public final class OAuthRedirectsTest {
         assertThat(getConfig("https://externalUri", "https://redirectUri").isSinglePortProxyMode())
                 .isFalse();
         assertThat(
-                        getConfig("https://localhost:8080", "https://localhost:8643")
-                                .isSinglePortProxyMode())
+                getConfig("https://localhost:8080", "https://localhost:8643")
+                        .isSinglePortProxyMode())
                 .isFalse();
         assertThat(
-                        getConfig(
-                                        "https://localhost:8080/foo/bar/baz",
-                                        "https://localhost:8643/bar/baz/foo")
-                                .isSinglePortProxyMode())
+                getConfig(
+                        "https://localhost:8080/foo/bar/baz",
+                        "https://localhost:8643/bar/baz/foo")
+                        .isSinglePortProxyMode())
                 .isFalse();
     }
 
     @Test
     public void test_isSppModeTrueWhenExternalAndRedirectUriMatchOnlyOnHostAndPort() {
         assertThat(
-                        getConfig(
-                                        "https://externalUri:8080/foo/bar/baz",
-                                        "https://externalUri:8080/bar/baz/foo")
-                                .isSinglePortProxyMode())
+                getConfig(
+                        "https://externalUri:8080/foo/bar/baz",
+                        "https://externalUri:8080/bar/baz/foo")
+                        .isSinglePortProxyMode())
                 .isTrue();
     }
 
@@ -78,8 +78,8 @@ public final class OAuthRedirectsTest {
     @Test
     public void test_getAuthorizeUri_preferHostWitHostPresent() {
         assertThat(
-                        OAuthRedirects.getAuthorizeRedirectUri(
-                                Optional.of("hostUri"), "encodedState", SPP_CONFIG))
+                OAuthRedirects.getAuthorizeRedirectUri(
+                        Optional.of("hostUri"), "encodedState", SPP_CONFIG))
                 .isEqualTo(
                         "https://hostUri/api/oauth2/authorize?client_id=clientId"
                                 + "&redirect_uri=https%3A%2F%2FhostUri%2Fcontext"
@@ -89,8 +89,8 @@ public final class OAuthRedirectsTest {
     @Test
     public void test_getAuthorizeUri_preferConfigNoHostPresent() {
         assertThat(
-                        OAuthRedirects.getAuthorizeRedirectUri(
-                                Optional.empty(), "encodedState", NON_SPP_CONFIG))
+                OAuthRedirects.getAuthorizeRedirectUri(
+                        Optional.empty(), "encodedState", NON_SPP_CONFIG))
                 .isEqualTo(
                         "https://authorizeUri/api/oauth2/authorize?client_id=clientId"
                                 + "&redirect_uri=https%3A%2F%2FredirectUri%2Fcontext"
@@ -100,8 +100,8 @@ public final class OAuthRedirectsTest {
     @Test
     public void test_getAuthorizeUri_preferConfigWithHostPresent() {
         assertThat(
-                        OAuthRedirects.getAuthorizeRedirectUri(
-                                Optional.of("hostUri"), "encodedState", NON_SPP_CONFIG))
+                OAuthRedirects.getAuthorizeRedirectUri(
+                        Optional.of("hostUri"), "encodedState", NON_SPP_CONFIG))
                 .isEqualTo(
                         "https://authorizeUri/api/oauth2/authorize?client_id=clientId"
                                 + "&redirect_uri=https%3A%2F%2FredirectUri%2Fcontext"

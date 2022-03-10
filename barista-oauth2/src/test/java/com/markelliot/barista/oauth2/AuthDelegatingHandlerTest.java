@@ -17,88 +17,97 @@
 package com.markelliot.barista.oauth2;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.markelliot.barista.handlers.DelegatingHandler;
 import com.palantir.tokens.auth.BearerToken;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.ServerConnection;
+import io.undertow.server.handlers.Cookie;
+import io.undertow.server.handlers.CookieImpl;
 import java.net.URI;
 import java.util.Optional;
-import java.util.function.Supplier;
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.xnio.OptionMap;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class AuthDelegatingHandlerTest {
 
     private static final BearerToken BEARER_TOKEN = BearerToken.valueOf("test-token");
+    private static final String COOKIE_PATH = "/cookie-path";
     private static final String REQUEST_URI = "https://test-uri";
-    private static final String REQUEST_PATH_INFO = "test-uri";
+    private static final String REQUEST_PATH_INFO = COOKIE_PATH + "/baz";
     private static final String QUERY_STRING = "foo=bar";
     private static final String SIGNED_REDIRECT_URI = "signed-redirect-uri";
     private static final String SIGNED_STATE = "signed-state";
-    private static final String COOKIE_PATH = "/cookie-path";
 
-    @Mock private HttpHandler next;
+    @Mock
+    private HttpHandler next;
 
-    @Mock private OAuth2CookieFilter cookieAuthFilter;
+    @Mock
+    private OAuth2CookieFilter cookieAuthFilter;
 
-    @Mock private OAuth2StateSerde oauth2StateSerde;
+    @Mock
+    private OAuth2StateSerde oauth2StateSerde;
 
-    @Mock private CookieManager cookieManager;
+    private final CookieManager cookieManager = CookieManagerImpl.INSTANCE;
+
+    @Mock
+    private ServerConnection connection;
 
     private HttpServerExchange exchange;
     private HttpHandler handler;
+    private Cookie cookie;
 
-    @Before
+    @BeforeEach
     public void before() {
         when(cookieAuthFilter.shouldDoOauth2Flow(
-                        REQUEST_PATH_INFO, Optional.of(BEARER_TOKEN.getToken())))
+                REQUEST_PATH_INFO, Optional.of(BEARER_TOKEN.getToken())))
                 .thenReturn(false);
         when(cookieAuthFilter.shouldDoOauth2Flow(REQUEST_PATH_INFO, Optional.empty()))
                 .thenReturn(true);
         when(oauth2StateSerde.encodeRedirectUrlToState(
-                        URI.create(String.format("/?%s", QUERY_STRING))))
+                URI.create(String.format("/?%s", QUERY_STRING))))
                 .thenReturn(SIGNED_STATE);
         when(cookieAuthFilter.getAuthorizeRedirectUri(Optional.empty(), SIGNED_STATE))
                 .thenReturn(SIGNED_REDIRECT_URI);
+        when(connection.getUndertowOptions()).thenReturn(OptionMap.EMPTY);
 
-        exchange = new HttpServerExchange(null);
+        exchange = new HttpServerExchange(connection);
         exchange.setRequestURI(REQUEST_URI);
         exchange.setRequestPath(REQUEST_PATH_INFO);
         exchange.setQueryString(QUERY_STRING);
 
         handler = new AuthDelegatingHandler(
-                        COOKIE_PATH,
-                        cookieAuthFilter,
-                        oauth2StateSerde,
-                        cookieManager).innerHandler(next);
+                COOKIE_PATH,
+                cookieAuthFilter,
+                oauth2StateSerde,
+                cookieManager).handler(next);
+
+        cookie = new CookieImpl(SIGNED_STATE, Cookies.OAUTH_STATE);
+        cookie.setPath(Cookies.getSafeCookiePath(COOKIE_PATH));
+        cookie.setMaxAge(Cookies.OAUTH_STATE_MAX_AGE);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
     }
 
     @Test
     public void test_redirect_filterChainStopped() throws Exception {
-        when(cookieManager.getTokenCookie(exchange)).thenReturn(Optional.empty());
+        assertThat(cookieManager.getTokenCookie(exchange)).isEmpty();
         handler.handleRequest(exchange);
         verify(next, never()).handleRequest(exchange);
         assertThat(exchange.getResponseHeaders().getFirst(HttpHeaders.LOCATION)).isEqualTo(SIGNED_REDIRECT_URI);
-        verify(cookieManager).setStateCookie(exchange, COOKIE_PATH, SIGNED_STATE);
+        assertThat(exchange.responseCookies()).contains(cookie);
     }
 
     @Test
     public void test_goodCookie_filterChainContinued() throws Exception {
-        when(cookieManager.getTokenCookie(exchange))
-                .thenReturn(Optional.of(BEARER_TOKEN.getToken()));
+        cookieManager.setTokenCookie(exchange, COOKIE_PATH, BEARER_TOKEN, Cookies.OAUTH_STATE_MAX_AGE);
         handler.handleRequest(exchange);
         verify(next).handleRequest(exchange);
     }

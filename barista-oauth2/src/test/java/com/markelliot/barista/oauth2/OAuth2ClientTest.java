@@ -20,18 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.google.common.io.ByteStreams;
 import com.palantir.conjure.java.api.errors.RemoteException;
-import com.palantir.dialogue.TypeMarker;
 import com.palantir.tokens.auth.AuthHeader;
 import com.palantir.tokens.auth.BearerToken;
-import io.undertow.util.Methods;
-import java.nio.charset.StandardCharsets;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Parameterized.class)
 public class OAuth2ClientTest {
 
     private static final int PORT = 8034;

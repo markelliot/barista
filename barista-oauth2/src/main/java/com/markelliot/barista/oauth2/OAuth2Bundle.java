@@ -28,6 +28,7 @@ public final class OAuth2Bundle implements Bundle {
 
     @Override
     public Endpoints endpoints() {
-        return null;
+        return new AuthRedirectResourceEndpoints(
+                new AuthRedirectResource(contextPath, client, () -> config, new OAuth2StateSerdeImpl()));
     }
 }
