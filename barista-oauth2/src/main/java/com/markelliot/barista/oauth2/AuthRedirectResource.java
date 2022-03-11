@@ -24,6 +24,7 @@ import com.markelliot.barista.oauth2.objects.CreateTokenRequest;
 import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
 import com.markelliot.barista.oauth2.objects.OAuth2Credentials;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.ResponseCodeHandler;
 import java.net.URI;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -49,9 +50,9 @@ public final class AuthRedirectResource {
     /**
      * Preferred constructor.
      *
-     * @param cookiePath cookie path, usually install.contextPath()
-     * @param oauth2Client client
-     * @param config config
+     * @param cookiePath       cookie path, usually install.contextPath()
+     * @param oauth2Client     client
+     * @param config           config
      * @param oauth2StateSerde serde
      */
     public AuthRedirectResource(
