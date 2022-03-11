@@ -65,8 +65,8 @@ public final class DefaultOAuth2Client implements OAuth2Client {
         try {
             HttpResponse<T> response = this.httpClient.send(request, bodyHandler);
             if (300 <= response.statusCode() && response.statusCode() <= 599) {
-                throw new RuntimeException("error in http request, status code " + response.statusCode()
-                        + ": " + response.body());
+                throw new RuntimeException("error in http request, status code: " + response.statusCode()
+                        + ", body: " + response.body());
             }
             return response.body();
         } catch (IOException | InterruptedException e) {

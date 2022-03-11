@@ -83,15 +83,30 @@ public final class OAuth2ClientTest {
     }
 
     @Test
-    public void testCheckTokenSuccessful() {
+    public void testCheckTokenSuccessful() throws IOException, InterruptedException {
+        HttpRequest expectedRequest = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URI + DefaultOAuth2Client.CHECK_TOKEN_PATH))
+                .header(HttpHeaders.AUTHORIZATION, VALID_AUTH_HEADER.toString())
+                .GET()
+                .build();
+        when(httpClient.<String>send(eq(expectedRequest), any())).thenReturn(httpResponse);
+        when(httpResponse.statusCode()).thenReturn(200);
         assertThatCode(() -> client.checkToken(VALID_AUTH_HEADER)).doesNotThrowAnyException();
     }
 
     @Test
-    public void testCheckTokenInvalid() {
-        assertThatThrownBy(() -> client.checkToken(AuthHeader.valueOf("invalid")))
+    public void testCheckTokenInvalid() throws IOException, InterruptedException {
+        AuthHeader invalid = AuthHeader.valueOf("invalid");
+        HttpRequest expectedRequest = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URI + DefaultOAuth2Client.CHECK_TOKEN_PATH))
+                .header(HttpHeaders.AUTHORIZATION, invalid.toString())
+                .GET()
+                .build();
+        when(httpClient.<String>send(eq(expectedRequest), any())).thenReturn(httpResponse);
+        when(httpResponse.statusCode()).thenReturn(401);
+        assertThatThrownBy(() -> client.checkToken(invalid))
                 .isInstanceOfSatisfying(
-                        RemoteException.class, re -> assertThat(re.getStatus()).isEqualTo(401));
+                        RuntimeException.class, re -> assertThat(re.getMessage()).contains("status code: 401, body: null"));
     }
 
     @Test
