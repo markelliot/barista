@@ -86,7 +86,7 @@ public final class AuthRedirectResourceTest {
     @BeforeEach
     public void before() {
         uuidForTesting = UUID.randomUUID();
-        oAuth2StateSerde = new OAuth2StateSerdeImpl(() -> this.uuidForTesting);
+        oAuth2StateSerde = new DefaultOAuth2StateSerde(() -> this.uuidForTesting);
         redirectBackToWithHost = "https://clientapp.biz/cookie-path/place";
         redirectBackToWithoutHost = "/cookie-path/place";
         stateWithHost =

@@ -55,7 +55,7 @@ public final class AuthDelegatingHandler implements DelegatingHandler {
         return new AuthDelegatingHandler(
                 cookiePath,
                 new OAuth2CookieFilter(client, config),
-                new OAuth2StateSerdeImpl(),
+                new DefaultOAuth2StateSerde(),
                 CookieManager.buildDefault());
     }
 
