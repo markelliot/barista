@@ -22,7 +22,6 @@ import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.BlockingHandler;
-import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 import java.net.URI;
 import java.util.Optional;
@@ -74,12 +73,12 @@ public final class AuthDelegatingHandler implements DelegatingHandler {
                                         getUriWithQueryParameters(exchange));
                         cookieManager.setStateCookie(exchange, cookiePath, encodedState);
 
-                        Optional<String> host = PalantirHeaders.getExternalHostHeader(exchange);
+                        Optional<String> host = Headers.getExternalHostHeader(exchange);
                         String authorizeRedirectUri =
                                 auth.getAuthorizeRedirectUri(host, encodedState);
 
                         exchange.setStatusCode(StatusCodes.TEMPORARY_REDIRECT);
-                        exchange.getResponseHeaders().put(Headers.LOCATION, authorizeRedirectUri);
+                        exchange.getResponseHeaders().put(io.undertow.util.Headers.LOCATION, authorizeRedirectUri);
 
                         // do not continue to process the handler chain
                         return;

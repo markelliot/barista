@@ -20,17 +20,17 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
 import java.util.Optional;
 
-public final class PalantirHeaders {
-    public static final String EXTERNAL_HOST_HEADER = "Palantir-External-Host";
+public final class Headers {
+    public static final String EXTERNAL_HOST_HEADER = "External-Host";
 
     static Optional<String> getExternalHostHeader(HttpServerExchange exchange) {
         HeaderValues header =
-                exchange.getRequestHeaders().get(PalantirHeaders.EXTERNAL_HOST_HEADER);
+                exchange.getRequestHeaders().get(Headers.EXTERNAL_HOST_HEADER);
         if (header == null || header.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(header.getFirst());
     }
 
-    private PalantirHeaders() {}
+    private Headers() {}
 }

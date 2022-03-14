@@ -24,7 +24,6 @@ import com.markelliot.barista.oauth2.objects.CreateTokenRequest;
 import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
 import com.markelliot.barista.oauth2.objects.OAuth2Credentials;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.ResponseCodeHandler;
 import java.net.URI;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -90,7 +89,7 @@ public final class AuthRedirectResource {
             @Param.Query("error") Optional<String> error,
             @Param.Query("state") String urlState,
             @Param.Query("code") String code,
-            @Param.Header(PalantirHeaders.EXTERNAL_HOST_HEADER) Optional<String> externalHostHeader) {
+            @Param.Header(Headers.EXTERNAL_HOST_HEADER) Optional<String> externalHostHeader) {
         if (error.isPresent()) {
             throw new WebApplicationException(
                     "An error occurred during login: " + error, Status.FORBIDDEN);
@@ -105,7 +104,7 @@ public final class AuthRedirectResource {
         HttpServerExchange exchange = exchangeSupplier.get();
         if (!cookieManager.hasStateCookie(exchange, urlState)) {
             if (!isLocalRedirectUri(redirectUri)) {
-                throw throwForBadCookieState();
+                throw throwForBadCookieState(exchange);
             }
             return retryOauthAuthorizeResponse(exchange, externalHostHeader, redirectUri);
         }
@@ -114,9 +113,10 @@ public final class AuthRedirectResource {
                 exchange, code, externalHostHeader, urlState, redirectUri);
     }
 
-    private static ForbiddenException throwForBadCookieState() {
+    private static ForbiddenException throwForBadCookieState(HttpServerExchange exchange) {
         log.warn("URL state parameter didn't match state from cookie.");
-        throw new ForbiddenException("Login state is invalid, try logging in again");
+        exchange.setStatusCode(403);
+        throw new IllegalArgumentException("Login state is invalid, try logging in again");
     }
 
     private boolean isLocalRedirectUri(URI uri) {

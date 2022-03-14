@@ -27,7 +27,6 @@ import com.google.common.collect.ImmutableMap;
 import com.markelliot.barista.oauth2.objects.CreateTokenRequest;
 import com.markelliot.barista.oauth2.objects.OAuth2Authorization;
 import com.markelliot.barista.oauth2.objects.OAuth2Credentials;
-import com.palantir.conjure.java.api.errors.RemoteException;
 import com.palantir.tokens.auth.AuthHeader;
 import com.palantir.tokens.auth.BearerToken;
 import java.io.IOException;

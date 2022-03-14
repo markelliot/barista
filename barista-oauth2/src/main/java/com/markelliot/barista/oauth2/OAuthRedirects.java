@@ -18,7 +18,6 @@ package com.markelliot.barista.oauth2;
 
 import com.google.common.base.Strings;
 import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
-import com.palantir.logsafe.exceptions.SafeRuntimeException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -41,7 +40,7 @@ final class OAuthRedirects {
                     .addParameter("state", encodedState)
                     .toString();
         } catch (URISyntaxException e) {
-            throw new SafeRuntimeException("Failed to construct uri", e);
+            throw new RuntimeException("Failed to construct uri", e);
         }
     }
 

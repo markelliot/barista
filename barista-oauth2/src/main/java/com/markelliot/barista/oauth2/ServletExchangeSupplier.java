@@ -16,7 +16,8 @@
 
 package com.markelliot.barista.oauth2;
 
-import static com.palantir.logsafe.Preconditions.checkNotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.handlers.ServletRequestContext;

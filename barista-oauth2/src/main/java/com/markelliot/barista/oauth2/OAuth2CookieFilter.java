@@ -21,9 +21,6 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.jakewharton.nopen.annotation.Open;
 import com.markelliot.barista.oauth2.objects.OAuth2Configuration;
-import com.palantir.dialogue.DialogueException;
-import com.palantir.logsafe.SafeArg;
-import com.palantir.logsafe.exceptions.SafeRuntimeException;
 import com.palantir.tokens.auth.AuthHeader;
 import com.palantir.tokens.auth.BearerToken;
 import com.palantir.tokens.auth.UnverifiedJsonWebToken;
@@ -58,23 +55,19 @@ class OAuth2CookieFilter {
                                     try {
                                         client.checkToken(AuthHeader.of(bearerToken));
                                         return true;
-                                    } catch (DialogueException | UncheckedIOException e) {
+                                    } catch (UncheckedIOException e) {
                                         String userId =
                                                 UnverifiedJsonWebToken.of(bearerToken)
                                                         .getUnverifiedUserId();
-                                        throw new SafeRuntimeException(
-                                                "checkToken did not succeed",
-                                                e,
-                                                SafeArg.of("userId", userId));
-                                    } catch (RuntimeException e) {
-                                        // this catch block is necessary because of the behavior of
-                                        // com.palantir.remoting3.retrofit2.SerializableErrorInterceptor
-                                        return false;
+                                        throw new RuntimeException(
+                                                "checkToken did not succeed (userId: " + userId + ")", e);
                                     }
                                 });
     }
 
-    /** Returns true when the caller should conduct an OAuth2 redirect flow. */
+    /**
+     * Returns true when the caller should conduct an OAuth2 redirect flow.
+     */
     public boolean shouldDoOauth2Flow(String requestPath, Optional<String> token) {
         if (AuthRedirectResource.REDIRECT_RESOURCE_PATH.equals(requestPath)) {
             // never intercept redirects for OAuth2
@@ -96,7 +89,9 @@ class OAuth2CookieFilter {
         return true;
     }
 
-    /** Returns the signed authorize redirect URI for OAuth2 flow. */
+    /**
+     * Returns the signed authorize redirect URI for OAuth2 flow.
+     */
     public String getAuthorizeRedirectUri(
             Optional<String> externalHostHeader, String encodedState) {
         return OAuthRedirects.getAuthorizeRedirectUri(
