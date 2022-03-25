@@ -19,6 +19,7 @@ package com.markelliot.barista;
 import com.google.common.base.Preconditions;
 import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.endpoints.EndpointHandler;
+import com.markelliot.barista.endpoints.Endpoints;
 import com.markelliot.barista.handlers.CorsHandler;
 import com.markelliot.barista.handlers.DispatchFromIoThreadHandler;
 import com.markelliot.barista.handlers.EndpointHandlerBuilder;
@@ -69,8 +70,6 @@ public final class Server {
 
     public static final class Builder {
         private int port = 8443;
-        private final Set<Endpoints.Open<?, ?>> openEndpoints = new LinkedHashSet<>();
-        private final Set<Endpoints.VerifiedAuth<?, ?>> authEndpoints = new LinkedHashSet<>();
         private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
         private SerDe serde = new SerDe.ObjectMapperSerDe();
@@ -88,24 +87,7 @@ public final class Server {
             return this;
         }
 
-        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
-        @Deprecated
-        public <Request, Response> Builder endpoint(Endpoints.Open<Request, Response> endpoint) {
-            Objects.requireNonNull(endpoint);
-            openEndpoints.add(endpoint);
-            return this;
-        }
-
-        /** Prefer {@link #endpoints(com.markelliot.barista.endpoints.Endpoints)}. */
-        @Deprecated
-        public <Request, Response> Builder endpoint(
-                Endpoints.VerifiedAuth<Request, Response> endpoint) {
-            Objects.requireNonNull(endpoint);
-            authEndpoints.add(endpoint);
-            return this;
-        }
-
-        public Builder endpoints(com.markelliot.barista.endpoints.Endpoints resource) {
+        public Builder endpoints(Endpoints resource) {
             Objects.requireNonNull(resource);
             endpointHandlers.addAll(resource.endpoints());
             return this;
@@ -168,7 +150,7 @@ public final class Server {
                     HandlerChain.of(DispatchFromIoThreadHandler::new)
                             .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
                             .then(h -> new TracingHandler(tracingRate, h))
-                            .last(handler.build(authEndpoints, openEndpoints, endpointHandlers));
+                            .last(handler.build(endpointHandlers));
             Undertow undertow =
                     Undertow.builder().setHandler(handlerChain).addListener(listener()).build();
             Server server = new Server(undertow);

@@ -18,12 +18,16 @@ package com.markelliot.barista;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.markelliot.barista.endpoints.EndpointHandler;
+import com.markelliot.barista.endpoints.EndpointRuntime;
+import io.undertow.server.HttpHandler;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,7 +43,29 @@ final class ServerTests {
                         .allowOrigin("localhost:8181")
                         .port(8080)
                         .disableTls()
-                        .endpoint(new HelloWorldEndpoint())
+                        .endpoints(
+                                () ->
+                                        Set.of(
+                                                new EndpointHandler() {
+                                                    @Override
+                                                    public HttpMethod method() {
+                                                        return HttpMethod.GET;
+                                                    }
+
+                                                    @Override
+                                                    public String route() {
+                                                        return "/hello-world";
+                                                    }
+
+                                                    @Override
+                                                    public HttpHandler handler(
+                                                            EndpointRuntime runtime) {
+                                                        return exchange ->
+                                                                runtime.handle(
+                                                                        () -> "Hello World",
+                                                                        exchange);
+                                                    }
+                                                }))
                         .start();
     }
 
@@ -85,27 +111,5 @@ final class ServerTests {
                         BodyHandlers.ofString());
         assertThat(helloWorldResult.statusCode()).isEqualTo(403);
         assertThat(helloWorldResult.body()).isEqualTo("Origin 'foo.com' not allowed.");
-    }
-
-    private static final class HelloWorldEndpoint implements Endpoints.Open<Void, String> {
-        @Override
-        public String call(Void unused) {
-            return "Hello World";
-        }
-
-        @Override
-        public Class<Void> requestClass() {
-            return Void.class;
-        }
-
-        @Override
-        public String path() {
-            return "/hello-world";
-        }
-
-        @Override
-        public HttpMethod method() {
-            return HttpMethod.GET;
-        }
     }
 }
