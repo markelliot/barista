@@ -20,10 +20,13 @@ import com.markelliot.barista.HttpMethod;
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.endpoints.EndpointRuntime;
 import com.markelliot.barista.endpoints.Endpoints;
+import com.markelliot.barista.handlers.HandlerChain;
 import com.palantir.conjure.java.undertow.lib.Endpoint;
+import com.palantir.conjure.java.undertow.lib.ExceptionHandler;
 import com.palantir.conjure.java.undertow.lib.UndertowRuntime;
 import com.palantir.conjure.java.undertow.lib.UndertowService;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,12 +50,13 @@ public final class ConjureAdapter {
     public static Endpoints adapt(UndertowService service, UndertowRuntime runtime) {
         Set<EndpointHandler> handlers =
                 service.endpoints(runtime).stream()
-                        .map(ConjureAdapter::fromConjureEndpoint)
+                        .map(e -> fromConjureEndpoint(e, runtime))
                         .collect(Collectors.toSet());
         return () -> handlers;
     }
 
-    private static EndpointHandler fromConjureEndpoint(Endpoint endpoint) {
+    private static EndpointHandler fromConjureEndpoint(
+            Endpoint endpoint, UndertowRuntime conjureRuntime) {
         return new EndpointHandler() {
             @Override
             public HttpMethod method() {
@@ -73,11 +77,38 @@ public final class ConjureAdapter {
 
             @Override
             public HttpHandler handler(EndpointRuntime runtime) {
-                return exchange -> {
-                    exchange.startBlocking();
-                    endpoint.handler().handleRequest(exchange);
-                };
+                return HandlerChain.of(BlockingHandler::new)
+                        .then(
+                                h ->
+                                        new ConjureExceptionHandler(
+                                                h, conjureRuntime.exceptionHandler()))
+                        .last(endpoint.handler());
             }
         };
+    }
+
+    private record BlockingHandler(HttpHandler delegate) implements HttpHandler {
+        @Override
+        public void handleRequest(HttpServerExchange exchange) throws Exception {
+            exchange.startBlocking();
+            delegate.handleRequest(exchange);
+        }
+    }
+
+    /**
+     * Functionally equivalent to {@code
+     * com.palantir.conjure.java.undertow.runtime.ConjureExceptionHandler}, which is unfortunately
+     * package-private.
+     */
+    private record ConjureExceptionHandler(HttpHandler delegate, ExceptionHandler exceptionHandler)
+            implements HttpHandler {
+        @Override
+        public void handleRequest(HttpServerExchange exchange) {
+            try {
+                delegate.handleRequest(exchange);
+            } catch (Throwable throwable) {
+                exceptionHandler.handle(exchange, throwable);
+            }
+        }
     }
 }
