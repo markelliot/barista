@@ -74,7 +74,6 @@ public final class Server {
         private final Set<Endpoints.VerifiedAuth<?, ?>> authEndpoints = new LinkedHashSet<>();
         private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
-        private final Set<Bundle> bundles = new LinkedHashSet<>();
         private SerDe serde = new SerDe.ObjectMapperSerDe();
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
@@ -141,11 +140,6 @@ public final class Server {
             return this;
         }
 
-        public Builder bundle(Bundle bundle) {
-            bundles.add(bundle);
-            return this;
-        }
-
         /**
          * Sets the sample rate to run tracing for incoming requests without a traceId header.
          *
@@ -170,19 +164,11 @@ public final class Server {
                 Spans.register("barista", span -> tracing.info("TRACING {}", span));
             }
 
-            Set<DelegatingHandler> bundleGlobalHandlers = new LinkedHashSet<>();
-            for (Bundle bundle : bundles) {
-                log.info("Installing bundle '{}'", bundle);
-                endpoints(bundle.endpoints());
-                bundle.handler().ifPresent(bundleGlobalHandlers::add);
-            }
-
             EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);
             HttpHandler handlerChain =
                     HandlerChain.of(DispatchFromIoThreadHandler::new)
                             .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
                             .then(h -> new TracingHandler(tracingRate, h))
-                            .then(bundleGlobalHandlers)
                             .last(handler.build(authEndpoints, openEndpoints, endpointHandlers));
             Undertow undertow =
                     Undertow.builder().setHandler(handlerChain).addListener(listener()).build();
