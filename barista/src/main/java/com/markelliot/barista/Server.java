@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.handlers.CorsHandler;
-import com.markelliot.barista.handlers.DelegatingHandler;
 import com.markelliot.barista.handlers.DispatchFromIoThreadHandler;
 import com.markelliot.barista.handlers.EndpointHandlerBuilder;
 import com.markelliot.barista.handlers.HandlerChain;
