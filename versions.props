@@ -1,7 +1,7 @@
 com.auth0:java-jwt = 3.19.1
 com.fasterxml.jackson.core:jackson-databind = 2.13.2.2
 com.fasterxml.jackson.*:* = 2.13.2
-com.github.ben-manes.caffeine:caffeine = 3.0.6
+com.github.ben-manes.caffeine:caffeine = 3.1.0
 com.google.auto.service:auto-service = 1.0.1
 com.google.errorprone:error_prone_core = 2.13.1
 com.google.googlejavaformat:google-java-format = 1.15.0
