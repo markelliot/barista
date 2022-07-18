@@ -2,8 +2,8 @@
 
 An opinionated library to simplify making Java services and helping developers focus on business 
 logic instead of server configuration and setup. By default, Barista listens on port 8443 and
-enables TLS, using `var/security/key.pem` as the private key and `var/security/trust.pem` as the
-trust store and CA certificates.
+enables TLS, using `var/security/key.pem` as the private key, `var/security/trust.pem` as the
+trust store, and `var/security/cas.pem` as the CA certificates.
 
 Depend on barista via Maven Central at coordinates 
 [`com.markelliot.barista:barista:<version>`](https://search.maven.org/artifact/com.markelliot.barista/barista).
@@ -110,4 +110,34 @@ Server.builder()
     .allowOrigin("https://example.com")
     .allowOrigin("http://localhost:8080") // for development
     .start();
+```
+
+## Generating Self-signed Certificates
+
+Create a `domains.ext` file:
+```
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = localhost
+# Add more domains as necessary
+# DNS.2 = myotherdomain.local 
+```
+
+And then generate the `cas.pem`, `key.pem` and `trust.pem` files:
+```bash
+# Create the root CA
+openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout cas.key -out cas.pem -subj "/C=US/CN=Barista-Root-CA"
+
+# Generate the keypair
+openssl req -new -nodes -newkey rsa:2048 -keyout localhost.key -out localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName = DNS:localhost"))
+
+# Generate the certificate
+openssl x509 -req -sha256 -days 1024 -in localhost.csr -CA cas.pem -CAkey cas.key -CAcreateserial -extfile domains.ext -out localhost.crt
+
+# Render the key and cert into the key file, and link the trust file to the CAs file.
+cat localhost.key localhost.crt > key.pem
+cp cas.pem trust.pem
 ```
