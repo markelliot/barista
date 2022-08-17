@@ -9,7 +9,7 @@ plugins {
     id("com.markelliot.versions") version "0.5.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("net.ltgt.errorprone") version "2.0.2" apply false
-    id("org.inferred.processors") version "3.6.0" apply false
+    id("org.inferred.processors") version "3.7.0" apply false
 }
 
 version = "git describe --tags".runCommand().trim() +
