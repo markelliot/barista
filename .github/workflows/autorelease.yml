@@ -1,0 +1,17 @@
+name: autorelease
+on:
+  workflow_dispatch: {}
+  schedule:
+    # check at 11am every day
+    - cron: '0 11 * * *'
+jobs:
+  autorelease:
+    name: autorelease
+    runs-on: ubuntu-latest
+    steps:
+      - name: autorelease
+        uses: markelliot/autorelease@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # maximum number of days since last release
+          max-days: 7
