@@ -12,6 +12,6 @@ jobs:
       - name: autorelease
         uses: markelliot/autorelease@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
           # maximum number of days since last release
           max-days: 7
