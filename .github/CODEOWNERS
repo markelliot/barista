@@ -1,0 +1,5 @@
+# require code review for everything except versions
+.github     @markelliot
+.spotless   @markelliot
+*/src/      @markelliot
+readme.md   @markelliot
