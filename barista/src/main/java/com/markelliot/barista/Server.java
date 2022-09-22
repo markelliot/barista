@@ -34,6 +34,7 @@ import io.undertow.server.HttpHandler;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
@@ -76,6 +77,7 @@ public final class Server {
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
         private boolean tls = true;
+        private Optional<SSLContext> sslContext = Optional.empty();
         private double tracingRate = 0.2;
 
         private Builder() {}
@@ -121,6 +123,12 @@ public final class Server {
             return this;
         }
 
+        public Builder setSslContext(SSLContext context) {
+            Objects.requireNonNull(context);
+            this.sslContext = Optional.of(context);
+            return this;
+        }
+
         /**
          * Sets the sample rate to run tracing for incoming requests without a traceId header.
          *
@@ -161,9 +169,9 @@ public final class Server {
         private ListenerBuilder listener() {
             ListenerBuilder lb = new ListenerBuilder().setPort(port).setHost("0.0.0.0");
             if (tls) {
-                SSLContext sslContext =
-                        TransportLayerSecurity.createSslContext(Paths.get("var", "security"));
-                lb.setType(ListenerType.HTTPS).setSslContext(sslContext);
+                SSLContext context = sslContext.orElseGet(() ->
+                        TransportLayerSecurity.createSslContext(Paths.get("var", "security")));
+                lb.setType(ListenerType.HTTPS).setSslContext(context);
             } else {
                 lb.setType(ListenerType.HTTP);
             }
