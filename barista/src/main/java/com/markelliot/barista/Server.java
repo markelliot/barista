@@ -123,7 +123,7 @@ public final class Server {
             return this;
         }
 
-        public Builder setSslContext(SSLContext context) {
+        public Builder sslContext(SSLContext context) {
             Objects.requireNonNull(context);
             this.sslContext = Optional.of(context);
             return this;
