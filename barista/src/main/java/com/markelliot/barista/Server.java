@@ -169,8 +169,11 @@ public final class Server {
         private ListenerBuilder listener() {
             ListenerBuilder lb = new ListenerBuilder().setPort(port).setHost("0.0.0.0");
             if (tls) {
-                SSLContext context = sslContext.orElseGet(() ->
-                        TransportLayerSecurity.createSslContext(Paths.get("var", "security")));
+                SSLContext context =
+                        sslContext.orElseGet(
+                                () ->
+                                        TransportLayerSecurity.createSslContext(
+                                                Paths.get("var", "security")));
                 lb.setType(ListenerType.HTTPS).setSslContext(context);
             } else {
                 lb.setType(ListenerType.HTTP);
