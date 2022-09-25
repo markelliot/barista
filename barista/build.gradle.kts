@@ -21,7 +21,7 @@ dependencies {
 
     implementation("org.apache.logging.log4j:log4j-core")
     implementation("org.apache.logging.log4j:log4j-jul")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl")
     // users of this library should have access to the slf4j api for their own logging
     api("org.slf4j:slf4j-api")
 
