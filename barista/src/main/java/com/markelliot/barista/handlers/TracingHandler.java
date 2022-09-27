@@ -67,7 +67,7 @@ public record TracingHandler(double rate, HttpHandler delegate) implements HttpH
     /** Gets the value of the named header the request and returns it if safe to handle. */
     private static String getId(HttpServerExchange exchange, String header) {
         String val = exchange.getRequestHeaders().getFirst(header);
-        if (val != null && val.length() < 32) {
+        if (val != null && val.length() <= 32) {
             return val;
         }
         return null;
