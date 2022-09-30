@@ -79,6 +79,7 @@ public final class Server {
         private boolean tls = true;
         private Optional<SSLContext> sslContext = Optional.empty();
         private double tracingRate = 0.2;
+        private boolean enableTraceLogging = true;
 
         private Builder() {}
 
@@ -144,10 +145,15 @@ public final class Server {
             return this;
         }
 
+        public Builder disableTraceLogging() {
+            this.enableTraceLogging = false;
+            return this;
+        }
+
         public Server start() {
             Preconditions.checkNotNull(authz);
 
-            if (tracingRate > 0.0) {
+            if (enableTraceLogging) {
                 // TODO(markelliot): use a custom format, perhaps emit to a specific log file
                 Logger tracing = LoggerFactory.getLogger("tracing");
                 Spans.register("barista", span -> tracing.info("TRACING {}", span));
