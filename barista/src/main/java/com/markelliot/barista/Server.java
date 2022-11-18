@@ -69,11 +69,11 @@ public final class Server {
      */
     public void stop() {
         shutdownHandler.shutdown();
-        shutdownHandler.addShutdownListener(shutdownSuccessful -> undertow.stop());
         try {
             if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
-                undertow.stop();
+                log.error("Failed to drain requests after shutdown grace period", SHUTDOWN_TIMEOUT);
             }
+            undertow.stop();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
