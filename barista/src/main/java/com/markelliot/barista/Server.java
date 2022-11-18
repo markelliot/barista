@@ -31,7 +31,9 @@ import io.undertow.Undertow;
 import io.undertow.Undertow.ListenerBuilder;
 import io.undertow.Undertow.ListenerType;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,12 +44,16 @@ import org.slf4j.LoggerFactory;
 
 public final class Server {
     private static final Logger log = LoggerFactory.getLogger(Server.class);
+    private static final Duration SHUTDOWN_TIMEOUT = Duration.ofMinutes(1);
+
+    private final GracefulShutdownHandler shutdownHandler;
     private final Undertow undertow;
 
-    private Server(Undertow undertow) {
+    private Server(GracefulShutdownHandler shutdownHandler, Undertow undertow) {
+        this.shutdownHandler = shutdownHandler;
         this.undertow = undertow;
 
-        Runtime.getRuntime().addShutdownHook(new Thread(undertow::stop));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
     private void start() {
@@ -62,7 +68,15 @@ public final class Server {
      * included automatically.
      */
     public void stop() {
-        undertow.stop();
+        shutdownHandler.shutdown();
+        shutdownHandler.addShutdownListener(shutdownSuccessful -> undertow.stop());
+        try {
+            if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
+                undertow.stop();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Builder builder() {
@@ -164,10 +178,14 @@ public final class Server {
                     HandlerChain.of(DispatchFromIoThreadHandler::new)
                             .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
                             .then(h -> new TracingHandler(tracingRate, h))
-                            .last(handler.build(endpointHandlers));
+                            .last(new EndpointHandlerBuilder(serde, authz).build(endpointHandlers));
+            GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handlerChain);
             Undertow undertow =
-                    Undertow.builder().setHandler(handlerChain).addListener(listener()).build();
-            Server server = new Server(undertow);
+                    Undertow.builder()
+                            .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
+                            .addListener(listener())
+                            .build();
+            Server server = new Server(shutdownHandler, undertow);
             server.start();
             return server;
         }
