@@ -6,8 +6,8 @@ com.google.errorprone:error_prone_core = 2.16
 com.google.googlejavaformat:google-java-format = 1.15.0
 com.google.guava:guava = 31.1-jre
 com.jakewharton.nopen:* = 1.0.1
-com.markelliot.barista.tracing:barista-tracing = 0.13.0
-com.markelliot.result:result = 0.14.0
+com.markelliot.barista.tracing:barista-tracing = 0.14.0
+com.markelliot.result:result = 0.15.0
 com.palantir.conjure.java:* = 6.66.0
 com.squareup:javapoet = 1.13.0
 io.undertow:undertow-core = 2.3.0.Final
@@ -15,5 +15,5 @@ org.apache.logging.log4j:* = 2.19.0
 org.assertj:assertj-core = 3.23.1
 org.junit:junit-bom = 5.9.1
 org.junit.jupiter:junit-jupiter-engine = 5.9.1
-org.slf4j:* = 2.0.3
+org.slf4j:* = 2.0.4
 
