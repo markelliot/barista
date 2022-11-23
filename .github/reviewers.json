@@ -1,0 +1,27 @@
+{
+    "teams": {
+      "everyone": {
+        "description": "a team that contains all users",
+        "users": [
+          "markelliot"
+        ]
+      }
+    },
+    "reviewers": {
+        "": {
+            "description": "Require at least one approval on every file from the everyone team",
+            "teams": ["everyone"],
+            "requiredApproverCount": 1
+        }
+    },
+    "overrides": [
+      {
+        "description": "Allow user 'mellbot' to make upgrades",
+        "modifiedByUsers": ["mellbot"],
+        "modifiedFileRegExs": [
+          "^versions\\.(props|lock)$",
+          "build\\.gradle\\.kts$"
+        ]
+      }
+    ]
+}
