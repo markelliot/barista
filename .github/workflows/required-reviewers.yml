@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: required-reviewers
-        uses: theoremlp/required-reviews@v1
+        uses: theoremlp/required-reviews@v2
         with:
           github-token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
           post-review: true
