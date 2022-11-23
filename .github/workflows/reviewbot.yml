@@ -10,5 +10,5 @@ jobs:
       - name: required-reviewers
         uses: theoremlp/required-reviews@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
           post-review: true
