@@ -24,7 +24,7 @@
         ]
       },
       {
-        "description": "Always approve changes from user 'markelliot'."
+        "description": "Always approve changes from user 'markelliot'.",
         "onlyModifiedByUsers": ["markelliot"]
       }
     ]
