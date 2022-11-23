@@ -19,8 +19,8 @@
         "description": "Allow user 'mellbot' to make upgrades",
         "modifiedByUsers": ["mellbot"],
         "modifiedFileRegExs": [
-          "^versions\.(props|lock)$",
-          "build.gradle.kts$"
+          "^versions\\.(props|lock)$",
+          "build\\.gradle\\.kts$"
         ]
       }
     ]
