@@ -22,6 +22,10 @@
           "^versions\\.(props|lock)$",
           "build\\.gradle\\.kts$"
         ]
+      },
+      {
+        "description": "Always approve changes from user 'markelliot'."
+        "onlyModifiedByUsers": ["markelliot"]
       }
     ]
 }
