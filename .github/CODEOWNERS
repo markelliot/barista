@@ -1,5 +1,2 @@
-# require code review for everything except versions
-.github     @markelliot
-.spotless   @markelliot
-*/src/      @markelliot
-readme.md   @markelliot
+# required-reviewers posts as @mellreview, require @mellreview on all changes
+* @mellreview
