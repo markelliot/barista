@@ -20,7 +20,8 @@
         "onlyModifiedByUsers": ["mellbot"],
         "onlyModifiedFileRegExs": [
           "^versions\\.(props|lock)$",
-          "build\\.gradle\\.kts$"
+          "build\\.gradle\\.kts$",
+          "^gradle/"
         ]
       },
       {
