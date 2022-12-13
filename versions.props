@@ -15,5 +15,5 @@ org.apache.logging.log4j:* = 2.19.0
 org.assertj:assertj-core = 3.23.1
 org.junit:junit-bom = 5.9.1
 org.junit.jupiter:junit-jupiter-engine = 5.9.1
-org.slf4j:* = 2.0.5
+org.slf4j:* = 2.0.6
 
