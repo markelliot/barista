@@ -22,10 +22,15 @@ import com.markelliot.barista.tracing.Trace;
 import com.markelliot.barista.tracing.Traces;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 public record TracingHandler(double rate, HttpHandler delegate) implements HttpHandler {
+    private static final HttpString TRACE_ID = HttpString.tryFromString("X-B3-TraceId");
+    private static final HttpString SAMPLED = HttpString.tryFromString("X-B3-Sampled");
+    private static final HttpString SPAN_ID = HttpString.tryFromString("X-B3-SpanId");
+
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Trace trace = getTraceForRequest(exchange);
@@ -35,11 +40,13 @@ public record TracingHandler(double rate, HttpHandler delegate) implements HttpH
                     span.close();
                     next.proceed();
                 });
+        // Populate response before proceeding since later operations might commit the response.
+        setExchangeState(exchange, span);
         delegate.handleRequest(exchange);
     }
 
     private Trace getTraceForRequest(HttpServerExchange exchange) {
-        String traceId = getId(exchange, "X-B3-TraceId");
+        String traceId = getId(exchange, TRACE_ID);
         if (traceId != null) {
             return Traces.create(traceId, isSampled(exchange));
         }
@@ -47,13 +54,13 @@ public record TracingHandler(double rate, HttpHandler delegate) implements HttpH
     }
 
     private static boolean isSampled(HttpServerExchange exchange) {
-        String val = exchange.getRequestHeaders().getFirst("X-B3-Sampled");
+        String val = exchange.getRequestHeaders().getFirst(SAMPLED);
         return val != null && (val.equals("1") || val.equalsIgnoreCase("true"));
     }
 
     private Span getSpanForRequest(HttpServerExchange exchange, Trace trace) {
         Supplier<String> opName = opName(exchange);
-        String spanId = getId(exchange, "X-B3-SpanId");
+        String spanId = getId(exchange, SPAN_ID);
         if (spanId != null) {
             return trace.withParent(spanId, opName);
         }
@@ -65,11 +72,15 @@ public record TracingHandler(double rate, HttpHandler delegate) implements HttpH
     }
 
     /** Gets the value of the named header the request and returns it if safe to handle. */
-    private static String getId(HttpServerExchange exchange, String header) {
+    private static String getId(HttpServerExchange exchange, HttpString header) {
         String val = exchange.getRequestHeaders().getFirst(header);
         if (val != null && val.length() <= 32) {
             return val;
         }
         return null;
+    }
+
+    private static void setExchangeState(HttpServerExchange exchange, Span span) {
+        exchange.getResponseHeaders().put(TRACE_ID, span.traceId());
     }
 }
