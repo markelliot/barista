@@ -27,22 +27,17 @@ import java.util.function.Predicate;
 
 /** An {@link HttpHandler} that returns reasonable CORS allow headers for {@code allowedOrigins}. */
 public final class CorsHandler implements HttpHandler {
-    private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN =
-            new HttpString("Access-Control-Allow-Origin");
+    private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN = new HttpString("Access-Control-Allow-Origin");
     private static final String ORIGIN_ALL = "*";
 
-    private static final HttpString ACCESS_CONTROL_ALLOW_METHODS =
-            new HttpString("Access-Control-Allow-Methods");
+    private static final HttpString ACCESS_CONTROL_ALLOW_METHODS = new HttpString("Access-Control-Allow-Methods");
     private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE";
 
-    private static final HttpString ACCESS_CONTROL_MAX_AGE =
-            new HttpString("Access-Control-Max-Age");
+    private static final HttpString ACCESS_CONTROL_MAX_AGE = new HttpString("Access-Control-Max-Age");
     private static final String ONE_DAY_IN_SECONDS = "86400";
 
-    private static final HttpString ACCESS_CONTROL_REQUEST_HEADERS =
-            new HttpString("Access-Control-Request-Headers");
-    private static final HttpString ACCESS_CONTROL_ALLOW_HEADERS =
-            new HttpString("Access-Control-Allow-Headers");
+    private static final HttpString ACCESS_CONTROL_REQUEST_HEADERS = new HttpString("Access-Control-Request-Headers");
+    private static final HttpString ACCESS_CONTROL_ALLOW_HEADERS = new HttpString("Access-Control-Allow-Headers");
 
     private final Set<String> allowedOrigins;
     private final HttpHandler delegate;
@@ -59,9 +54,7 @@ public final class CorsHandler implements HttpHandler {
         String origin = exchange.getRequestHeaders().getFirst(Headers.ORIGIN);
         if (!originCheck.test(origin)) {
             // not an allowed origin, hard deny
-            exchange.setStatusCode(403)
-                    .getResponseSender()
-                    .send("Origin '" + origin + "' not allowed.");
+            exchange.setStatusCode(403).getResponseSender().send("Origin '" + origin + "' not allowed.");
             return;
         }
 
@@ -72,8 +65,7 @@ public final class CorsHandler implements HttpHandler {
 
         if (exchange.getRequestHeaders().contains(ACCESS_CONTROL_REQUEST_HEADERS)) {
             String allowedHeaders =
-                    Joiner.on(',')
-                            .join(exchange.getRequestHeaders().get(ACCESS_CONTROL_REQUEST_HEADERS));
+                    Joiner.on(',').join(exchange.getRequestHeaders().get(ACCESS_CONTROL_REQUEST_HEADERS));
             exchange.getResponseHeaders().add(ACCESS_CONTROL_ALLOW_HEADERS, allowedHeaders);
         }
 

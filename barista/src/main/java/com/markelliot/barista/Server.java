@@ -98,8 +98,7 @@ public final class Server {
         private Builder() {}
 
         public Builder port(int port) {
-            Preconditions.checkArgument(
-                    0 < port && port < 65536, "Port must be in range [1, 65535]");
+            Preconditions.checkArgument(0 < port && port < 65536, "Port must be in range [1, 65535]");
             this.port = port;
             return this;
         }
@@ -174,17 +173,15 @@ public final class Server {
             }
 
             EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);
-            HttpHandler handlerChain =
-                    HandlerChain.of(DispatchFromIoThreadHandler::new)
-                            .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
-                            .then(h -> new TracingHandler(tracingRate, h))
-                            .last(new EndpointHandlerBuilder(serde, authz).build(endpointHandlers));
+            HttpHandler handlerChain = HandlerChain.of(DispatchFromIoThreadHandler::new)
+                    .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
+                    .then(h -> new TracingHandler(tracingRate, h))
+                    .last(new EndpointHandlerBuilder(serde, authz).build(endpointHandlers));
             GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handlerChain);
-            Undertow undertow =
-                    Undertow.builder()
-                            .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
-                            .addListener(listener())
-                            .build();
+            Undertow undertow = Undertow.builder()
+                    .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
+                    .addListener(listener())
+                    .build();
             Server server = new Server(shutdownHandler, undertow);
             server.start();
             return server;
@@ -193,11 +190,8 @@ public final class Server {
         private ListenerBuilder listener() {
             ListenerBuilder lb = new ListenerBuilder().setPort(port).setHost("0.0.0.0");
             if (tls) {
-                SSLContext context =
-                        sslContext.orElseGet(
-                                () ->
-                                        TransportLayerSecurity.createSslContext(
-                                                Paths.get("var", "security")));
+                SSLContext context = sslContext.orElseGet(
+                        () -> TransportLayerSecurity.createSslContext(Paths.get("var", "security")));
                 lb.setType(ListenerType.HTTPS).setSslContext(context);
             } else {
                 lb.setType(ListenerType.HTTP);

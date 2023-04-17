@@ -35,11 +35,10 @@ public record TracingHandler(double rate, HttpHandler delegate) implements HttpH
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         Trace trace = getTraceForRequest(exchange);
         Span span = getSpanForRequest(exchange, trace);
-        exchange.addExchangeCompleteListener(
-                (ignored, next) -> {
-                    span.close();
-                    next.proceed();
-                });
+        exchange.addExchangeCompleteListener((ignored, next) -> {
+            span.close();
+            next.proceed();
+        });
         // Populate response before proceeding since later operations might commit the response.
         setExchangeState(exchange, span);
         delegate.handleRequest(exchange);

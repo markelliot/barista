@@ -39,13 +39,12 @@ public interface SerDe {
         private final ObjectMapper mapper;
 
         public ObjectMapperSerDe() {
-            this.mapper =
-                    new ObjectMapper()
-                            .registerModule(new GuavaModule())
-                            .registerModule(new Jdk8Module())
-                            .registerModule(new JavaTimeModule())
-                            .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-                            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            this.mapper = new ObjectMapper()
+                    .registerModule(new GuavaModule())
+                    .registerModule(new Jdk8Module())
+                    .registerModule(new JavaTimeModule())
+                    .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         }
 
         @Override

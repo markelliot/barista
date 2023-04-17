@@ -37,31 +37,25 @@ final class Logging extends ConfigurationFactory {
     private static final String STDOUT = "stdout";
     private static final String[] SUPPORTED_TYPES = {"*"};
 
-    static BuiltConfiguration createConfiguration(
-            String name, ConfigurationBuilder<BuiltConfiguration> builder) {
+    static BuiltConfiguration createConfiguration(String name, ConfigurationBuilder<BuiltConfiguration> builder) {
         builder.setStatusLevel(Level.ERROR);
         builder.setConfigurationName(name);
 
         LayoutComponentBuilder layout =
-                builder.newLayout("PatternLayout")
-                        .addAttribute("pattern", "%d [%t] %level: %msg%n%throwable");
+                builder.newLayout("PatternLayout").addAttribute("pattern", "%d [%t] %level: %msg%n%throwable");
 
-        AppenderComponentBuilder appenderBuilder =
-                builder.newAppender(STDOUT, "CONSOLE")
-                        .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
-                        .add(layout);
+        AppenderComponentBuilder appenderBuilder = builder.newAppender(STDOUT, "CONSOLE")
+                .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
+                .add(layout);
 
         builder.add(appenderBuilder);
-        builder.add(
-                builder.newRootLogger(Level.INFO)
-                        .add(builder.newAppenderRef(appenderBuilder.getName())));
+        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef(appenderBuilder.getName())));
 
         return builder.build();
     }
 
     @Override
-    public Configuration getConfiguration(
-            final LoggerContext loggerContext, final ConfigurationSource source) {
+    public Configuration getConfiguration(final LoggerContext loggerContext, final ConfigurationSource source) {
         return getConfiguration(loggerContext, source.toString(), null);
     }
 

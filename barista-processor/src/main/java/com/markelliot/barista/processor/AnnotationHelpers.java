@@ -28,25 +28,17 @@ import javax.lang.model.element.ExecutableElement;
 public final class AnnotationHelpers {
 
     record EndpointAnnotation(
-            Class<? extends Annotation> annontationClass,
-            HttpMethod httpMethod,
-            Function<Annotation, String> pathFn) {}
+            Class<? extends Annotation> annontationClass, HttpMethod httpMethod, Function<Annotation, String> pathFn) {}
 
-    private static final Set<EndpointAnnotation> ENDPOINT_ANNOTATIONS =
-            ImmutableSet.of(
-                    new EndpointAnnotation(
-                            Http.Get.class, HttpMethod.GET, a -> ((Http.Get) a).value()),
-                    new EndpointAnnotation(
-                            Http.Post.class, HttpMethod.POST, a -> ((Http.Post) a).value()),
-                    new EndpointAnnotation(
-                            Http.Put.class, HttpMethod.PUT, a -> ((Http.Put) a).value()),
-                    new EndpointAnnotation(
-                            Http.Delete.class, HttpMethod.DELETE, a -> ((Http.Delete) a).value()));
+    private static final Set<EndpointAnnotation> ENDPOINT_ANNOTATIONS = ImmutableSet.of(
+            new EndpointAnnotation(Http.Get.class, HttpMethod.GET, a -> ((Http.Get) a).value()),
+            new EndpointAnnotation(Http.Post.class, HttpMethod.POST, a -> ((Http.Post) a).value()),
+            new EndpointAnnotation(Http.Put.class, HttpMethod.PUT, a -> ((Http.Put) a).value()),
+            new EndpointAnnotation(Http.Delete.class, HttpMethod.DELETE, a -> ((Http.Delete) a).value()));
 
-    private static Set<Class<? extends Annotation>> ENDPOINT_ANNOTATION_CLASSES =
-            ENDPOINT_ANNOTATIONS.stream()
-                    .map(EndpointAnnotation::annontationClass)
-                    .collect(Collectors.toSet());
+    private static Set<Class<? extends Annotation>> ENDPOINT_ANNOTATION_CLASSES = ENDPOINT_ANNOTATIONS.stream()
+            .map(EndpointAnnotation::annontationClass)
+            .collect(Collectors.toSet());
 
     public static Set<Class<? extends Annotation>> endpointAnnotations() {
         return ENDPOINT_ANNOTATION_CLASSES;

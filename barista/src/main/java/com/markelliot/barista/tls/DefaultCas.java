@@ -54,8 +54,7 @@ final class DefaultCas {
         ImmutableMap.Builder<String, X509Certificate> certificateMap = ImmutableMap.builder();
         try {
             List<X509Certificate> caCertificates =
-                    TransportLayerSecurity.readX509Certificates(new FileInputStream(CA_PEM_FILE))
-                            .stream()
+                    TransportLayerSecurity.readX509Certificates(new FileInputStream(CA_PEM_FILE)).stream()
                             .map(cert -> (X509Certificate) cert)
                             .collect(Collectors.toList());
             for (X509Certificate cert : caCertificates) {

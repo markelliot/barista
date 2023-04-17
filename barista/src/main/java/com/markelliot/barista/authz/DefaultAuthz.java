@@ -39,19 +39,17 @@ final class DefaultAuthz implements Authz {
 
     @Override
     public AuthToken newSession(String userId) {
-        return AuthTokens.of(
-                JWT.create()
-                        .withIssuer(issuer)
-                        .withSubject(userId)
-                        .withExpiresAt(Date.from(clock.instant().plus(1, ChronoUnit.DAYS)))
-                        .sign(algorithm));
+        return AuthTokens.of(JWT.create()
+                .withIssuer(issuer)
+                .withSubject(userId)
+                .withExpiresAt(Date.from(clock.instant().plus(1, ChronoUnit.DAYS)))
+                .sign(algorithm));
     }
 
     @Override
     public Optional<VerifiedAuthToken> check(AuthToken token) {
         try {
-            return Optional.of(verifier.verify(token.token()))
-                    .map(t -> new VerifiedAuthToken(token, t.getSubject()));
+            return Optional.of(verifier.verify(token.token())).map(t -> new VerifiedAuthToken(token, t.getSubject()));
         } catch (Exception e) {
             return Optional.empty();
         }

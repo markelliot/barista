@@ -83,8 +83,7 @@ public final class Pkcs1PrivateKeyReader {
     public RSAPrivateKeySpec readRsaKey() {
         byte tag = derBytes.get();
         if (tag != SEQUENCE) {
-            throw new RuntimeException(
-                    "Expected SEQUENCE byte (0x30) at the beginning of RSA private key");
+            throw new RuntimeException("Expected SEQUENCE byte (0x30) at the beginning of RSA private key");
         }
         int length = readLength();
         // cap the read length
