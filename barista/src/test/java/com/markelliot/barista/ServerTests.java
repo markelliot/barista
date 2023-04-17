@@ -38,35 +38,27 @@ final class ServerTests {
 
     @BeforeAll
     static void beforeAll() {
-        server =
-                Server.builder()
-                        .allowOrigin("localhost:8181")
-                        .port(8080)
-                        .disableTls()
-                        .endpoints(
-                                () ->
-                                        Set.of(
-                                                new EndpointHandler() {
-                                                    @Override
-                                                    public HttpMethod method() {
-                                                        return HttpMethod.GET;
-                                                    }
+        server = Server.builder()
+                .allowOrigin("localhost:8181")
+                .port(8080)
+                .disableTls()
+                .endpoints(() -> Set.of(new EndpointHandler() {
+                    @Override
+                    public HttpMethod method() {
+                        return HttpMethod.GET;
+                    }
 
-                                                    @Override
-                                                    public String route() {
-                                                        return "/hello-world";
-                                                    }
+                    @Override
+                    public String route() {
+                        return "/hello-world";
+                    }
 
-                                                    @Override
-                                                    public HttpHandler handler(
-                                                            EndpointRuntime runtime) {
-                                                        return exchange ->
-                                                                runtime.handle(
-                                                                        () -> "Hello World",
-                                                                        exchange);
-                                                    }
-                                                }))
-                        .start();
+                    @Override
+                    public HttpHandler handler(EndpointRuntime runtime) {
+                        return exchange -> runtime.handle(() -> "Hello World", exchange);
+                    }
+                }))
+                .start();
     }
 
     @AfterAll
@@ -88,27 +80,25 @@ final class ServerTests {
 
     private void assertResponse(String uri, int statusCode, String expectedResponseText)
             throws IOException, InterruptedException {
-        HttpResponse<String> helloWorldResult =
-                CLIENT.send(
-                        HttpRequest.newBuilder()
-                                .uri(URI.create(uri))
-                                .header("origin", "localhost:8181")
-                                .GET()
-                                .build(),
-                        BodyHandlers.ofString());
+        HttpResponse<String> helloWorldResult = CLIENT.send(
+                HttpRequest.newBuilder()
+                        .uri(URI.create(uri))
+                        .header("origin", "localhost:8181")
+                        .GET()
+                        .build(),
+                BodyHandlers.ofString());
         assertThat(helloWorldResult.statusCode()).isEqualTo(statusCode);
         assertThat(helloWorldResult.body()).isEqualTo(expectedResponseText);
     }
 
     private void assertCorsFailure(String uri) throws IOException, InterruptedException {
-        HttpResponse<String> helloWorldResult =
-                CLIENT.send(
-                        HttpRequest.newBuilder()
-                                .uri(URI.create(uri))
-                                .header("origin", "foo.com")
-                                .GET()
-                                .build(),
-                        BodyHandlers.ofString());
+        HttpResponse<String> helloWorldResult = CLIENT.send(
+                HttpRequest.newBuilder()
+                        .uri(URI.create(uri))
+                        .header("origin", "foo.com")
+                        .GET()
+                        .build(),
+                BodyHandlers.ofString());
         assertThat(helloWorldResult.statusCode()).isEqualTo(403);
         assertThat(helloWorldResult.body()).isEqualTo("Origin 'foo.com' not allowed.");
     }

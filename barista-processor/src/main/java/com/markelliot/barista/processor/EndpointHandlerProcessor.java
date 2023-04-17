@@ -91,7 +91,8 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
     private String format(JavaFile jf) {
         String javaFileAsString = jf.toString();
         try {
-            return new Formatter(JavaFormatterOptions.builder().style(Style.AOSP).build())
+            return new Formatter(
+                            JavaFormatterOptions.builder().style(Style.AOSP).build())
                     .formatSourceAndFixImports(javaFileAsString);
         } catch (Exception e) {
             // if the formatter throws an exception, opt to output code anyway
@@ -100,12 +101,10 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
     }
 
     // Copied from JavaFile
-    public void writeTo(String packageName, TypeSpec typeSpec, String formattedSource, Filer filer)
-            throws IOException {
+    public void writeTo(String packageName, TypeSpec typeSpec, String formattedSource, Filer filer) throws IOException {
         String fileName = packageName.isEmpty() ? typeSpec.name : packageName + "." + typeSpec.name;
         List<Element> originatingElements = typeSpec.originatingElements;
-        JavaFileObject filerSourceFile =
-                filer.createSourceFile(fileName, originatingElements.toArray(new Element[0]));
+        JavaFileObject filerSourceFile = filer.createSourceFile(fileName, originatingElements.toArray(new Element[0]));
         try (Writer writer = filerSourceFile.openWriter()) {
             writer.write(formattedSource);
         } catch (Exception e) {
@@ -117,20 +116,17 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
         }
     }
 
-    public Set<JavaFile> processImpl(
-            Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    public Set<JavaFile> processImpl(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Set<EndpointHandlerDefinition> definitions = new LinkedHashSet<>();
-        for (Element element :
-                roundEnv.getElementsAnnotatedWithAny(AnnotationHelpers.endpointAnnotations())) {
+        for (Element element : roundEnv.getElementsAnnotatedWithAny(AnnotationHelpers.endpointAnnotations())) {
             if (element.getKind() != ElementKind.METHOD) {
                 error("Authed.Get is only applicable for methods", element);
             } else {
                 ExecutableElement methodElement = (ExecutableElement) element;
-                definitions.add(
-                        processMethod(
-                                methodElement,
-                                AnnotationHelpers.httpMethod(methodElement),
-                                AnnotationHelpers.path(methodElement)));
+                definitions.add(processMethod(
+                        methodElement,
+                        AnnotationHelpers.httpMethod(methodElement),
+                        AnnotationHelpers.path(methodElement)));
 
                 // TODO(markelliot): lint method parameters
             }
@@ -139,10 +135,8 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
         Set<JavaFile> filesFromRound = new LinkedHashSet<>();
         Multimaps.index(definitions, EndpointHandlerDefinition::className)
                 .asMap()
-                .forEach(
-                        (resource, handlers) ->
-                                filesFromRound.add(
-                                        EndpointHandlerGenerator.generate(resource, handlers)));
+                .forEach((resource, handlers) ->
+                        filesFromRound.add(EndpointHandlerGenerator.generate(resource, handlers)));
         return filesFromRound;
     }
 
@@ -156,39 +150,27 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
             String paramName = paramElement.getSimpleName().toString();
             TypeName paramClass = ClassName.get(paramElement.asType());
             if (pathParamNames.contains(paramName)) {
-                parameters.add(
-                        new ParameterDefinition(paramName, paramName, paramClass, ParamType.PATH));
+                parameters.add(new ParameterDefinition(paramName, paramName, paramClass, ParamType.PATH));
             } else if (paramElement.getAnnotation(Param.Query.class) != null) {
                 Param.Query queryParam = paramElement.getAnnotation(Param.Query.class);
-                parameters.add(
-                        new ParameterDefinition(
-                                paramName,
-                                queryParam.value() != null ? queryParam.value() : paramName,
-                                paramClass,
-                                ParamType.QUERY));
+                parameters.add(new ParameterDefinition(
+                        paramName,
+                        queryParam.value() != null ? queryParam.value() : paramName,
+                        paramClass,
+                        ParamType.QUERY));
             } else if (paramElement.getAnnotation(Param.Cookie.class) != null) {
                 Param.Cookie cookie = paramElement.getAnnotation(Param.Cookie.class);
-                parameters.add(
-                        new ParameterDefinition(
-                                paramName,
-                                cookie.value() != null ? cookie.value() : paramName,
-                                paramClass,
-                                ParamType.COOKIE));
+                parameters.add(new ParameterDefinition(
+                        paramName, cookie.value() != null ? cookie.value() : paramName, paramClass, ParamType.COOKIE));
             } else if (paramElement.getAnnotation(Param.Header.class) != null) {
                 Param.Header header = paramElement.getAnnotation(Param.Header.class);
-                parameters.add(
-                        new ParameterDefinition(
-                                paramName,
-                                header.value() != null ? header.value() : paramName,
-                                paramClass,
-                                ParamType.HEADER));
+                parameters.add(new ParameterDefinition(
+                        paramName, header.value() != null ? header.value() : paramName, paramClass, ParamType.HEADER));
             } else if (ClassName.get(VerifiedAuthToken.class).equals(paramClass)) {
-                parameters.add(
-                        new ParameterDefinition(paramName, null, paramClass, ParamType.TOKEN));
+                parameters.add(new ParameterDefinition(paramName, null, paramClass, ParamType.TOKEN));
             } else {
                 // must be a body parameter
-                parameters.add(
-                        new ParameterDefinition(paramName, null, paramClass, ParamType.BODY));
+                parameters.add(new ParameterDefinition(paramName, null, paramClass, ParamType.BODY));
             }
         }
 

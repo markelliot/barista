@@ -69,33 +69,25 @@ public final class TransportLayerSecurity {
      * Pattern that matches a single RSA key in a PEM file. Has a capture group that captures the
      * content of the key (everything that occurs between the header and footer).
      */
-    private static final Pattern KEY_PATTERN =
-            Pattern.compile(
-                    "-----BEGIN (RSA)? ?PRIVATE KEY-----\n?(.+?)\n?-----END (RSA)? ?PRIVATE KEY-----",
-                    Pattern.DOTALL);
+    private static final Pattern KEY_PATTERN = Pattern.compile(
+            "-----BEGIN (RSA)? ?PRIVATE KEY-----\n?(.+?)\n?-----END (RSA)? ?PRIVATE KEY-----", Pattern.DOTALL);
 
     /**
      * Pattern that matches a single certificate in a PEM file. Has a capture group that captures
      * the content of the certificate (everything that occurs between the header and footer).
      */
     private static final Pattern CERT_PATTERN =
-            Pattern.compile(
-                    "-----BEGIN CERTIFICATE-----\n?(.+?)\n?-----END CERTIFICATE-----",
-                    Pattern.DOTALL);
+            Pattern.compile("-----BEGIN CERTIFICATE-----\n?(.+?)\n?-----END CERTIFICATE-----", Pattern.DOTALL);
 
     private static final FileFilter VISIBLE_FILE_FILTER = pathname -> !pathname.isHidden();
 
     public static SSLContext createSslContext(Path securityDir) {
-        TrustManagerFactory trustManagerFactory =
-                createTrustManagerFactory(securityDir.resolve("trust.pem"));
-        KeyManagerFactory keyManagerFactory =
-                createKeyManagerFactory(securityDir.resolve("key.pem"));
-        return createSslContext(
-                trustManagerFactory.getTrustManagers(), keyManagerFactory.getKeyManagers());
+        TrustManagerFactory trustManagerFactory = createTrustManagerFactory(securityDir.resolve("trust.pem"));
+        KeyManagerFactory keyManagerFactory = createKeyManagerFactory(securityDir.resolve("key.pem"));
+        return createSslContext(trustManagerFactory.getTrustManagers(), keyManagerFactory.getKeyManagers());
     }
 
-    private static SSLContext createSslContext(
-            TrustManager[] trustManagers, KeyManager[] keyManagers) {
+    private static SSLContext createSslContext(TrustManager[] trustManagers, KeyManager[] keyManagers) {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagers, trustManagers, null);
@@ -109,15 +101,13 @@ public final class TransportLayerSecurity {
         KeyStore keyStore = createTrustStoreFromCertificates(trustStorePath);
 
         // Add globally trusted root CAs
-        DefaultCas.getCertificates()
-                .forEach(
-                        (certAlias, cert) -> {
-                            try {
-                                keyStore.setCertificateEntry(certAlias, cert);
-                            } catch (KeyStoreException e) {
-                                throw new RuntimeException("Unable to add certificate to store", e);
-                            }
-                        });
+        DefaultCas.getCertificates().forEach((certAlias, cert) -> {
+            try {
+                keyStore.setCertificateEntry(certAlias, cert);
+            } catch (KeyStoreException e) {
+                throw new RuntimeException("Unable to add certificate to store", e);
+            }
+        });
 
         try {
             TrustManagerFactory trustManagerFactory =
@@ -160,20 +150,14 @@ public final class TransportLayerSecurity {
         keyStore = createKeyStore();
 
         for (File currFile : getFilesForPath(path)) {
-            try (InputStream in =
-                    new BufferedInputStream(Files.newInputStream(currFile.toPath()))) {
+            try (InputStream in = new BufferedInputStream(Files.newInputStream(currFile.toPath()))) {
                 addCertificatesToKeystore(keyStore, currFile.getName(), readX509Certificates(in));
             } catch (IOException e) {
                 throw new RuntimeException(
-                        String.format(
-                                "IOException encountered when opening '%s'", currFile.toPath()),
-                        e);
+                        String.format("IOException encountered when opening '%s'", currFile.toPath()), e);
             } catch (CertificateException | KeyStoreException e) {
                 throw new RuntimeException(
-                        String.format(
-                                "Could not read file at \"%s\" as an X.509 certificate",
-                                currFile.toPath()),
-                        e);
+                        String.format("Could not read file at \"%s\" as an X.509 certificate", currFile.toPath()), e);
             }
         }
 
@@ -191,8 +175,7 @@ public final class TransportLayerSecurity {
         return keyStore;
     }
 
-    static List<Certificate> readX509Certificates(InputStream certificateIn)
-            throws CertificateException {
+    static List<Certificate> readX509Certificates(InputStream certificateIn) throws CertificateException {
         return CertificateFactory.getInstance("X.509").generateCertificates(certificateIn).stream()
                 .map(cert -> getCertFromCache((X509Certificate) cert))
                 .collect(Collectors.toList());
@@ -227,8 +210,7 @@ public final class TransportLayerSecurity {
             keyStore.load(null, null);
 
             for (File currFile : getFilesForPath(filePathOrDirectory)) {
-                KeyStore.PrivateKeyEntry privateKeyEntry =
-                        readKeyEntryFromPems(currFile.toPath(), currFile.toPath());
+                KeyStore.PrivateKeyEntry privateKeyEntry = readKeyEntryFromPems(currFile.toPath(), currFile.toPath());
                 keyStore.setKeyEntry(
                         currFile.getName(),
                         privateKeyEntry.getPrivateKey(),
@@ -254,8 +236,7 @@ public final class TransportLayerSecurity {
         if (pathFile.isDirectory()) {
             files = pathFile.listFiles(VISIBLE_FILE_FILTER);
             if (files == null) {
-                throw new IllegalStateException(
-                        String.format("failed to list visible files in directory %s", path));
+                throw new IllegalStateException(String.format("failed to list visible files in directory %s", path));
             }
         } else {
             files = new File[] {pathFile};
@@ -279,8 +260,7 @@ public final class TransportLayerSecurity {
      * @return a KeyStore.PrivateKeyEntry that consists of the private key and the certificate chain
      *     for the key read from the provided paths.
      */
-    private static KeyStore.PrivateKeyEntry readKeyEntryFromPems(
-            Path privateKeyFilePath, Path certFilePath) {
+    private static KeyStore.PrivateKeyEntry readKeyEntryFromPems(Path privateKeyFilePath, Path certFilePath) {
         // read private key
         String keyPemFileString;
         PrivateKey privateKey;
@@ -289,9 +269,7 @@ public final class TransportLayerSecurity {
             privateKey = getPrivateKeyFromString(keyPemFileString);
         } catch (IOException | GeneralSecurityException e) {
             throw new RuntimeException(
-                    String.format(
-                            "Failed to read private key from file at \"%s\"", privateKeyFilePath),
-                    e);
+                    String.format("Failed to read private key from file at \"%s\"", privateKeyFilePath), e);
         }
 
         // read certificates
@@ -299,14 +277,11 @@ public final class TransportLayerSecurity {
         try {
             // if key and cert file are the same, use string that was already created
             String certPemFileString =
-                    privateKeyFilePath.equals(certFilePath)
-                            ? keyPemFileString
-                            : readFileAsString(certFilePath);
+                    privateKeyFilePath.equals(certFilePath) ? keyPemFileString : readFileAsString(certFilePath);
             certificates = getCertificatesFromString(certPemFileString).toArray(new Certificate[0]);
         } catch (IOException | GeneralSecurityException e) {
             throw new RuntimeException(
-                    String.format("Failed to read certificates from file at \"%s\"", certFilePath),
-                    e);
+                    String.format("Failed to read certificates from file at \"%s\"", certFilePath), e);
         }
 
         return new KeyStore.PrivateKeyEntry(privateKey, certificates);
@@ -326,14 +301,11 @@ public final class TransportLayerSecurity {
      *     properly formatted RSA key content exists in the string.
      * @return PrivateKey representing the first RSA key in the provided string
      */
-    static PrivateKey getPrivateKeyFromString(String pemFileString)
-            throws GeneralSecurityException {
+    static PrivateKey getPrivateKeyFromString(String pemFileString) throws GeneralSecurityException {
         Matcher matcher = KEY_PATTERN.matcher(pemFileString);
         if (!matcher.find() || !Objects.equals(matcher.group(1), matcher.group(3))) {
             throw new GeneralSecurityException(
-                    String.format(
-                            "unable to find valid RSA key in the provided string: %s",
-                            pemFileString));
+                    String.format("unable to find valid RSA key in the provided string: %s", pemFileString));
         }
 
         // get content between headers and strip newlines to get Base64 encoded ASN1 DER only
@@ -342,10 +314,9 @@ public final class TransportLayerSecurity {
         // read private key
         byte[] privateKeyDerBytes = BaseEncoding.base64().decode(privateKeyString);
 
-        KeySpec rsaPrivKeySpec =
-                "RSA".equals(matcher.group(1))
-                        ? parsePkcs1PrivateKey(privateKeyDerBytes)
-                        : parsePkcs8PrivateKey(privateKeyDerBytes);
+        KeySpec rsaPrivKeySpec = "RSA".equals(matcher.group(1))
+                ? parsePkcs1PrivateKey(privateKeyDerBytes)
+                : parsePkcs8PrivateKey(privateKeyDerBytes);
         return KeyFactory.getInstance("RSA").generatePrivate(rsaPrivKeySpec);
     }
 
@@ -368,11 +339,8 @@ public final class TransportLayerSecurity {
         CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
         List<Certificate> certList = new ArrayList<>();
         while (matcher.find()) {
-            try (InputStream stream =
-                    new ByteArrayInputStream(matcher.group().getBytes(StandardCharsets.UTF_8))) {
-                certList.add(
-                        getCertFromCache(
-                                (X509Certificate) certFactory.generateCertificate(stream)));
+            try (InputStream stream = new ByteArrayInputStream(matcher.group().getBytes(StandardCharsets.UTF_8))) {
+                certList.add(getCertFromCache((X509Certificate) certFactory.generateCertificate(stream)));
             }
         }
 
@@ -381,8 +349,7 @@ public final class TransportLayerSecurity {
 
     private static X509Certificate getCertFromCache(X509Certificate certificate) {
         try {
-            return certCache.get(
-                    new EqualByteArray(certificate.getEncoded()), _input -> certificate);
+            return certCache.get(new EqualByteArray(certificate.getEncoded()), _input -> certificate);
         } catch (CertificateEncodingException e) {
             throw new RuntimeException("Unable to get certificate bytes", e);
         }

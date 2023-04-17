@@ -48,15 +48,13 @@ public final class ConjureAdapter {
     private ConjureAdapter() {}
 
     public static Endpoints adapt(UndertowService service, UndertowRuntime runtime) {
-        Set<EndpointHandler> handlers =
-                service.endpoints(runtime).stream()
-                        .map(e -> fromConjureEndpoint(e, runtime))
-                        .collect(Collectors.toSet());
+        Set<EndpointHandler> handlers = service.endpoints(runtime).stream()
+                .map(e -> fromConjureEndpoint(e, runtime))
+                .collect(Collectors.toSet());
         return () -> handlers;
     }
 
-    private static EndpointHandler fromConjureEndpoint(
-            Endpoint endpoint, UndertowRuntime conjureRuntime) {
+    private static EndpointHandler fromConjureEndpoint(Endpoint endpoint, UndertowRuntime conjureRuntime) {
         return new EndpointHandler() {
             @Override
             public HttpMethod method() {
@@ -65,8 +63,7 @@ public final class ConjureAdapter {
                     case "PUT" -> HttpMethod.PUT;
                     case "POST" -> HttpMethod.POST;
                     case "DELETE" -> HttpMethod.DELETE;
-                    default -> throw new IllegalStateException(
-                            "Unsupported HTTP method " + endpoint.method());
+                    default -> throw new IllegalStateException("Unsupported HTTP method " + endpoint.method());
                 };
             }
 
@@ -78,10 +75,7 @@ public final class ConjureAdapter {
             @Override
             public HttpHandler handler(EndpointRuntime runtime) {
                 return HandlerChain.of(BlockingHandler::new)
-                        .then(
-                                h ->
-                                        new ConjureExceptionHandler(
-                                                h, conjureRuntime.exceptionHandler()))
+                        .then(h -> new ConjureExceptionHandler(h, conjureRuntime.exceptionHandler()))
                         .last(endpoint.handler());
             }
         };

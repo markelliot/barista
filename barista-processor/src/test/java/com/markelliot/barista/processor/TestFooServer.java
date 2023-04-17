@@ -35,13 +35,12 @@ public final class TestFooServer {
 
     @BeforeAll
     static void beforeAll() {
-        server =
-                Server.builder()
-                        .allowOrigin("localhost:8181")
-                        .port(8080)
-                        .disableTls()
-                        .endpoints(new FooResourceEndpoints(new FooResource()))
-                        .start();
+        server = Server.builder()
+                .allowOrigin("localhost:8181")
+                .port(8080)
+                .disableTls()
+                .endpoints(new FooResourceEndpoints(new FooResource()))
+                .start();
     }
 
     @AfterAll
@@ -56,14 +55,13 @@ public final class TestFooServer {
 
     private void assertResponse(String uri, int statusCode, String expectedResponseText)
             throws IOException, InterruptedException {
-        HttpResponse<String> helloWorldResult =
-                CLIENT.send(
-                        HttpRequest.newBuilder()
-                                .uri(URI.create(uri))
-                                .header("origin", "localhost:8181")
-                                .GET()
-                                .build(),
-                        BodyHandlers.ofString());
+        HttpResponse<String> helloWorldResult = CLIENT.send(
+                HttpRequest.newBuilder()
+                        .uri(URI.create(uri))
+                        .header("origin", "localhost:8181")
+                        .GET()
+                        .build(),
+                BodyHandlers.ofString());
         assertThat(helloWorldResult.statusCode()).isEqualTo(statusCode);
         assertThat(helloWorldResult.body()).isEqualTo(expectedResponseText);
     }

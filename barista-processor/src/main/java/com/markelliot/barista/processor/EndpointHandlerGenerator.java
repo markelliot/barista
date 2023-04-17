@@ -42,26 +42,22 @@ import javax.lang.model.element.Modifier;
 
 public final class EndpointHandlerGenerator {
 
-    public static JavaFile generate(
-            ClassName className, Collection<EndpointHandlerDefinition> handlers) {
+    public static JavaFile generate(ClassName className, Collection<EndpointHandlerDefinition> handlers) {
         ClassName resourceClassName = endpointsClassName(className);
-        TypeSpec resourceClass =
-                TypeSpec.classBuilder(resourceClassName)
-                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                        .addSuperinterface(ClassName.get(Endpoints.class))
-                        .addField(className, "delegate", Modifier.PRIVATE, Modifier.FINAL)
-                        .addMethod(
-                                MethodSpec.constructorBuilder()
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .addParameter(className, "delegate")
-                                        .addStatement("this.$N = $N", "delegate", "delegate")
-                                        .build())
-                        .addMethod(generateEndpointsMethod(className, handlers))
-                        .addTypes(
-                                handlers.stream()
-                                        .map(h -> generateEndpointHandlers(className, h))
-                                        .collect(Collectors.toList()))
-                        .build();
+        TypeSpec resourceClass = TypeSpec.classBuilder(resourceClassName)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addSuperinterface(ClassName.get(Endpoints.class))
+                .addField(className, "delegate", Modifier.PRIVATE, Modifier.FINAL)
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(className, "delegate")
+                        .addStatement("this.$N = $N", "delegate", "delegate")
+                        .build())
+                .addMethod(generateEndpointsMethod(className, handlers))
+                .addTypes(handlers.stream()
+                        .map(h -> generateEndpointHandlers(className, h))
+                        .collect(Collectors.toList()))
+                .build();
         return JavaFile.builder(className.packageName(), resourceClass).build();
     }
 
@@ -83,50 +79,44 @@ public final class EndpointHandlerGenerator {
                 .build();
     }
 
-    private static TypeSpec generateEndpointHandlers(
-            ClassName className, EndpointHandlerDefinition definition) {
+    private static TypeSpec generateEndpointHandlers(ClassName className, EndpointHandlerDefinition definition) {
         return TypeSpec.classBuilder(endpointHandlerClassName(className, definition))
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
                 .addSuperinterface(ClassName.get(EndpointHandler.class))
                 .addField(className, "delegate", Modifier.PRIVATE, Modifier.FINAL)
-                .addMethod(
-                        MethodSpec.constructorBuilder()
-                                .addParameter(className, "delegate")
-                                .addStatement("this.$N = $N", "delegate", "delegate")
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addParameter(className, "delegate")
+                        .addStatement("this.$N = $N", "delegate", "delegate")
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("method")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(ClassName.get(HttpMethod.class))
+                        .addStatement(
+                                "return $T.$N",
+                                HttpMethod.class,
+                                definition.httpMethod().toString())
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("route")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(ClassName.get(String.class))
+                        .addStatement("return $S", definition.route())
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("handler")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(EndpointRuntime.class, "runtime")
+                        .returns(ClassName.get("io.undertow.server", "HttpHandler"))
+                        .addCode(CodeBlock.builder()
+                                .beginControlFlow("return exchange ->")
+                                .add(generateHttpHandler(definition))
+                                .endControlFlow()
+                                // because we're returning a lambda and want a
+                                // terminating ";"
+                                .addStatement("")
                                 .build())
-                .addMethod(
-                        MethodSpec.methodBuilder("method")
-                                .addAnnotation(Override.class)
-                                .addModifiers(Modifier.PUBLIC)
-                                .returns(ClassName.get(HttpMethod.class))
-                                .addStatement(
-                                        "return $T.$N",
-                                        HttpMethod.class,
-                                        definition.httpMethod().toString())
-                                .build())
-                .addMethod(
-                        MethodSpec.methodBuilder("route")
-                                .addAnnotation(Override.class)
-                                .addModifiers(Modifier.PUBLIC)
-                                .returns(ClassName.get(String.class))
-                                .addStatement("return $S", definition.route())
-                                .build())
-                .addMethod(
-                        MethodSpec.methodBuilder("handler")
-                                .addAnnotation(Override.class)
-                                .addModifiers(Modifier.PUBLIC)
-                                .addParameter(EndpointRuntime.class, "runtime")
-                                .returns(ClassName.get("io.undertow.server", "HttpHandler"))
-                                .addCode(
-                                        CodeBlock.builder()
-                                                .beginControlFlow("return exchange ->")
-                                                .add(generateHttpHandler(definition))
-                                                .endControlFlow()
-                                                // because we're returning a lambda and want a
-                                                // terminating ";"
-                                                .addStatement("")
-                                                .build())
-                                .build())
+                        .build())
                 .build();
     }
 
@@ -175,22 +165,20 @@ public final class EndpointHandlerGenerator {
                 .filter(p -> p.type() == ParamType.BODY)
                 .findAny()
                 .ifPresentOrElse(
-                        bodyParam ->
-                                handler.add(
-                                        CodeBlock.builder()
-                                                .beginControlFlow(
-                                                        "$N.getRequestReceiver().receiveFullString((bodyExchange, body_) ->",
-                                                        "exchange")
-                                                .addStatement(
-                                                        "$T $N = $N.serde().deserialize(new $T(body_), $T.class)",
-                                                        bodyParam.className(),
-                                                        bodyParam.argumentName(),
-                                                        "runtime",
-                                                        ByteRepr.class,
-                                                        bodyParam.className())
-                                                .add(returnStatement)
-                                                .endControlFlow(")")
-                                                .build()),
+                        bodyParam -> handler.add(CodeBlock.builder()
+                                .beginControlFlow(
+                                        "$N.getRequestReceiver().receiveFullString((bodyExchange, body_) ->",
+                                        "exchange")
+                                .addStatement(
+                                        "$T $N = $N.serde().deserialize(new $T(body_), $T.class)",
+                                        bodyParam.className(),
+                                        bodyParam.argumentName(),
+                                        "runtime",
+                                        ByteRepr.class,
+                                        bodyParam.className())
+                                .add(returnStatement)
+                                .endControlFlow(")")
+                                .build()),
                         () -> handler.add(returnStatement));
         return handler.build();
     }
@@ -206,8 +194,7 @@ public final class EndpointHandlerGenerator {
                         "runtime",
                         "exchange")
                 .beginControlFlow("if ($N.isError())", authParamName)
-                .addStatement(
-                        "$N.error($N.error().get(), $N)", "runtime", authParamName, "exchange")
+                .addStatement("$N.error($N.error().get(), $N)", "runtime", authParamName, "exchange")
                 .addStatement("return")
                 .endControlFlow()
                 .build();
@@ -220,16 +207,14 @@ public final class EndpointHandlerGenerator {
                     case QUERY -> "queryParameter";
                     case HEADER -> "headerParameter";
                     case COOKIE -> "cookieParameter";
-                    default -> throw new IllegalStateException(
-                            "Processor invariant failed due to programmer error");
+                    default -> throw new IllegalStateException("Processor invariant failed due to programmer error");
                 };
         return CodeBlock.builder()
                 .addStatement(
                         "$T $N = $N.$N($S, $N)",
                         isOptional(param.className())
                                 ? param.className()
-                                : ParameterizedTypeName.get(
-                                        ClassName.get(Optional.class), param.className()),
+                                : ParameterizedTypeName.get(ClassName.get(Optional.class), param.className()),
                         param.argumentName(),
                         "runtime",
                         methodName,
@@ -241,17 +226,13 @@ public final class EndpointHandlerGenerator {
     private static CodeBlock argumentList(EndpointHandlerDefinition definition) {
         return CodeBlock.join(
                 definition.parameters().stream()
-                        .map(
-                                param ->
-                                        switch (param.type()) {
-                                            case TOKEN -> CodeBlock.of(
-                                                    "$N.unwrap()", param.argumentName());
-                                            case BODY -> CodeBlock.of("$N", param.argumentName());
-                                            default -> isOptional(param.className())
-                                                    ? CodeBlock.of("$N", param.argumentName())
-                                                    : CodeBlock.of(
-                                                            "$N.get()", param.argumentName());
-                                        })
+                        .map(param -> switch (param.type()) {
+                            case TOKEN -> CodeBlock.of("$N.unwrap()", param.argumentName());
+                            case BODY -> CodeBlock.of("$N", param.argumentName());
+                            default -> isOptional(param.className())
+                                    ? CodeBlock.of("$N", param.argumentName())
+                                    : CodeBlock.of("$N.get()", param.argumentName());
+                        })
                         .collect(Collectors.toList()),
                 ", ");
     }
@@ -265,10 +246,8 @@ public final class EndpointHandlerGenerator {
         return ClassName.get(className.packageName(), className.simpleName() + "Endpoints");
     }
 
-    private static ClassName endpointHandlerClassName(
-            ClassName className, EndpointHandlerDefinition definition) {
-        return endpointsClassName(className)
-                .nestedClass(ucfirst(definition.methodName()) + "EndpointHandler");
+    private static ClassName endpointHandlerClassName(ClassName className, EndpointHandlerDefinition definition) {
+        return endpointsClassName(className).nestedClass(ucfirst(definition.methodName()) + "EndpointHandler");
     }
 
     private static String ucfirst(String str) {
@@ -285,7 +264,10 @@ public final class EndpointHandlerGenerator {
 
         public EndpointHandlerDefinition {
             Preconditions.checkArgument(
-                    parameters.stream().filter(p -> p.type().equals(ParamType.BODY)).count() <= 1,
+                    parameters.stream()
+                                    .filter(p -> p.type().equals(ParamType.BODY))
+                                    .count()
+                            <= 1,
                     "At most one body-type parameter allowed");
         }
 
@@ -305,8 +287,7 @@ public final class EndpointHandlerGenerator {
         }
     }
 
-    public record ParameterDefinition(
-            String argumentName, String httpName, TypeName className, ParamType type) {
+    public record ParameterDefinition(String argumentName, String httpName, TypeName className, ParamType type) {
         enum ParamType {
             BODY,
             PATH,

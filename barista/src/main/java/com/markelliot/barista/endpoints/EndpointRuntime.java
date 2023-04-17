@@ -52,10 +52,7 @@ public final class EndpointRuntime {
         AuthToken authToken = AuthTokens.fromAuthorizationHeader(authzHeader.getFirst());
         return authz.check(authToken)
                 .map(Result::<VerifiedAuthToken, HttpError>ok)
-                .orElseGet(
-                        () ->
-                                HttpError.unauthorized(
-                                        "Unauthorized: Invalid authorization authToken"));
+                .orElseGet(() -> HttpError.unauthorized("Unauthorized: Invalid authorization authToken"));
     }
 
     public void handle(Runnable runnable, HttpServerExchange exchange) {
@@ -99,11 +96,8 @@ public final class EndpointRuntime {
         exchange.setStatusCode(error.statusCode());
         exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
         exchange.getResponseSender()
-                .send(
-                        serde.serialize(
-                                        new ServerError(
-                                                UUID.randomUUID().toString(), error.message()))
-                                .raw());
+                .send(serde.serialize(new ServerError(UUID.randomUUID().toString(), error.message()))
+                        .raw());
     }
 
     private void writeBody(Object body, HttpServerExchange exchange) {
@@ -132,8 +126,7 @@ public final class EndpointRuntime {
     }
 
     public static Optional<String> pathParameter(String parameter, HttpServerExchange exchange) {
-        return Optional.ofNullable(exchange.getPathParameters().get(parameter))
-                .map(Deque::getFirst);
+        return Optional.ofNullable(exchange.getPathParameters().get(parameter)).map(Deque::getFirst);
     }
 
     public static Optional<String> headerParameter(String parameter, HttpServerExchange exchange) {
@@ -145,8 +138,7 @@ public final class EndpointRuntime {
     }
 
     public static Optional<String> queryParameter(String parameter, HttpServerExchange exchange) {
-        return Optional.ofNullable(exchange.getQueryParameters().get(parameter))
-                .map(Deque::getFirst);
+        return Optional.ofNullable(exchange.getQueryParameters().get(parameter)).map(Deque::getFirst);
     }
 
     record ServerError(String errorId, String message) {}
