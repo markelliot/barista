@@ -9,9 +9,15 @@ jobs:
     name: autorelease
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.MELLBOT_APP_ID }}
+          private_key: ${{ secrets.MELLBOT_PK }}
       - name: autorelease
         uses: markelliot/autorelease@v2
         with:
-          github-token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
+          github-token: ${{ steps.token.outputs.token }}
           # maximum number of days since last release
           max-days: 7

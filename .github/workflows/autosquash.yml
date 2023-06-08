@@ -13,14 +13,20 @@ jobs:
   autosquash:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.MELLBOT_APP_ID }}
+          private_key: ${{ secrets.MELLBOT_PK }}
       - uses: actions/checkout@v3
       - uses: theoremlp/autosquash@v1
         with:
-          github-token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
+          github-token: ${{ steps.token.outputs.token }}
           pull-request-number: ${{ github.event.pull_request.number }}
-          squash-commit-title: "${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }})"
-          squash-commit-message: "${{ github.event.pull_request.body }}"
-          do-not-merge-label: "do not merge"
+          squash-commit-title: '${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }})'
+          squash-commit-message: '${{ github.event.pull_request.body }}'
+          do-not-merge-label: 'do not merge'
           # the setup for this repo is:
           #  - all markelliot's PRs are auto-approved using required-reviewers
           #  - if we don't ignore markelliot for autosquash, all PRs will merge on first successful build
