@@ -2,21 +2,27 @@ name: Update Deps
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "0 0/6 * * *"
+    - cron: '0 0/6 * * *'
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.MELLBOT_APP_ID }}
+          private_key: ${{ secrets.MELLBOT_PK }}
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
+          token: ${{ steps.token.outputs.token }}
       - uses: actions/setup-java@v3
         with:
-          java-version: "17"
-          distribution: "zulu"
+          java-version: '17'
+          distribution: 'zulu'
       - uses: markelliot/update-gradle-deps@v1
         with:
-          push-to-repo-token: ${{ secrets.GH_PUSH_TO_REPO_TOKEN }}
+          push-to-repo-token: ${{ steps.token.outputs.token }}
           commit-user: mellbot
           commit-email: mellbot@users.noreply.github.com
