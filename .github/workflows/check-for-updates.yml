@@ -24,5 +24,5 @@ jobs:
       - uses: markelliot/update-gradle-deps@v1
         with:
           push-to-repo-token: ${{ steps.token.outputs.token }}
-          commit-user: mellbot
-          commit-email: mellbot@users.noreply.github.com
+          commit-user: mellbot[bot]
+          commit-email: mellbot[bot]@users.noreply.github.com

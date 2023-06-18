@@ -17,7 +17,7 @@
     "overrides": [
       {
         "description": "Allow user 'mellbot' to make upgrades",
-        "onlyModifiedByUsers": ["mellbot", "melliotbot[bot]"],
+        "onlyModifiedByUsers": ["mellbot[bot]"],
         "onlyModifiedFileRegExs": [
           "^versions\\.(props|lock)$",
           "build\\.gradle\\.kts$",
