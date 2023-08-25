@@ -5,7 +5,7 @@ plugins {
     idea
     id("com.diffplug.spotless") version "6.20.0"
     id("com.google.cloud.tools.jib") version "3.3.2" apply false
-    id("com.palantir.consistent-versions") version "2.12.0"
+    id("com.palantir.consistent-versions") version "2.15.0"
     id("com.markelliot.versions") version "0.43.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("net.ltgt.errorprone") version "3.1.0" apply false
