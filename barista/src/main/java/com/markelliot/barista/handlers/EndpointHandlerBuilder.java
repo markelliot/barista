@@ -35,7 +35,7 @@ public final class EndpointHandlerBuilder {
 
     public HttpHandler build(Set<EndpointHandler> endpointHandlers) {
         EndpointRuntime runtime = new EndpointRuntime(serde, authz);
-        RoutingHandler router = new RoutingHandler();
+        RoutingHandler router = new RoutingHandler(false);
         endpointHandlers.forEach(e -> router.add(e.method().method(), e.route(), e.handler(runtime)));
         router.setFallbackHandler(
                 exchange -> exchange.setStatusCode(404).getResponseSender().send("Unknown API Endpoint"));
