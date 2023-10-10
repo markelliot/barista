@@ -33,11 +33,11 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 
 public final class EndpointHandlerBuilder {
-    private final Optional<Consumer<Request>> fallbackHandler;
     private final SerDe serde;
     private final Authz authz;
+    private final Optional<Consumer<Request>> fallbackHandler;
 
-    public EndpointHandlerBuilder(Optional<Consumer<Request>> fallbackHandler, SerDe serde, Authz authz) {
+    public EndpointHandlerBuilder(SerDe serde, Authz authz, Optional<Consumer<Request>> fallbackHandler) {
         this.fallbackHandler = fallbackHandler;
         this.serde = serde;
         this.authz = authz;
