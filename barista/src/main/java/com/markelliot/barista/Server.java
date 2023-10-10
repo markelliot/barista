@@ -38,6 +38,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +92,7 @@ public final class Server {
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
         private boolean tls = true;
+        private Optional<Consumer<Request>> fallbackHandler = Optional.empty();
         private Optional<SSLContext> sslContext = Optional.empty();
         private double tracingRate = 0.2;
         private boolean enableTraceLogging = true;
@@ -100,6 +102,11 @@ public final class Server {
         public Builder port(int port) {
             Preconditions.checkArgument(0 < port && port < 65536, "Port must be in range [1, 65535]");
             this.port = port;
+            return this;
+        }
+
+        public Builder fallback(Consumer<Request> fallback) {
+            this.fallbackHandler = Optional.of(fallback);
             return this;
         }
 
@@ -172,11 +179,11 @@ public final class Server {
                 Spans.register("barista", span -> tracing.info("TRACING {}", span));
             }
 
-            EndpointHandlerBuilder handler = new EndpointHandlerBuilder(serde, authz);
+            EndpointHandlerBuilder handler = new EndpointHandlerBuilder(fallbackHandler, serde, authz);
             HttpHandler handlerChain = HandlerChain.of(DispatchFromIoThreadHandler::new)
                     .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
                     .then(h -> new TracingHandler(tracingRate, h))
-                    .last(new EndpointHandlerBuilder(serde, authz).build(endpointHandlers));
+                    .last(new EndpointHandlerBuilder(fallbackHandler, serde, authz).build(endpointHandlers));
             GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handlerChain);
             Undertow undertow = Undertow.builder()
                     .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
