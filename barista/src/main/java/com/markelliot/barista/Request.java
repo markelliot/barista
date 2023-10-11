@@ -17,6 +17,8 @@
 package com.markelliot.barista;
 
 import com.google.common.collect.ListMultimap;
+import io.undertow.util.HttpString;
 
 public record Request(
+        HttpString method,
         String path, ListMultimap<String, String> headerParams, ListMultimap<String, String> queryParams) {}

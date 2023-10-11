@@ -65,6 +65,6 @@ public final class EndpointHandlerBuilder {
             headers.putAll(headerValue.getHeaderName().toString(), headerValue);
         });
 
-        return new Request(exchange.getRequestPath(), headers, queryParams);
+        return new Request(exchange.getRequestMethod(), exchange.getRequestPath(), headers, queryParams);
     }
 }
