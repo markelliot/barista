@@ -21,4 +21,6 @@ import io.undertow.util.HttpString;
 
 public record Request(
         HttpString method,
-        String path, ListMultimap<String, String> headerParams, ListMultimap<String, String> queryParams) {}
+        String path,
+        ListMultimap<String, String> headerParams,
+        ListMultimap<String, String> queryParams) {}
