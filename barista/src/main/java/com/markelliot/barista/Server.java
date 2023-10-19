@@ -24,6 +24,7 @@ import com.markelliot.barista.handlers.CorsHandler;
 import com.markelliot.barista.handlers.DispatchFromIoThreadHandler;
 import com.markelliot.barista.handlers.EndpointHandlerBuilder;
 import com.markelliot.barista.handlers.HandlerChain;
+import com.markelliot.barista.handlers.StrictTransportSecurityHandler;
 import com.markelliot.barista.handlers.TracingHandler;
 import com.markelliot.barista.tls.TransportLayerSecurity;
 import com.markelliot.barista.tracing.Spans;
@@ -91,6 +92,7 @@ public final class Server {
         private SerDe serde = new SerDe.ObjectMapperSerDe();
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
+        private boolean strictTransportSecurity = false;
         private boolean tls = true;
         private Optional<Consumer<Request>> fallbackHandler = Optional.empty();
         private Optional<SSLContext> sslContext = Optional.empty();
@@ -139,6 +141,11 @@ public final class Server {
             return this;
         }
 
+        public Builder enableStrictTransportSecurity() {
+            this.strictTransportSecurity = true;
+            return this;
+        }
+
         public Builder disableTls() {
             this.tls = false;
             return this;
@@ -179,11 +186,17 @@ public final class Server {
                 Spans.register("barista", span -> tracing.info("TRACING {}", span));
             }
 
-            HttpHandler handlerChain = HandlerChain.of(DispatchFromIoThreadHandler::new)
+            HandlerChain handlerChain = HandlerChain.of(DispatchFromIoThreadHandler::new)
                     .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
-                    .then(h -> new TracingHandler(tracingRate, h))
-                    .last(new EndpointHandlerBuilder(serde, authz, fallbackHandler).build(endpointHandlers));
-            GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handlerChain);
+                    .then(h -> new TracingHandler(tracingRate, h));
+
+            if (strictTransportSecurity) {
+                handlerChain.then(StrictTransportSecurityHandler::new);
+            }
+
+            HttpHandler handler = handlerChain.last(
+                    new EndpointHandlerBuilder(serde, authz, fallbackHandler).build(endpointHandlers));
+            GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handler);
             Undertow undertow = Undertow.builder()
                     .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
                     .addListener(listener())

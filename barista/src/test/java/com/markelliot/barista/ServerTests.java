@@ -42,6 +42,7 @@ final class ServerTests {
                 .allowOrigin("localhost:8181")
                 .port(8080)
                 .disableTls()
+                .enableStrictTransportSecurity()
                 .endpoints(() -> Set.of(new EndpointHandler() {
                     @Override
                     public HttpMethod method() {
@@ -89,6 +90,8 @@ final class ServerTests {
                 BodyHandlers.ofString());
         assertThat(helloWorldResult.statusCode()).isEqualTo(statusCode);
         assertThat(helloWorldResult.body()).isEqualTo(expectedResponseText);
+        assertThat(helloWorldResult.headers().map().containsKey("strict-transport-security"))
+                .isTrue();
     }
 
     private void assertCorsFailure(String uri) throws IOException, InterruptedException {
