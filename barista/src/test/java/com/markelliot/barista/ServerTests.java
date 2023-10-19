@@ -90,7 +90,7 @@ final class ServerTests {
                 BodyHandlers.ofString());
         assertThat(helloWorldResult.statusCode()).isEqualTo(statusCode);
         assertThat(helloWorldResult.body()).isEqualTo(expectedResponseText);
-        assertThat(helloWorldResult.headers().map().containsKey("Strict-Transport-Security"))
+        assertThat(helloWorldResult.headers().map().containsKey("strict-transport-security"))
                 .isTrue();
     }
 

@@ -20,7 +20,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 
-public class StrictTransportSecurityHandler implements HttpHandler {
+public final class StrictTransportSecurityHandler implements HttpHandler {
 
     private static final HttpString STRICT_TRANSPORT_SECURITY = new HttpString("Strict-Transport-Security");
     private static final String ONE_DAY_IN_SECONDS = "86400";
@@ -33,9 +33,9 @@ public class StrictTransportSecurityHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        delegate.handleRequest(exchange);
         if (!exchange.getResponseHeaders().contains(STRICT_TRANSPORT_SECURITY)) {
             exchange.getResponseHeaders().add(STRICT_TRANSPORT_SECURITY, "max-age=" + ONE_DAY_IN_SECONDS);
         }
+        delegate.handleRequest(exchange);
     }
 }
