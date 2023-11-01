@@ -25,7 +25,10 @@ import com.markelliot.result.Result;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
+import io.undertow.util.PathTemplateMatch;
+
 import java.util.Deque;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -126,7 +129,8 @@ public final class EndpointRuntime {
     }
 
     public static Optional<String> pathParameter(String parameter, HttpServerExchange exchange) {
-        return Optional.ofNullable(exchange.getPathParameters().get(parameter)).map(Deque::getFirst);
+        Map<String, String> pathParams = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY).getParameters();
+        return Optional.ofNullable(pathParams.get(parameter));
     }
 
     public static Optional<String> headerParameter(String parameter, HttpServerExchange exchange) {
