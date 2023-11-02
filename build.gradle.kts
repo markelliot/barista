@@ -100,10 +100,11 @@ fun booleanEnv(envVar: String): Boolean? {
 }
 
 fun String.runCommand(): String {
-    val proc = ProcessBuilder(*split(" ").toTypedArray())
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.INHERIT)
-        .start()
+    val proc =
+        ProcessBuilder(*split(" ").toTypedArray())
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start()
     proc.waitFor(10, TimeUnit.SECONDS)
     return proc.inputStream.bufferedReader().readText()
 }
