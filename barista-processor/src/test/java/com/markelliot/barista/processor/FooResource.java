@@ -54,4 +54,9 @@ public final class FooResource {
     public String openGet() {
         return "Hello, World!";
     }
+
+    @Http.Get("/foo/open/echo/{msg}")
+    public String openEcho(String msg) {
+        return msg;
+    }
 }
