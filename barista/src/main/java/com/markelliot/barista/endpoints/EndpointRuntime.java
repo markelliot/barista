@@ -26,7 +26,6 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
-
 import java.util.Deque;
 import java.util.Map;
 import java.util.Optional;
