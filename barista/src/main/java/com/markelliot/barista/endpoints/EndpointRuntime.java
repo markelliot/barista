@@ -129,7 +129,8 @@ public final class EndpointRuntime {
     }
 
     public static Optional<String> pathParameter(String parameter, HttpServerExchange exchange) {
-        Map<String, String> pathParams = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY).getParameters();
+        Map<String, String> pathParams =
+                exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY).getParameters();
         return Optional.ofNullable(pathParams.get(parameter));
     }
 
