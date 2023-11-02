@@ -53,6 +53,13 @@ public final class HandlerChain {
         return this;
     }
 
+    public HandlerChain then(DelegatingHandler next, boolean onlyIf) {
+        if (onlyIf) {
+            handlers.add(next);
+        }
+        return this;
+    }
+
     public HandlerChain then(Set<DelegatingHandler> next) {
         for (DelegatingHandler fn : next) {
             then(fn);

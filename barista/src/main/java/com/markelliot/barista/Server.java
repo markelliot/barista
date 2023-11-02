@@ -186,16 +186,11 @@ public final class Server {
                 Spans.register("barista", span -> tracing.info("TRACING {}", span));
             }
 
-            HandlerChain handlerChain = HandlerChain.of(DispatchFromIoThreadHandler::new)
+            HttpHandler handler = HandlerChain.of(DispatchFromIoThreadHandler::new)
                     .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
-                    .then(h -> new TracingHandler(tracingRate, h));
-
-            if (strictTransportSecurity) {
-                handlerChain.then(StrictTransportSecurityHandler::new);
-            }
-
-            HttpHandler handler = handlerChain.last(
-                    new EndpointHandlerBuilder(serde, authz, fallbackHandler).build(endpointHandlers));
+                    .then(h -> new TracingHandler(tracingRate, h))
+                    .then(StrictTransportSecurityHandler::new, strictTransportSecurity)
+                    .last(new EndpointHandlerBuilder(serde, authz, fallbackHandler).build(endpointHandlers));
             GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handler);
             Undertow undertow = Undertow.builder()
                     .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
