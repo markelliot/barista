@@ -6,6 +6,7 @@ jobs:
   required-reviewers:
     name: Required Reviewers
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: required-reviewers
         uses: theoremlp/required-reviews@v2
