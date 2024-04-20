@@ -22,7 +22,7 @@ task("printVersion") {
 }
 
 tasks.updateGradleWrapper {
-    enabled = false
+    enabled = true
 }
 
 allprojects {
