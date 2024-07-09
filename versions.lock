@@ -65,8 +65,8 @@ org.wildfly.common:wildfly-common:1.7.0.Final (3 constraints: 203237d9)
 org.yaml:snakeyaml:2.2 (1 constraints: 3c178b10)
 
 [Test dependencies]
-net.bytebuddy:byte-buddy:1.14.16 (1 constraints: 830bcaea)
-org.assertj:assertj-core:3.26.0 (1 constraints: 3d054b3b)
+net.bytebuddy:byte-buddy:1.14.18 (1 constraints: 850bccea)
+org.assertj:assertj-core:3.26.3 (1 constraints: 40054e3b)
 org.junit:junit-bom:5.11.0-M2 (5 constraints: bf4c025c)
 org.junit.jupiter:junit-jupiter-api:5.11.0-M2 (2 constraints: 6c1b34ae)
 org.junit.jupiter:junit-jupiter-engine:5.11.0-M2 (2 constraints: ce0f96c4)
