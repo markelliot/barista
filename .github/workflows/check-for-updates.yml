@@ -26,3 +26,4 @@ jobs:
           push-to-repo-token: ${{ steps.token.outputs.token }}
           commit-user: mellbot[bot]
           commit-email: mellbot[bot]@users.noreply.github.com
+          format: true
