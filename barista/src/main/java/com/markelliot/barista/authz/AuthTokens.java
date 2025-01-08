@@ -19,7 +19,7 @@ package com.markelliot.barista.authz;
 import java.util.regex.Pattern;
 
 public final class AuthTokens {
-    private static final Pattern BEARER = Pattern.compile("Bearer\s+");
+    private static final Pattern BEARER = Pattern.compile("Bearer\\s+");
 
     private AuthTokens() {}
 
