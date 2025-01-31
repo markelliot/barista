@@ -141,3 +141,9 @@ openssl x509 -req -sha256 -days 1024 -in localhost.csr -CA cas.pem -CAkey cas.ke
 cat localhost.key localhost.crt > key.pem
 cp cas.pem trust.pem
 ```
+
+## Logging
+
+Barista provides a default logging configuration. If you want to customize logging you can set the Java system property `barista.logging.disableDefaults` to `true`.
+
+This will result in Barista not setting up any default logging configuration and instead falling back to the underlying logging provider.
