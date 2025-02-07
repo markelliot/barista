@@ -34,15 +34,23 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 @Order(1_000_000)
 final class Logging extends ConfigurationFactory {
 
+    static final String DISABLE_LOGGING_DEFAULTS_SYSTEM_PROPERTY = "barista.logging.disableDefaults";
+    static final String PATTERN = "%d [%t] %level: %msg%n%throwable";
     private static final String STDOUT = "stdout";
     private static final String[] SUPPORTED_TYPES = {"*"};
 
+    private static boolean isTrueish(String value) {
+        return value != null && value.matches("(?i)^(true|1|yes|on|enabled)$");
+    }
+
     static BuiltConfiguration createConfiguration(String name, ConfigurationBuilder<BuiltConfiguration> builder) {
+        if (isTrueish(System.getProperty(DISABLE_LOGGING_DEFAULTS_SYSTEM_PROPERTY, null))) {
+            return null;
+        }
         builder.setStatusLevel(Level.ERROR);
         builder.setConfigurationName(name);
 
-        LayoutComponentBuilder layout =
-                builder.newLayout("PatternLayout").addAttribute("pattern", "%d [%t] %level: %msg%n%throwable");
+        LayoutComponentBuilder layout = builder.newLayout("PatternLayout").addAttribute("pattern", PATTERN);
 
         AppenderComponentBuilder appenderBuilder = builder.newAppender(STDOUT, "CONSOLE")
                 .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
