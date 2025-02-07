@@ -37,7 +37,7 @@ public final class TestFooServer {
     static void beforeAll() {
         server = Server.builder()
                 .allowOrigin("localhost:8181")
-                .port(8080)
+                .port(8282)
                 .disableTls()
                 .endpoints(new FooResourceEndpoints(new FooResource()))
                 .start();
@@ -50,8 +50,8 @@ public final class TestFooServer {
 
     @Test
     void smokeTest() throws IOException, InterruptedException {
-        assertResponse("http://localhost:8080/foo/open/get", 200, "\"Hello, World!\"");
-        assertResponse("http://localhost:8080/foo/open/echo/hellother", 200, "\"hellother\"");
+        assertResponse("http://localhost:8282/foo/open/get", 200, "\"Hello, World!\"");
+        assertResponse("http://localhost:8282/foo/open/echo/hellother", 200, "\"hellother\"");
     }
 
     private void assertResponse(String uri, int statusCode, String expectedResponseText)
