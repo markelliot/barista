@@ -71,9 +71,9 @@ public final class Server {
      */
     public void stop() {
         shutdownHandler.shutdown();
-        shutdownHandler.addShutdownListener(shutdownSuccessful -> undertow.stop());
         try {
             if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
+                log.warn("Graceful shutdown handler exceeded wait.");
                 undertow.stop();
             }
         } catch (InterruptedException e) {
@@ -196,6 +196,8 @@ public final class Server {
                     .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
                     .addListener(listener())
                     .build();
+            shutdownHandler.addShutdownListener(shutdownSuccessful -> undertow.stop());
+
             Server server = new Server(shutdownHandler, undertow);
             server.start();
             return server;
