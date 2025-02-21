@@ -58,7 +58,7 @@ public final class Server {
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
-    private void start() {
+    private synchronized void start() {
         undertow.start();
     }
 
@@ -69,8 +69,9 @@ public final class Server {
      * server to run for the lifetime of the process, and a shutdown hook to stop the server is
      * included automatically.
      */
-    public void stop() {
+    public synchronized void stop() {
         shutdownHandler.shutdown();
+        shutdownHandler.addShutdownListener(shutdownSuccessful -> undertow.stop());
         try {
             if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
                 log.warn("Graceful shutdown handler exceeded wait.");
@@ -196,8 +197,6 @@ public final class Server {
                     .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
                     .addListener(listener())
                     .build();
-            shutdownHandler.addShutdownListener(shutdownSuccessful -> undertow.stop());
-
             Server server = new Server(shutdownHandler, undertow);
             server.start();
             return server;
