@@ -51,7 +51,7 @@ public final class TestFooServer {
     @Test
     void smokeTest() throws IOException, InterruptedException {
         assertResponse("http://localhost:8282/foo/open/get", 200, "\"Hello, World!\"");
-        assertResponse("http://localhost:8282/foo/open/echo/hellother", 200, "\"hellother\"");
+        assertResponse("http://localhost:8282/foo/open/echo/onetwothreefour", 200, "\"onetwothreefour\"");
     }
 
     private void assertResponse(String uri, int statusCode, String expectedResponseText)

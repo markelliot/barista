@@ -28,9 +28,8 @@ dependencies {
     // register @Plugin annotation processor
     annotationProcessor("org.apache.logging.log4j:log4j-core")
 
-    testImplementation(platform("org.junit:junit-bom"))
-    testImplementation("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.assertj:assertj-core")
 }
 
