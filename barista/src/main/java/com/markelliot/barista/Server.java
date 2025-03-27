@@ -198,6 +198,7 @@ public final class Server {
                     .addListener(listener())
                     .build();
             Server server = new Server(shutdownHandler, undertow);
+            server.start();
             return server;
         }
 
