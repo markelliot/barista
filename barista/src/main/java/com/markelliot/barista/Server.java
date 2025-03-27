@@ -90,7 +90,7 @@ public final class Server {
         private int port = 8443;
         private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
-        private SerDe serde = new SerDe.ObjectMapperSerDe();
+        private SerDe serde = SerDe.MimeTypeDispatchingSerDe.INSTANCE;
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
         private boolean strictTransportSecurity = false;
@@ -192,12 +192,11 @@ public final class Server {
                     .then(h -> new TracingHandler(tracingRate, h))
                     .then(StrictTransportSecurityHandler::new, strictTransportSecurity)
                     .last(new EndpointHandlerBuilder(serde, authz, fallbackHandler).build(endpointHandlers));
-            GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handler);
             Undertow undertow = Undertow.builder()
-                    .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
+                    .setHandler(handler)
                     .addListener(listener())
                     .build();
-            Server server = new Server(shutdownHandler, undertow);
+            Server server = new Server(new GracefulShutdownHandler(handler), undertow);
             server.start();
             return server;
         }
