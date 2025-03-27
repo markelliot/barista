@@ -72,19 +72,18 @@ public interface SerDe {
 
     final class ObjectMapperSerDe implements SerDe {
         static final SerDe JSON = new ObjectMapperSerDe(new ObjectMapper(), MediaType.JSON_UTF_8);
-        static final SerDe YAML = new ObjectMapperSerDe(new ObjectMapper(new YAMLFactory()
-                .configure(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false)
-                .configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true)
-                .configure(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID, false)),
-                MediaType.create("text", "x-yaml")
-        );
+        static final SerDe YAML = new ObjectMapperSerDe(
+                new ObjectMapper(new YAMLFactory()
+                        .configure(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false)
+                        .configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true)
+                        .configure(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID, false)),
+                MediaType.create("text", "x-yaml"));
 
         private final ObjectMapper mapper;
         private final MediaType mediaType;
 
         private ObjectMapperSerDe(ObjectMapper mapper, MediaType mediaType) {
-            this.mapper = mapper
-                    .registerModule(new GuavaModule())
+            this.mapper = mapper.registerModule(new GuavaModule())
                     .registerModule(new Jdk8Module())
                     .registerModule(new JavaTimeModule())
                     .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
