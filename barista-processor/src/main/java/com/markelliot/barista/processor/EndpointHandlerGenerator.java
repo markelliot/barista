@@ -170,7 +170,7 @@ public final class EndpointHandlerGenerator {
                                         "$N.getRequestReceiver().receiveFullString((bodyExchange, body_) ->",
                                         "exchange")
                                 .addStatement(
-                                        "$T $N = $N.serde().deserialize(new $T(body_), $T.class)",
+                                        "$T $N = $N.serde(bodyExchange).deserialize(new $T(body_), $T.class)",
                                         bodyParam.className(),
                                         bodyParam.argumentName(),
                                         "runtime",

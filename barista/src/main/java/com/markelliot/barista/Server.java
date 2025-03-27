@@ -90,7 +90,7 @@ public final class Server {
         private int port = 8443;
         private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
-        private SerDe serde = new SerDe.ObjectMapperSerDe();
+        private SerDe serde = SerDe.MimeTypeDispatchingSerDe.INSTANCE;
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
         private boolean strictTransportSecurity = false;

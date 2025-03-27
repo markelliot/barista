@@ -45,6 +45,14 @@ public final class EndpointRuntime {
         return serde;
     }
 
+    public SerDe serde(HttpServerExchange exchange) {
+        HeaderValues headers = exchange.getRequestHeaders().get(Headers.CONTENT_TYPE);
+        if (headers.isEmpty()) {
+            return serde();
+        }
+        return serde.forMimeType(headers.getFirst());
+    }
+
     public Result<VerifiedAuthToken, HttpError> verifyAuth(HttpServerExchange exchange) {
         HeaderValues authzHeader = exchange.getRequestHeaders().get(Headers.AUTHORIZATION);
         if (authzHeader.size() != 1) {
