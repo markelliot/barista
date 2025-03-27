@@ -77,7 +77,7 @@ public interface SerDe {
                         .configure(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false)
                         .configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true)
                         .configure(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID, false)),
-                MediaType.create("text", "x-yaml"));
+                MediaType.create("application", "yaml"));
 
         private final ObjectMapper mapper;
         private final MediaType mediaType;
