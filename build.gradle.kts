@@ -6,9 +6,9 @@ plugins {
     id("com.diffplug.spotless") version "7.0.3"
     id("com.google.cloud.tools.jib") version "3.4.5" apply false
     id("com.palantir.consistent-versions") version "2.32.0"
-    id("com.markelliot.versions") version "0.115.0"
+    id("com.markelliot.versions") version "0.118.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("net.ltgt.errorprone") version "4.1.0" apply false
+    id("net.ltgt.errorprone") version "4.2.0" apply false
     id("org.inferred.processors") version "3.7.0" apply false
 }
 
