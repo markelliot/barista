@@ -64,7 +64,7 @@ final class ServerTests {
 
     @AfterAll
     static void afterAll() {
-        server.stop();
+        new Thread(server::stop).start();
     }
 
     @Test
