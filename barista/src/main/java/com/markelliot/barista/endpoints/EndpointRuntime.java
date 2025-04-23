@@ -41,14 +41,10 @@ public final class EndpointRuntime {
         this.authz = authz;
     }
 
-    public SerDe serde() {
-        return serde;
-    }
-
-    public SerDe serde(HttpServerExchange exchange) {
+    public SerDe requestSerDe(HttpServerExchange exchange) {
         HeaderValues headers = exchange.getRequestHeaders().get(Headers.CONTENT_TYPE);
         if (headers.isEmpty()) {
-            return serde();
+            return serde;
         }
         return serde.forMimeType(headers.getFirst());
     }
@@ -107,12 +103,12 @@ public final class EndpointRuntime {
         exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
         exchange.getResponseSender()
                 .send(serde.serialize(new ServerError(UUID.randomUUID().toString(), error.message()))
-                        .raw());
+                        .asReadOnlyByteBuffer());
     }
 
     private void writeBody(Object body, HttpServerExchange exchange) {
         exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
-        exchange.getResponseSender().send(serde.serialize(body).raw());
+        exchange.getResponseSender().send(serde.serialize(body).asReadOnlyByteBuffer());
     }
 
     private void writeEmpty(HttpServerExchange exchange) {
@@ -127,7 +123,7 @@ public final class EndpointRuntime {
     private void writeError(ServerError error, HttpServerExchange exchange) {
         exchange.setStatusCode(500);
         exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
-        exchange.getResponseSender().send(serde.serialize(error).raw());
+        exchange.getResponseSender().send(serde.serialize(error).asReadOnlyByteBuffer());
     }
 
     private static void redirect(HttpRedirect redirect, HttpServerExchange exchange) {

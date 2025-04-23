@@ -21,11 +21,11 @@ import com.google.common.collect.Multimaps;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
+import com.markelliot.barista.HttpMethod;
 import com.markelliot.barista.annotations.Param;
 import com.markelliot.barista.authz.VerifiedAuthToken;
 import com.markelliot.barista.endpoints.HttpRedirect;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition;
-import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition.HttpMethod;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition.ReturnType;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.ParameterDefinition;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.ParameterDefinition.ParamType;
@@ -114,6 +114,7 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
             try {
                 filerSourceFile.delete();
             } catch (Exception ignored) {
+                // ignore
             }
             throw e;
         }

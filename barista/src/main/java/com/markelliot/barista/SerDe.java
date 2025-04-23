@@ -29,9 +29,9 @@ import com.google.common.net.MediaType;
 import java.io.IOException;
 
 public interface SerDe {
-    <T> ByteRepr serialize(T any);
+    <T> Bytes serialize(T any);
 
-    <T> T deserialize(ByteRepr bytes, Class<T> objClass);
+    <T> T deserialize(Bytes bytes, Class<T> objClass);
 
     String contentType();
 
@@ -39,20 +39,18 @@ public interface SerDe {
         return this;
     }
 
-    record ByteRepr(String raw) {}
-
     final class MimeTypeDispatchingSerDe implements SerDe {
         public static final SerDe INSTANCE = new MimeTypeDispatchingSerDe();
 
         private MimeTypeDispatchingSerDe() {}
 
         @Override
-        public <T> ByteRepr serialize(T any) {
+        public <T> Bytes serialize(T any) {
             return ObjectMapperSerDe.JSON.serialize(any);
         }
 
         @Override
-        public <T> T deserialize(ByteRepr bytes, Class<T> objClass) {
+        public <T> T deserialize(Bytes bytes, Class<T> objClass) {
             return ObjectMapperSerDe.JSON.deserialize(bytes, objClass);
         }
 
@@ -92,18 +90,18 @@ public interface SerDe {
         }
 
         @Override
-        public <T> ByteRepr serialize(T any) {
+        public <T> Bytes serialize(T any) {
             try {
-                return new ByteRepr(mapper.writeValueAsString(any));
+                return Bytes.from(mapper.writeValueAsBytes(any));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Error while serializing object to bytes", e);
             }
         }
 
         @Override
-        public <T> T deserialize(ByteRepr bytes, Class<T> objClass) {
+        public <T> T deserialize(Bytes bytes, Class<T> objClass) {
             try {
-                return mapper.readValue(bytes.raw(), objClass);
+                return mapper.readValue(bytes.unsafeGetUnderlyingArray(), objClass);
             } catch (IOException e) {
                 throw new RuntimeException("Error while deserializing object from bytes", e);
             }
