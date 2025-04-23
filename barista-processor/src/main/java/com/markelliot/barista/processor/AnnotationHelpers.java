@@ -17,8 +17,8 @@
 package com.markelliot.barista.processor;
 
 import com.google.common.collect.ImmutableSet;
+import com.markelliot.barista.HttpMethod;
 import com.markelliot.barista.annotations.Http;
-import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition.HttpMethod;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Function;

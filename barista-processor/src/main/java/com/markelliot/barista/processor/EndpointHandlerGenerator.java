@@ -18,8 +18,8 @@ package com.markelliot.barista.processor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.markelliot.barista.Bytes;
 import com.markelliot.barista.HttpMethod;
-import com.markelliot.barista.SerDe.ByteRepr;
 import com.markelliot.barista.authz.VerifiedAuthToken;
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.endpoints.EndpointRuntime;
@@ -35,6 +35,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -167,14 +168,13 @@ public final class EndpointHandlerGenerator {
                 .ifPresentOrElse(
                         bodyParam -> handler.add(CodeBlock.builder()
                                 .beginControlFlow(
-                                        "$N.getRequestReceiver().receiveFullString((bodyExchange, body_) ->",
-                                        "exchange")
+                                        "$N.getRequestReceiver().receiveFullBytes((bodyExchange, body_) ->", "exchange")
                                 .addStatement(
-                                        "$T $N = $N.serde(bodyExchange).deserialize(new $T(body_), $T.class)",
+                                        "$T $N = $N.requestSerDe(bodyExchange).deserialize($T.from(body_), $T.class)",
                                         bodyParam.className(),
                                         bodyParam.argumentName(),
                                         "runtime",
-                                        ByteRepr.class,
+                                        Bytes.class,
                                         bodyParam.className())
                                 .add(returnStatement)
                                 .endControlFlow(")")
@@ -251,7 +251,7 @@ public final class EndpointHandlerGenerator {
     }
 
     private static String ucfirst(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
+        return str.substring(0, 1).toUpperCase(Locale.getDefault()) + str.substring(1);
     }
 
     public record EndpointHandlerDefinition(
@@ -269,13 +269,6 @@ public final class EndpointHandlerGenerator {
                                     .count()
                             <= 1,
                     "At most one body-type parameter allowed");
-        }
-
-        enum HttpMethod {
-            GET,
-            PUT,
-            POST,
-            DELETE
         }
 
         enum ReturnType {

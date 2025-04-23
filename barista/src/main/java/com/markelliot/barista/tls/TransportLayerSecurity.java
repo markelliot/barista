@@ -374,14 +374,7 @@ public final class TransportLayerSecurity {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (!(obj instanceof EqualByteArray)) {
-                return false;
-            }
-            EqualByteArray other = (EqualByteArray) obj;
-            return Arrays.equals(this.bytes, other.bytes);
+            return this == obj || (obj instanceof EqualByteArray other && Arrays.equals(bytes, other.bytes));
         }
     }
 
