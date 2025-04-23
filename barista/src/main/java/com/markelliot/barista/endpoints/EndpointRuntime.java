@@ -43,7 +43,7 @@ public final class EndpointRuntime {
 
     public SerDe requestSerDe(HttpServerExchange exchange) {
         HeaderValues headers = exchange.getRequestHeaders().get(Headers.CONTENT_TYPE);
-        if (headers.isEmpty()) {
+        if (headers == null || headers.isEmpty()) {
             return serde;
         }
         return serde.forMimeType(headers.getFirst());
@@ -51,10 +51,12 @@ public final class EndpointRuntime {
 
     private SerDe responseSerDe(HttpServerExchange exchange) {
         HeaderValues headers = exchange.getRequestHeaders().get(Headers.ACCEPT);
-        for (String accept : headers) {
-            SerDe candidate = serde.forMimeType(accept);
-            if (candidate != null) {
-                return candidate;
+        if (headers != null) {
+            for (String accept : headers) {
+                SerDe candidate = serde.forMimeType(accept);
+                if (candidate != null) {
+                    return candidate;
+                }
             }
         }
         return serde;
