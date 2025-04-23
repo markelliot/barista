@@ -49,6 +49,17 @@ public final class EndpointRuntime {
         return serde.forMimeType(headers.getFirst());
     }
 
+    private SerDe responseSerDe(HttpServerExchange exchange) {
+        HeaderValues headers = exchange.getRequestHeaders().get(Headers.ACCEPT);
+        for (String accept : headers) {
+            SerDe candidate = serde.forMimeType(accept);
+            if (candidate != null) {
+                return candidate;
+            }
+        }
+        return serde;
+    }
+
     public Result<VerifiedAuthToken, HttpError> verifyAuth(HttpServerExchange exchange) {
         HeaderValues authzHeader = exchange.getRequestHeaders().get(Headers.AUTHORIZATION);
         if (authzHeader.size() != 1) {
@@ -107,13 +118,15 @@ public final class EndpointRuntime {
     }
 
     private void writeBody(Object body, HttpServerExchange exchange) {
-        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
-        exchange.getResponseSender().send(serde.serialize(body).asReadOnlyByteBuffer());
+        SerDe responseSerDe = responseSerDe(exchange);
+        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, responseSerDe.contentType());
+        exchange.getResponseSender().send(responseSerDe.serialize(body).asReadOnlyByteBuffer());
     }
 
     private void writeEmpty(HttpServerExchange exchange) {
+        SerDe responseSerDe = responseSerDe(exchange);
         exchange.setStatusCode(201);
-        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
+        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, responseSerDe.contentType());
     }
 
     private void writeError(Exception exception, HttpServerExchange exchange) {
@@ -121,9 +134,10 @@ public final class EndpointRuntime {
     }
 
     private void writeError(ServerError error, HttpServerExchange exchange) {
+        SerDe responseSerDe = responseSerDe(exchange);
         exchange.setStatusCode(500);
-        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, serde.contentType());
-        exchange.getResponseSender().send(serde.serialize(error).asReadOnlyByteBuffer());
+        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, responseSerDe.contentType());
+        exchange.getResponseSender().send(responseSerDe.serialize(error).asReadOnlyByteBuffer());
     }
 
     private static void redirect(HttpRedirect redirect, HttpServerExchange exchange) {
