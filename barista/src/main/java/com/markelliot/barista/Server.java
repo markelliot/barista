@@ -20,12 +20,7 @@ import com.google.common.base.Preconditions;
 import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.endpoints.Endpoints;
-import com.markelliot.barista.handlers.CorsHandler;
-import com.markelliot.barista.handlers.DispatchFromIoThreadHandler;
-import com.markelliot.barista.handlers.EndpointHandlerBuilder;
-import com.markelliot.barista.handlers.HandlerChain;
-import com.markelliot.barista.handlers.StrictTransportSecurityHandler;
-import com.markelliot.barista.handlers.TracingHandler;
+import com.markelliot.barista.handlers.*;
 import com.markelliot.barista.tls.TransportLayerSecurity;
 import com.markelliot.barista.tracing.Spans;
 import io.undertow.Undertow;
@@ -99,6 +94,8 @@ public final class Server {
         private Optional<SSLContext> sslContext = Optional.empty();
         private double tracingRate = 0.2;
         private boolean enableTraceLogging = true;
+        private RequestLoggingHandler.LogConsumer requestLogConsumer = RequestLoggingHandler.NO_OP_LOG_CONSUMER;
+        private RequestLoggingHandler.ErrorConsumer requestErrorConsumer = RequestLoggingHandler.NO_OP_ERROR_CONSUMER;
 
         private Builder() {}
 
@@ -178,6 +175,16 @@ public final class Server {
             return this;
         }
 
+        public Builder requestLogConsumer(RequestLoggingHandler.LogConsumer logConsumer) {
+            this.requestLogConsumer = logConsumer;
+            return this;
+        }
+
+        public Builder requestErrorConsumer(RequestLoggingHandler.ErrorConsumer errorConsumer) {
+            this.requestErrorConsumer = errorConsumer;
+            return this;
+        }
+
         public Server start() {
             Preconditions.checkNotNull(authz);
 
@@ -190,6 +197,7 @@ public final class Server {
             HttpHandler handler = HandlerChain.of(DispatchFromIoThreadHandler::new)
                     .then(h -> new CorsHandler(allowAllOrigins, allowedOrigins, h))
                     .then(h -> new TracingHandler(tracingRate, h))
+                    .then(h -> new RequestLoggingHandler(requestLogConsumer, requestErrorConsumer, h))
                     .then(StrictTransportSecurityHandler::new, strictTransportSecurity)
                     .last(new EndpointHandlerBuilder(serde, authz, fallbackHandler).build(endpointHandlers));
             GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handler);
