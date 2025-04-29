@@ -81,7 +81,11 @@ allprojects {
             (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:-missing")
         }
 
-        the<JavaPluginExtension>().sourceCompatibility = JavaVersion.VERSION_17
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(17)
+            }
+        }
 
         tasks["check"].dependsOn("spotlessCheck")
     }
