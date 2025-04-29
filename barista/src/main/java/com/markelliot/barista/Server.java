@@ -188,7 +188,7 @@ public final class Server {
                     .then(h -> new TracingHandler(tracingRate, h))
                     .then(h -> new RequestLoggingHandler(requestLogConsumer, requestErrorConsumer, h))
                     .then(StrictTransportSecurityHandler::new, strictTransportSecurity)
-                    .last(new EndpointHandlerBuilder(fallbackHandler).build(endpointHandlers));
+                    .last(EndpointHandlerBuilder.build(endpointHandlers, fallbackHandler));
             GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handler);
             Undertow undertow = Undertow.builder()
                     .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))

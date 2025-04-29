@@ -30,13 +30,9 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 
 public final class EndpointHandlerBuilder {
-    private final Optional<Consumer<Request>> fallbackHandler;
+    private EndpointHandlerBuilder() {}
 
-    public EndpointHandlerBuilder(Optional<Consumer<Request>> fallbackHandler) {
-        this.fallbackHandler = fallbackHandler;
-    }
-
-    public HttpHandler build(Set<EndpointHandler> endpointHandlers) {
+    public static HttpHandler build(Set<EndpointHandler> endpointHandlers, Optional<Consumer<Request>> fallbackHandler) {
         RoutingHandler router = new RoutingHandler(false);
         endpointHandlers.forEach(e -> router.add(e.method().method(), e.route(), e.handler()));
         router.setFallbackHandler(exchange -> {
