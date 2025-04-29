@@ -31,20 +31,21 @@ import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
 import java.util.Deque;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-public final class EndpointRuntime {
-    private final SerDe<?> serde;
+public final class EndpointRuntime<E> {
+    private final SerDe<E> serde;
     private final Authz authz;
 
-    private EndpointRuntime(SerDe<?> serde, Authz authz) {
+    private EndpointRuntime(SerDe<E> serde, Authz authz) {
         this.serde = serde;
         this.authz = authz;
     }
 
-    private SerDe.MimeTypeSerDe<?> requestSerDe(HttpServerExchange exchange) {
+    private SerDe.MimeTypeSerDe<E> requestSerDe(HttpServerExchange exchange) {
         HeaderValues headers = exchange.getRequestHeaders().get(Headers.CONTENT_TYPE);
         if (headers == null || headers.isEmpty()) {
             return serde.select(MediaType.ANY_TYPE);
@@ -52,11 +53,11 @@ public final class EndpointRuntime {
         return serde.select(MediaType.parse(headers.getFirst()));
     }
 
-    private SerDe.MimeTypeSerDe<?> responseSerDe(HttpServerExchange exchange) {
+    private SerDe.MimeTypeSerDe<E> responseSerDe(HttpServerExchange exchange) {
         HeaderValues headers = exchange.getRequestHeaders().get(Headers.ACCEPT);
         if (headers != null) {
             for (String accept : headers) {
-                SerDe.MimeTypeSerDe<?> candidate = serde.select(MediaType.parse(accept));
+                SerDe.MimeTypeSerDe<E> candidate = serde.select(MediaType.parse(accept));
                 if (candidate != null) {
                     return candidate;
                 }
@@ -65,13 +66,12 @@ public final class EndpointRuntime {
         return serde.select(MediaType.ANY_TYPE);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T, E> Result<T, E> readBodyAsResult(HttpServerExchange exchange, byte[] body, Class<T> aClass) {
-        return (Result<T, E>) requestSerDe(exchange).deserialize(Bytes.from(body), aClass);
+    public <T> Result<T, E> readBodyAsResult(HttpServerExchange exchange, byte[] body, Class<T> aClass) {
+        return requestSerDe(exchange).deserialize(Bytes.from(body), aClass);
     }
 
     public <T> T readBody(HttpServerExchange exchange, byte[] body, Class<T> aClass) {
-        Result<T, ?> result = readBodyAsResult(exchange, body, aClass);
+        Result<T, E> result = readBodyAsResult(exchange, body, aClass);
         return result.orElseThrow(err -> {
             if (err instanceof RuntimeException re) {
                 return re;
@@ -132,7 +132,7 @@ public final class EndpointRuntime {
     }
 
     public void error(HttpError error, HttpServerExchange exchange) {
-        SerDe.MimeTypeSerDe<?> responseSerDe = responseSerDe(exchange);
+        SerDe.MimeTypeSerDe<E> responseSerDe = responseSerDe(exchange);
         exchange.setStatusCode(error.statusCode());
         exchange.getResponseHeaders()
                 .add(Headers.CONTENT_TYPE, responseSerDe.mimeType().toString());
@@ -144,14 +144,14 @@ public final class EndpointRuntime {
     }
 
     private void writeBody(Object body, HttpServerExchange exchange) {
-        SerDe.MimeTypeSerDe<?> responseSerDe = responseSerDe(exchange);
+        SerDe.MimeTypeSerDe<E> responseSerDe = responseSerDe(exchange);
         exchange.getResponseHeaders()
                 .add(Headers.CONTENT_TYPE, responseSerDe.mimeType().toString());
         exchange.getResponseSender().send(responseSerDe.serialize(body).unwrap().asReadOnlyByteBuffer());
     }
 
     private void writeEmpty(HttpServerExchange exchange) {
-        SerDe.MimeTypeSerDe<?> responseSerDe = responseSerDe(exchange);
+        SerDe.MimeTypeSerDe<E> responseSerDe = responseSerDe(exchange);
         exchange.setStatusCode(201);
         exchange.getResponseHeaders()
                 .add(Headers.CONTENT_TYPE, responseSerDe.mimeType().toString());
@@ -162,7 +162,7 @@ public final class EndpointRuntime {
     }
 
     private void writeError(ServerError error, HttpServerExchange exchange) {
-        SerDe.MimeTypeSerDe<?> responseSerDe = responseSerDe(exchange);
+        SerDe.MimeTypeSerDe<E> responseSerDe = responseSerDe(exchange);
         exchange.setStatusCode(500);
         exchange.getResponseHeaders()
                 .add(Headers.CONTENT_TYPE, responseSerDe.mimeType().toString());
@@ -195,32 +195,36 @@ public final class EndpointRuntime {
 
     record ServerError(String errorId, String message) {}
 
-    public static Builder builder() {
-        return new Builder();
+    public static <E> Builder<E> builder() {
+        return new Builder<>();
     }
 
-    public static EndpointRuntime createDefault() {
-        return builder().build();
+    public static EndpointRuntime<Exception> createDefault() {
+        return EndpointRuntime.<Exception>builder()
+                .serde(DispatchingSerDe.createDefault())
+                .build();
     }
 
-    public static final class Builder {
-        private SerDe<?> serde = DispatchingSerDe.createDefault();
+    public static final class Builder<E> {
+        private SerDe<E> serde;
         private Authz authz = Authz.denyAll();
 
         private Builder() {}
 
-        public Builder serde(SerDe<?> serde) {
+        public Builder<E> serde(SerDe<E> serde) {
             this.serde = serde;
             return this;
         }
 
-        public Builder authz(Authz authz) {
+        public Builder<E> authz(Authz authz) {
             this.authz = authz;
             return this;
         }
 
-        public EndpointRuntime build() {
-            return new EndpointRuntime(serde, authz);
+        public EndpointRuntime<E> build() {
+            Objects.requireNonNull(serde);
+            Objects.requireNonNull(authz);
+            return new EndpointRuntime<>(serde, authz);
         }
     }
 }

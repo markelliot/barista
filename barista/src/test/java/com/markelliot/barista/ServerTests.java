@@ -38,7 +38,7 @@ final class ServerTests {
 
     @BeforeAll
     static void beforeAll() {
-        EndpointRuntime runtime = EndpointRuntime.createDefault();
+        EndpointRuntime<Exception> runtime = EndpointRuntime.createDefault();
         server = Server.builder()
                 .allowOrigin("localhost:8181")
                 .port(8080)

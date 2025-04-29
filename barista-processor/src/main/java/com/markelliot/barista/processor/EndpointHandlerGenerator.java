@@ -18,6 +18,7 @@ package com.markelliot.barista.processor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.markelliot.barista.HttpMethod;
 import com.markelliot.barista.authz.VerifiedAuthToken;
 import com.markelliot.barista.endpoints.EndpointHandler;
@@ -33,6 +34,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
@@ -41,27 +43,56 @@ import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 
 public final class EndpointHandlerGenerator {
+    private static final TypeVariableName TYPE_VAR_E = TypeVariableName.get("E");
+    private static final TypeName RUNTIME_CLASS =
+            ParameterizedTypeName.get(ClassName.get(EndpointRuntime.class), TYPE_VAR_E);
 
     public static JavaFile generate(ClassName className, Collection<EndpointHandlerDefinition> handlers) {
+        Optional<TypeName> concreteErrorType = concreteErrorType(handlers);
         ClassName resourceClassName = endpointsClassName(className);
         TypeSpec resourceClass = TypeSpec.classBuilder(resourceClassName)
+                .addTypeVariables(errorTypeVariable(concreteErrorType))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(ClassName.get(Endpoints.class))
                 .addField(className, "delegate", Modifier.PRIVATE, Modifier.FINAL)
-                .addField(EndpointRuntime.class, "runtime", Modifier.PRIVATE, Modifier.FINAL)
+                .addField(runtimeClass(concreteErrorType), "runtime", Modifier.PRIVATE, Modifier.FINAL)
                 .addMethod(MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(className, "delegate")
-                        .addParameter(EndpointRuntime.class, "runtime")
+                        .addParameter(runtimeClass(concreteErrorType), "runtime")
                         .addStatement("this.$N = $N", "delegate", "delegate")
                         .addStatement("this.$N = $N", "runtime", "runtime")
                         .build())
                 .addMethod(generateEndpointsMethod(className, handlers))
                 .addTypes(handlers.stream()
-                        .map(h -> generateEndpointHandlers(className, h))
+                        .map(h -> generateEndpointHandlers(className, concreteErrorType, h))
                         .collect(Collectors.toList()))
                 .build();
         return JavaFile.builder(className.packageName(), resourceClass).build();
+    }
+
+    private static Optional<TypeName> concreteErrorType(Collection<EndpointHandlerDefinition> handlers) {
+        Set<TypeName> errTypes = handlers.stream()
+                .flatMap(h -> h.parameters().stream())
+                .filter(p -> p.type() == ParamType.BODY)
+                .filter(p -> (p.className() instanceof ParameterizedTypeName ptn)
+                        && ptn.rawType.equals(ClassName.get(Result.class)))
+                .map(p -> (ParameterizedTypeName) p.className())
+                .map(c -> c.typeArguments.get(1))
+                .collect(Collectors.toSet());
+        Preconditions.checkArgument(
+                errTypes.size() <= 1, "All body Result<T, E> types must have same E type, found %s", errTypes);
+        return Optional.ofNullable(Iterables.getOnlyElement(errTypes));
+    }
+
+    private static Iterable<TypeVariableName> errorTypeVariable(Optional<TypeName> concreteErrorType) {
+        return concreteErrorType.isEmpty() ? Set.of(TYPE_VAR_E) : Set.of();
+    }
+
+    private static TypeName runtimeClass(Optional<TypeName> concreteErrorType) {
+        return concreteErrorType
+                .map(t -> (TypeName) ParameterizedTypeName.get(ClassName.get(EndpointRuntime.class), t))
+                .orElse(RUNTIME_CLASS);
     }
 
     private static MethodSpec generateEndpointsMethod(
@@ -82,15 +113,17 @@ public final class EndpointHandlerGenerator {
                 .build();
     }
 
-    private static TypeSpec generateEndpointHandlers(ClassName className, EndpointHandlerDefinition definition) {
+    private static TypeSpec generateEndpointHandlers(
+            ClassName className, Optional<TypeName> concreteErrorType, EndpointHandlerDefinition definition) {
         return TypeSpec.classBuilder(endpointHandlerClassName(className, definition))
+                .addTypeVariables(errorTypeVariable(concreteErrorType))
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
                 .addSuperinterface(ClassName.get(EndpointHandler.class))
                 .addField(className, "delegate", Modifier.PRIVATE, Modifier.FINAL)
-                .addField(EndpointRuntime.class, "runtime", Modifier.PRIVATE, Modifier.FINAL)
+                .addField(runtimeClass(concreteErrorType), "runtime", Modifier.PRIVATE, Modifier.FINAL)
                 .addMethod(MethodSpec.constructorBuilder()
                         .addParameter(className, "delegate")
-                        .addParameter(EndpointRuntime.class, "runtime")
+                        .addParameter(runtimeClass(concreteErrorType), "runtime")
                         .addStatement("this.$N = $N", "delegate", "delegate")
                         .addStatement("this.$N = $N", "runtime", "runtime")
                         .build())
