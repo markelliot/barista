@@ -16,7 +16,16 @@
 
 package com.markelliot.barista;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.base.Preconditions;
+import com.google.common.net.MediaType;
 import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.endpoints.Endpoints;
@@ -27,6 +36,8 @@ import com.markelliot.barista.handlers.HandlerChain;
 import com.markelliot.barista.handlers.RequestLoggingHandler;
 import com.markelliot.barista.handlers.StrictTransportSecurityHandler;
 import com.markelliot.barista.handlers.TracingHandler;
+import com.markelliot.barista.serde.DispatchingSerDe;
+import com.markelliot.barista.serde.ObjectMapperSerDe;
 import com.markelliot.barista.tls.TransportLayerSecurity;
 import com.markelliot.barista.tracing.Spans;
 import io.undertow.Undertow;
@@ -88,10 +99,27 @@ public final class Server {
     }
 
     public static final class Builder {
+        private static final ObjectMapperSerDe YAML_SERDE = new ObjectMapperSerDe(
+                MediaType.create("application", "yaml"),
+                new ObjectMapper(new YAMLFactory()
+                                .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+                                .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+                        .registerModule(new GuavaModule())
+                        .registerModule(new Jdk8Module())
+                        .registerModule(new JavaTimeModule())
+                        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+                        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
+        private static final ObjectMapperSerDe JSON_SERDE =
+                new ObjectMapperSerDe(MediaType.create("application", "json"), new ObjectMapper());
+
         private int port = 8443;
         private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
-        private SerDe serde = SerDe.MimeTypeDispatchingSerDe.INSTANCE;
+        private SerDe serde = DispatchingSerDe.builder()
+                .add(MediaType.create("application", "yaml"), YAML_SERDE)
+                .add(MediaType.create("application", "json"), JSON_SERDE)
+                .defaultSerDe(JSON_SERDE)
+                .build();
         private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
         private boolean strictTransportSecurity = false;

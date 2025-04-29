@@ -16,100 +16,17 @@
 
 package com.markelliot.barista;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.net.MediaType;
-import java.io.IOException;
+import com.markelliot.result.Result;
 
 public interface SerDe {
-    <T> Bytes serialize(T any);
+    MimeTypeSerDe<?> select(MediaType mimeType);
 
-    <T> T deserialize(Bytes bytes, Class<T> objClass);
+    interface MimeTypeSerDe<E> {
+        <T> Result<Bytes, E> serialize(T any);
 
-    String contentType();
+        <T> Result<T, E> deserialize(Bytes bytes, Class<T> type);
 
-    default SerDe forMimeType(String mimeType) {
-        return this;
-    }
-
-    final class MimeTypeDispatchingSerDe implements SerDe {
-        public static final SerDe INSTANCE = new MimeTypeDispatchingSerDe();
-
-        private MimeTypeDispatchingSerDe() {}
-
-        @Override
-        public <T> Bytes serialize(T any) {
-            return ObjectMapperSerDe.JSON.serialize(any);
-        }
-
-        @Override
-        public <T> T deserialize(Bytes bytes, Class<T> objClass) {
-            return ObjectMapperSerDe.JSON.deserialize(bytes, objClass);
-        }
-
-        @Override
-        public String contentType() {
-            return ObjectMapperSerDe.JSON.contentType();
-        }
-
-        @Override
-        public SerDe forMimeType(String mimeType) {
-            if (mimeType.startsWith("application/yaml")) {
-                return ObjectMapperSerDe.YAML;
-            }
-            return ObjectMapperSerDe.JSON;
-        }
-    }
-
-    final class ObjectMapperSerDe implements SerDe {
-        static final SerDe JSON = new ObjectMapperSerDe(new ObjectMapper(), MediaType.JSON_UTF_8);
-        static final SerDe YAML = new ObjectMapperSerDe(
-                new ObjectMapper(new YAMLFactory()
-                        .configure(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false)
-                        .configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true)
-                        .configure(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID, false)),
-                MediaType.create("application", "yaml"));
-
-        private final ObjectMapper mapper;
-        private final MediaType mediaType;
-
-        private ObjectMapperSerDe(ObjectMapper mapper, MediaType mediaType) {
-            this.mapper = mapper.registerModule(new GuavaModule())
-                    .registerModule(new Jdk8Module())
-                    .registerModule(new JavaTimeModule())
-                    .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-            this.mediaType = mediaType;
-        }
-
-        @Override
-        public <T> Bytes serialize(T any) {
-            try {
-                return Bytes.from(mapper.writeValueAsBytes(any));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("Error while serializing object to bytes", e);
-            }
-        }
-
-        @Override
-        public <T> T deserialize(Bytes bytes, Class<T> objClass) {
-            try {
-                return mapper.readValue(bytes.unsafeGetUnderlyingArray(), objClass);
-            } catch (IOException e) {
-                throw new RuntimeException("Error while deserializing object from bytes", e);
-            }
-        }
-
-        @Override
-        public String contentType() {
-            return mediaType.toString();
-        }
+        MediaType mimeType();
     }
 }

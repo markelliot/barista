@@ -22,6 +22,8 @@ import com.markelliot.barista.annotations.Param.Header;
 import com.markelliot.barista.annotations.Param.Query;
 import com.markelliot.barista.authz.VerifiedAuthToken;
 import com.markelliot.barista.endpoints.HttpRedirect;
+import com.markelliot.result.Result;
+import java.util.List;
 import java.util.Optional;
 
 public final class FooResource {
@@ -40,6 +42,9 @@ public final class FooResource {
 
     @Http.Post("/foo/authed/post")
     public void authedPost(VerifiedAuthToken authToken, String body) {}
+
+    @Http.Post("/foo/result")
+    public void result(Result<String, List<String>> body) {}
 
     @Http.Post("/foo/authed/post/{pathParam}")
     public void authedPostWithParams(

@@ -18,7 +18,6 @@ package com.markelliot.barista.processor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.markelliot.barista.Bytes;
 import com.markelliot.barista.HttpMethod;
 import com.markelliot.barista.authz.VerifiedAuthToken;
 import com.markelliot.barista.endpoints.EndpointHandler;
@@ -125,24 +124,26 @@ public final class EndpointHandlerGenerator {
         CodeBlock returnStatement =
                 switch (definition.returnType()) {
                     case BYTE_STREAM -> throw new IllegalStateException("Unsupported");
-                    case EMPTY, OBJECT -> CodeBlock.builder()
-                            .addStatement(
-                                    "$N.handle(() -> $N.$N($L), $N)",
-                                    "runtime",
-                                    "delegate",
-                                    definition.methodName(),
-                                    argumentList(definition),
-                                    "exchange")
-                            .build();
-                    case REDIRECT -> CodeBlock.builder()
-                            .addStatement(
-                                    "$N.redirect(() -> $N.$N($L), $N)",
-                                    "runtime",
-                                    "delegate",
-                                    definition.methodName(),
-                                    argumentList(definition),
-                                    "exchange")
-                            .build();
+                    case EMPTY, OBJECT ->
+                        CodeBlock.builder()
+                                .addStatement(
+                                        "$N.handle(() -> $N.$N($L), $N)",
+                                        "runtime",
+                                        "delegate",
+                                        definition.methodName(),
+                                        argumentList(definition),
+                                        "exchange")
+                                .build();
+                    case REDIRECT ->
+                        CodeBlock.builder()
+                                .addStatement(
+                                        "$N.redirect(() -> $N.$N($L), $N)",
+                                        "runtime",
+                                        "delegate",
+                                        definition.methodName(),
+                                        argumentList(definition),
+                                        "exchange")
+                                .build();
                 };
 
         CodeBlock.Builder handler = CodeBlock.builder();
@@ -169,18 +170,34 @@ public final class EndpointHandlerGenerator {
                         bodyParam -> handler.add(CodeBlock.builder()
                                 .beginControlFlow(
                                         "$N.getRequestReceiver().receiveFullBytes((bodyExchange, body_) ->", "exchange")
-                                .addStatement(
-                                        "$T $N = $N.requestSerDe(bodyExchange).deserialize($T.from(body_), $T.class)",
-                                        bodyParam.className(),
-                                        bodyParam.argumentName(),
-                                        "runtime",
-                                        Bytes.class,
-                                        bodyParam.className())
+                                .add(deserialize(bodyParam))
                                 .add(returnStatement)
                                 .endControlFlow(")")
                                 .build()),
                         () -> handler.add(returnStatement));
         return handler.build();
+    }
+
+    private static CodeBlock deserialize(ParameterDefinition bodyParam) {
+        if (bodyParam.className() instanceof ParameterizedTypeName ptn
+                && ptn.rawType.equals(ClassName.get(Result.class))) {
+            return CodeBlock.builder()
+                    .addStatement(
+                            "$T $N = $N.readBodyAsResult(bodyExchange, body_, $T.class)",
+                            bodyParam.className(),
+                            bodyParam.argumentName(),
+                            "runtime",
+                            ptn.typeArguments.get(0))
+                    .build();
+        }
+        return CodeBlock.builder()
+                .addStatement(
+                        "$T $N = $N.readBody(bodyExchange, body_, $T.class)",
+                        bodyParam.className(),
+                        bodyParam.argumentName(),
+                        "runtime",
+                        bodyParam.className())
+                .build();
     }
 
     private static CodeBlock authBlock(String authParamName) {
@@ -229,9 +246,10 @@ public final class EndpointHandlerGenerator {
                         .map(param -> switch (param.type()) {
                             case TOKEN -> CodeBlock.of("$N.unwrap()", param.argumentName());
                             case BODY -> CodeBlock.of("$N", param.argumentName());
-                            default -> isOptional(param.className())
-                                    ? CodeBlock.of("$N", param.argumentName())
-                                    : CodeBlock.of("$N.get()", param.argumentName());
+                            default ->
+                                isOptional(param.className())
+                                        ? CodeBlock.of("$N", param.argumentName())
+                                        : CodeBlock.of("$N.get()", param.argumentName());
                         })
                         .collect(Collectors.toList()),
                 ", ");
