@@ -32,7 +32,8 @@ import java.util.function.Consumer;
 public final class EndpointHandlerBuilder {
     private EndpointHandlerBuilder() {}
 
-    public static HttpHandler build(Set<EndpointHandler> endpointHandlers, Optional<Consumer<Request>> fallbackHandler) {
+    public static HttpHandler build(
+            Set<EndpointHandler> endpointHandlers, Optional<Consumer<Request>> fallbackHandler) {
         RoutingHandler router = new RoutingHandler(false);
         endpointHandlers.forEach(e -> router.add(e.method().method(), e.route(), e.handler()));
         router.setFallbackHandler(exchange -> {
