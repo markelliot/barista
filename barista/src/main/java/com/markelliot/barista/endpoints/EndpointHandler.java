@@ -24,5 +24,5 @@ public interface EndpointHandler {
 
     String route();
 
-    HttpHandler handler(EndpointRuntime runtime);
+    HttpHandler handler();
 }

@@ -17,7 +17,6 @@
 package com.markelliot.barista;
 
 import com.google.common.base.Preconditions;
-import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.endpoints.Endpoints;
 import com.markelliot.barista.handlers.CorsHandler;
@@ -91,8 +90,6 @@ public final class Server {
         private int port = 8443;
         private final Set<EndpointHandler> endpointHandlers = new LinkedHashSet<>();
         private final Set<String> allowedOrigins = new LinkedHashSet<>();
-        private SerDe serde = SerDe.MimeTypeDispatchingSerDe.INSTANCE;
-        private Authz authz = Authz.denyAll();
         private boolean allowAllOrigins = false;
         private boolean strictTransportSecurity = false;
         private boolean tls = true;
@@ -130,18 +127,6 @@ public final class Server {
 
         public Builder allowAllOrigins() {
             allowAllOrigins = true;
-            return this;
-        }
-
-        public Builder serde(SerDe serde) {
-            Objects.requireNonNull(serde);
-            this.serde = serde;
-            return this;
-        }
-
-        public Builder authz(Authz authz) {
-            Objects.requireNonNull(authz);
-            this.authz = authz;
             return this;
         }
 
@@ -192,8 +177,6 @@ public final class Server {
         }
 
         public Server start() {
-            Preconditions.checkNotNull(authz);
-
             if (enableTraceLogging) {
                 // TODO(markelliot): use a custom format, perhaps emit to a specific log file
                 Logger tracing = LoggerFactory.getLogger("tracing");
@@ -205,7 +188,7 @@ public final class Server {
                     .then(h -> new TracingHandler(tracingRate, h))
                     .then(h -> new RequestLoggingHandler(requestLogConsumer, requestErrorConsumer, h))
                     .then(StrictTransportSecurityHandler::new, strictTransportSecurity)
-                    .last(new EndpointHandlerBuilder(serde, authz, fallbackHandler).build(endpointHandlers));
+                    .last(EndpointHandlerBuilder.build(endpointHandlers, fallbackHandler));
             GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handler);
             Undertow undertow = Undertow.builder()
                     .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))

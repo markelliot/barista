@@ -19,6 +19,7 @@ package com.markelliot.barista.processor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.markelliot.barista.Server;
+import com.markelliot.barista.endpoints.EndpointRuntime;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -35,11 +36,12 @@ public final class TestFooServer {
 
     @BeforeAll
     static void beforeAll() {
+        EndpointRuntime<Exception> runtime = EndpointRuntime.createDefault();
         server = Server.builder()
                 .allowOrigin("localhost:8181")
                 .port(8282)
                 .disableTls()
-                .endpoints(new FooResourceEndpoints(new FooResource()))
+                .endpoints(new FooResourceEndpoints(new FooResource(), runtime))
                 .start();
     }
 
