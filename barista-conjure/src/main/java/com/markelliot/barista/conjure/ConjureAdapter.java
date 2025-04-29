@@ -18,7 +18,6 @@ package com.markelliot.barista.conjure;
 
 import com.markelliot.barista.HttpMethod;
 import com.markelliot.barista.endpoints.EndpointHandler;
-import com.markelliot.barista.endpoints.EndpointRuntime;
 import com.markelliot.barista.endpoints.Endpoints;
 import com.markelliot.barista.handlers.HandlerChain;
 import com.palantir.conjure.java.undertow.lib.Endpoint;
@@ -73,7 +72,7 @@ public final class ConjureAdapter {
             }
 
             @Override
-            public HttpHandler handler(EndpointRuntime runtime) {
+            public HttpHandler handler() {
                 return HandlerChain.of(BlockingHandler::new)
                         .then(h -> new ConjureExceptionHandler(h, conjureRuntime.exceptionHandler()))
                         .last(endpoint.handler());

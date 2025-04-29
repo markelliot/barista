@@ -38,6 +38,7 @@ final class ServerTests {
 
     @BeforeAll
     static void beforeAll() {
+        EndpointRuntime runtime = EndpointRuntime.createDefault();
         server = Server.builder()
                 .allowOrigin("localhost:8181")
                 .port(8080)
@@ -55,7 +56,7 @@ final class ServerTests {
                     }
 
                     @Override
-                    public HttpHandler handler(EndpointRuntime runtime) {
+                    public HttpHandler handler() {
                         return exchange -> runtime.handle(() -> "Hello World", exchange);
                     }
                 }))

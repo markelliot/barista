@@ -19,10 +19,7 @@ package com.markelliot.barista.handlers;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import com.markelliot.barista.Request;
-import com.markelliot.barista.SerDe;
-import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.endpoints.EndpointHandler;
-import com.markelliot.barista.endpoints.EndpointRuntime;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
@@ -33,20 +30,15 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 
 public final class EndpointHandlerBuilder {
-    private final SerDe serde;
-    private final Authz authz;
     private final Optional<Consumer<Request>> fallbackHandler;
 
-    public EndpointHandlerBuilder(SerDe serde, Authz authz, Optional<Consumer<Request>> fallbackHandler) {
+    public EndpointHandlerBuilder(Optional<Consumer<Request>> fallbackHandler) {
         this.fallbackHandler = fallbackHandler;
-        this.serde = serde;
-        this.authz = authz;
     }
 
     public HttpHandler build(Set<EndpointHandler> endpointHandlers) {
-        EndpointRuntime runtime = new EndpointRuntime(serde, authz);
         RoutingHandler router = new RoutingHandler(false);
-        endpointHandlers.forEach(e -> router.add(e.method().method(), e.route(), e.handler(runtime)));
+        endpointHandlers.forEach(e -> router.add(e.method().method(), e.route(), e.handler()));
         router.setFallbackHandler(exchange -> {
             fallbackHandler.ifPresent(requestConsumer -> requestConsumer.accept(toRequest(exchange)));
             exchange.setStatusCode(404).getResponseSender().send("Unknown API Endpoint");

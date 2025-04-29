@@ -23,6 +23,7 @@ import com.markelliot.barista.authz.AuthToken;
 import com.markelliot.barista.authz.AuthTokens;
 import com.markelliot.barista.authz.Authz;
 import com.markelliot.barista.authz.VerifiedAuthToken;
+import com.markelliot.barista.serde.DispatchingSerDe;
 import com.markelliot.result.Result;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
@@ -38,7 +39,7 @@ public final class EndpointRuntime {
     private final SerDe serde;
     private final Authz authz;
 
-    public EndpointRuntime(SerDe serde, Authz authz) {
+    private EndpointRuntime(SerDe serde, Authz authz) {
         this.serde = serde;
         this.authz = authz;
     }
@@ -193,4 +194,33 @@ public final class EndpointRuntime {
     }
 
     record ServerError(String errorId, String message) {}
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static EndpointRuntime createDefault() {
+        return builder().build();
+    }
+
+    public static final class Builder {
+        private SerDe serde = DispatchingSerDe.createDefault();
+        private Authz authz = Authz.denyAll();
+
+        private Builder() {}
+
+        public Builder serde(SerDe serde) {
+            this.serde = serde;
+            return this;
+        }
+
+        public Builder authz(Authz authz) {
+            this.authz = authz;
+            return this;
+        }
+
+        public EndpointRuntime build() {
+            return new EndpointRuntime(serde, authz);
+        }
+    }
 }
