@@ -36,10 +36,10 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 public final class EndpointRuntime {
-    private final SerDe serde;
+    private final SerDe<?> serde;
     private final Authz authz;
 
-    private EndpointRuntime(SerDe serde, Authz authz) {
+    private EndpointRuntime(SerDe<?> serde, Authz authz) {
         this.serde = serde;
         this.authz = authz;
     }
@@ -204,12 +204,12 @@ public final class EndpointRuntime {
     }
 
     public static final class Builder {
-        private SerDe serde = DispatchingSerDe.createDefault();
+        private SerDe<?> serde = DispatchingSerDe.createDefault();
         private Authz authz = Authz.denyAll();
 
         private Builder() {}
 
-        public Builder serde(SerDe serde) {
+        public Builder serde(SerDe<?> serde) {
             this.serde = serde;
             return this;
         }

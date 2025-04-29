@@ -29,29 +29,29 @@ import com.google.common.net.MediaType;
 import com.markelliot.barista.SerDe;
 import java.util.Map;
 
-public final class DispatchingSerDe implements SerDe {
-    private final ImmutableMap<MediaType, SerDe.MimeTypeSerDe<?>> serdes;
-    private final MimeTypeSerDe<?> defaultSerDe;
+public final class DispatchingSerDe<E> implements SerDe<E> {
+    private final ImmutableMap<MediaType, SerDe.MimeTypeSerDe<E>> serdes;
+    private final MimeTypeSerDe<E> defaultSerDe;
 
-    private DispatchingSerDe(Map<MediaType, MimeTypeSerDe<?>> serdes, MimeTypeSerDe<?> defaultSerDe) {
+    private DispatchingSerDe(Map<MediaType, MimeTypeSerDe<E>> serdes, MimeTypeSerDe<E> defaultSerDe) {
         this.serdes = ImmutableMap.copyOf(serdes);
         this.defaultSerDe = defaultSerDe;
     }
 
     @Override
-    public MimeTypeSerDe<?> select(MediaType mimeType) {
-        SerDe.MimeTypeSerDe<?> maybe = serdes.get(mimeType.withoutParameters());
+    public MimeTypeSerDe<E> select(MediaType mimeType) {
+        SerDe.MimeTypeSerDe<E> maybe = serdes.get(mimeType.withoutParameters());
         if (maybe != null) {
             return maybe;
         }
         return defaultSerDe;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <E> Builder<E> builder() {
+        return new Builder<>();
     }
 
-    public static DispatchingSerDe createDefault() {
+    public static DispatchingSerDe<Exception> createDefault() {
         ObjectMapperSerDe yaml = new ObjectMapperSerDe(
                 MediaType.create("application", "yaml"),
                 new ObjectMapper(new YAMLFactory()
@@ -63,31 +63,31 @@ public final class DispatchingSerDe implements SerDe {
                         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
                         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
         ObjectMapperSerDe json = new ObjectMapperSerDe(MediaType.create("application", "json"), new ObjectMapper());
-        return DispatchingSerDe.builder()
+        return DispatchingSerDe.<Exception>builder()
                 .add(MediaType.create("application", "yaml"), yaml)
                 .add(MediaType.create("application", "json"), json)
                 .defaultSerDe(json)
                 .build();
     }
 
-    public static final class Builder {
-        private ImmutableMap.Builder<MediaType, SerDe.MimeTypeSerDe<?>> serdes = ImmutableMap.builder();
-        private SerDe.MimeTypeSerDe<?> defaultSerDe = null;
+    public static final class Builder<E> {
+        private ImmutableMap.Builder<MediaType, SerDe.MimeTypeSerDe<E>> serdes = ImmutableMap.builder();
+        private SerDe.MimeTypeSerDe<E> defaultSerDe = null;
 
         private Builder() {}
 
-        public Builder add(MediaType mimeType, SerDe.MimeTypeSerDe<?> serde) {
+        public Builder<E> add(MediaType mimeType, SerDe.MimeTypeSerDe<E> serde) {
             serdes.put(mimeType.withoutParameters(), serde);
             return this;
         }
 
-        public Builder defaultSerDe(SerDe.MimeTypeSerDe<?> defaultSerDe) {
+        public Builder<E> defaultSerDe(SerDe.MimeTypeSerDe<E> defaultSerDe) {
             this.defaultSerDe = defaultSerDe;
             return this;
         }
 
-        public DispatchingSerDe build() {
-            return new DispatchingSerDe(serdes.buildKeepingLast(), defaultSerDe);
+        public DispatchingSerDe<E> build() {
+            return new DispatchingSerDe<>(serdes.buildKeepingLast(), defaultSerDe);
         }
     }
 }

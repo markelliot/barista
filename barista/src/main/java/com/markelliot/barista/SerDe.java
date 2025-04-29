@@ -19,8 +19,8 @@ package com.markelliot.barista;
 import com.google.common.net.MediaType;
 import com.markelliot.result.Result;
 
-public interface SerDe {
-    MimeTypeSerDe<?> select(MediaType mimeType);
+public interface SerDe<E> {
+    MimeTypeSerDe<E> select(MediaType mimeType);
 
     interface MimeTypeSerDe<E> {
         <T> Result<Bytes, E> serialize(T any);
