@@ -162,8 +162,7 @@ public final class EndpointHandlerGenerator {
         CodeBlock returnStatement =
                 switch (definition.returnType()) {
                     case BYTE_STREAM -> throw new IllegalStateException("Unsupported");
-                    case EMPTY, OBJECT ->
-                        CodeBlock.builder()
+                    case EMPTY, OBJECT -> CodeBlock.builder()
                                 .addStatement(
                                         "$N.handle(() -> $N.$N($L), $N)",
                                         "runtime",
@@ -172,8 +171,7 @@ public final class EndpointHandlerGenerator {
                                         argumentList(definition),
                                         "exchange")
                                 .build();
-                    case REDIRECT ->
-                        CodeBlock.builder()
+                    case REDIRECT -> CodeBlock.builder()
                                 .addStatement(
                                         "$N.redirect(() -> $N.$N($L), $N)",
                                         "runtime",
