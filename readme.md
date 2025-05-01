@@ -51,6 +51,10 @@ Customize endpoint function by:
  - Use up to one unannotated non-path parameter as the body; Barista's code-generator will attempt
    to deserialize incoming requests to the type of this parameter.
 
+   Use `Result<T, E>` as the type of the argument where `E` matches the generic in `EndpointRuntime<E>`
+   (`EndpointRuntime.createDefault()` returns an `EndpointRuntime<Exception>`) to trap SerDe errors
+   in the resource class.
+
    (Generics are not presently supported. `InputStream` is not presently supported.)
  - The return type of the method dictates behavior of the endpoint:
    - `HttpRedirect`: redirect according to the logic encoded by an instance of `HttpRedirect`
@@ -103,10 +107,9 @@ Server.builder()
 Then, to create and start the server, one can use the `Server` builder to register the endpoint,
 correctly set allowed CORS origins and then ultimately start the server: 
 ```java
-Authz authz = Authz.denyAll(); // not using authz, so this is a no-op implementation
+EndpointRuntime runtime = EndpointRuntime.createDefault();
 Server.builder()
-    .authz(authz)
-    .endpoints(new GreeterResourceEndpoints(new GreeterResource()))
+    .endpoints(new GreeterResourceEndpoints(new GreeterResource(), runtime))
     .allowOrigin("https://example.com")
     .allowOrigin("http://localhost:8080") // for development
     .start();
