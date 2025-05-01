@@ -82,7 +82,7 @@ public final class EndpointHandlerGenerator {
                 .collect(Collectors.toSet());
         Preconditions.checkArgument(
                 errTypes.size() <= 1, "All body Result<T, E> types must have same E type, found %s", errTypes);
-        return Optional.ofNullable(Iterables.getOnlyElement(errTypes));
+        return Optional.ofNullable(Iterables.getFirst(errTypes, null));
     }
 
     private static Iterable<TypeVariableName> errorTypeVariable(Optional<TypeName> concreteErrorType) {
