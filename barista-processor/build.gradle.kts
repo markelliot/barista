@@ -13,7 +13,7 @@ dependencies {
     implementation("com.google.googlejavaformat:google-java-format")
     implementation("com.google.guava:guava")
     implementation("com.markelliot.result:result")
-    implementation("com.squareup:javapoet")
+    implementation("com.palantir.javapoet:javapoet")
 
     testAnnotationProcessor(project(":barista-processor"))
     // TODO(markelliot): figure out why the rest of these are necessary for intellij
@@ -23,7 +23,7 @@ dependencies {
     testAnnotationProcessor("com.google.googlejavaformat:google-java-format")
     testAnnotationProcessor("com.google.guava:guava")
     testAnnotationProcessor("com.markelliot.result:result")
-    testAnnotationProcessor("com.squareup:javapoet")
+    testAnnotationProcessor("com.palantir.javapoet:javapoet")
 
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
