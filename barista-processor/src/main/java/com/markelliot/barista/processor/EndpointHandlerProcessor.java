@@ -29,10 +29,10 @@ import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandler
 import com.markelliot.barista.processor.EndpointHandlerGenerator.EndpointHandlerDefinition.ReturnType;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.ParameterDefinition;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.ParameterDefinition.ParamType;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.palantir.javapoet.ClassName;
+import com.palantir.javapoet.JavaFile;
+import com.palantir.javapoet.TypeName;
+import com.palantir.javapoet.TypeSpec;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -76,7 +76,7 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
                 Set<JavaFile> filesFromRound = processImpl(annotations, roundEnv);
                 for (JavaFile jf : filesFromRound) {
                     String output = format(jf);
-                    writeTo(jf.packageName, jf.typeSpec, output, processingEnv.getFiler());
+                    writeTo(jf.packageName(), jf.typeSpec(), output, processingEnv.getFiler());
                 }
             }
         } catch (Exception e) {
@@ -105,8 +105,8 @@ public final class EndpointHandlerProcessor extends AbstractProcessor {
 
     // Copied from JavaFile
     public void writeTo(String packageName, TypeSpec typeSpec, String formattedSource, Filer filer) throws IOException {
-        String fileName = packageName.isEmpty() ? typeSpec.name : packageName + "." + typeSpec.name;
-        List<Element> originatingElements = typeSpec.originatingElements;
+        String fileName = packageName.isEmpty() ? typeSpec.name() : packageName + "." + typeSpec.name();
+        List<Element> originatingElements = typeSpec.originatingElements();
         JavaFileObject filerSourceFile = filer.createSourceFile(fileName, originatingElements.toArray(new Element[0]));
         try (Writer writer = filerSourceFile.openWriter()) {
             writer.write(formattedSource);
