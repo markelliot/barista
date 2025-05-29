@@ -75,11 +75,11 @@ public final class Server {
         try {
             if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
                 log.warn("Graceful shutdown handler exceeded wait.");
-                undertow.stop();
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error("Interrupted while waiting for graceful shutdown", e);
         }
+        undertow.stop();
     }
 
     public static Builder builder() {
