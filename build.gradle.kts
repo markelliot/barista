@@ -15,7 +15,7 @@ plugins {
 version = "git describe --tags".runCommand().trim() +
     (if (!"git status -s".runCommand().isEmpty()) ".dirty" else "")
 
-task("printVersion") {
+tasks.register("printVersion") {
     doLast {
         println(rootProject.version)
     }
