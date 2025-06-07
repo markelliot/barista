@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2022 Mark Elliot. All rights reserved.
+ * (c) Copyright 2025 Mark Elliot. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,4 @@ package com.markelliot.barista.endpoints;
 import com.markelliot.barista.HttpMethod;
 import io.undertow.server.HttpHandler;
 
-public interface EndpointHandler {
-    static EndpointHandler of(HttpMethod method, String route, HttpHandler handler) {
-        return new DefaultEndpointHandler(method, route, handler);
-    }
-
-    HttpMethod method();
-
-    String route();
-
-    HttpHandler handler();
-}
+record DefaultEndpointHandler(HttpMethod method, String route, HttpHandler handler) implements EndpointHandler {}
