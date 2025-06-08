@@ -13,6 +13,6 @@ com.squareup:javapoet = 1.13.0
 io.undertow:undertow-core = 2.3.18.Final
 org.apache.logging.log4j:* = 2.24.3
 org.assertj:assertj-core = 3.27.3
-org.junit.jupiter:junit-jupiter = 5.13.0
+org.junit.jupiter:junit-jupiter = 5.13.1
 org.slf4j:* = 2.0.17
 
