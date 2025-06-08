@@ -54,30 +54,18 @@ public final class ConjureAdapter {
     }
 
     private static EndpointHandler fromConjureEndpoint(Endpoint endpoint, UndertowRuntime conjureRuntime) {
-        return new EndpointHandler() {
-            @Override
-            public HttpMethod method() {
-                return switch (endpoint.method().toString()) {
+        var method =
+                switch (endpoint.method().toString()) {
                     case "GET" -> HttpMethod.GET;
                     case "PUT" -> HttpMethod.PUT;
                     case "POST" -> HttpMethod.POST;
                     case "DELETE" -> HttpMethod.DELETE;
                     default -> throw new IllegalStateException("Unsupported HTTP method " + endpoint.method());
                 };
-            }
-
-            @Override
-            public String route() {
-                return endpoint.template();
-            }
-
-            @Override
-            public HttpHandler handler() {
-                return HandlerChain.of(BlockingHandler::new)
-                        .then(h -> new ConjureExceptionHandler(h, conjureRuntime.exceptionHandler()))
-                        .last(endpoint.handler());
-            }
-        };
+        HttpHandler handler = HandlerChain.of(BlockingHandler::new)
+                .then(h -> new ConjureExceptionHandler(h, conjureRuntime.exceptionHandler()))
+                .last(endpoint.handler());
+        return EndpointHandler.of(method, endpoint.template(), handler);
     }
 
     private record BlockingHandler(HttpHandler delegate) implements HttpHandler {

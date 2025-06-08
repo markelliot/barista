@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.markelliot.barista.endpoints.EndpointHandler;
 import com.markelliot.barista.endpoints.EndpointRuntime;
-import io.undertow.server.HttpHandler;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -44,22 +43,8 @@ final class ServerTests {
                 .port(8080)
                 .disableTls()
                 .enableStrictTransportSecurity()
-                .endpoints(() -> Set.of(new EndpointHandler() {
-                    @Override
-                    public HttpMethod method() {
-                        return HttpMethod.GET;
-                    }
-
-                    @Override
-                    public String route() {
-                        return "/hello-world";
-                    }
-
-                    @Override
-                    public HttpHandler handler() {
-                        return exchange -> runtime.handle(() -> "Hello World", exchange);
-                    }
-                }))
+                .endpoints(() -> Set.of(EndpointHandler.of(
+                        HttpMethod.GET, "/hello-world", exchange -> runtime.handle(() -> "Hello World", exchange))))
                 .start();
     }
 
