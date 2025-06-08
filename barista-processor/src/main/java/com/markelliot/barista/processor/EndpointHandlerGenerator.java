@@ -27,14 +27,14 @@ import com.markelliot.barista.endpoints.Endpoints;
 import com.markelliot.barista.endpoints.HttpError;
 import com.markelliot.barista.processor.EndpointHandlerGenerator.ParameterDefinition.ParamType;
 import com.markelliot.result.Result;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
+import com.palantir.javapoet.ClassName;
+import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.JavaFile;
+import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.ParameterizedTypeName;
+import com.palantir.javapoet.TypeName;
+import com.palantir.javapoet.TypeSpec;
+import com.palantir.javapoet.TypeVariableName;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
@@ -76,9 +76,9 @@ public final class EndpointHandlerGenerator {
                 .flatMap(h -> h.parameters().stream())
                 .filter(p -> p.type() == ParamType.BODY)
                 .filter(p -> (p.className() instanceof ParameterizedTypeName ptn)
-                        && ptn.rawType.equals(ClassName.get(Result.class)))
+                        && ptn.rawType().equals(ClassName.get(Result.class)))
                 .map(p -> (ParameterizedTypeName) p.className())
-                .map(c -> c.typeArguments.get(1))
+                .map(c -> c.typeArguments().get(1))
                 .collect(Collectors.toSet());
         Preconditions.checkArgument(
                 errTypes.size() <= 1, "All body Result<T, E> types must have same E type, found %s", errTypes);
@@ -216,14 +216,14 @@ public final class EndpointHandlerGenerator {
 
     private static CodeBlock deserialize(ParameterDefinition bodyParam) {
         if (bodyParam.className() instanceof ParameterizedTypeName ptn
-                && ptn.rawType.equals(ClassName.get(Result.class))) {
+                && ptn.rawType().equals(ClassName.get(Result.class))) {
             return CodeBlock.builder()
                     .addStatement(
                             "$T $N = $N.readBodyAsResult(bodyExchange, body_, $T.class)",
                             bodyParam.className(),
                             bodyParam.argumentName(),
                             "runtime",
-                            ptn.typeArguments.get(0))
+                            ptn.typeArguments().get(0))
                     .build();
         }
         return CodeBlock.builder()
@@ -292,7 +292,7 @@ public final class EndpointHandlerGenerator {
 
     private static boolean isOptional(TypeName name) {
         return (name instanceof ParameterizedTypeName className)
-                && className.rawType.equals(ClassName.get(Optional.class));
+                && className.rawType().equals(ClassName.get(Optional.class));
     }
 
     private static ClassName endpointsClassName(ClassName className) {
