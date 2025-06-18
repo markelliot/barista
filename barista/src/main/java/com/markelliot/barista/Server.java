@@ -43,6 +43,7 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnio.Options;
 
 public final class Server {
     private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -191,7 +192,8 @@ public final class Server {
                     .last(EndpointHandlerBuilder.build(endpointHandlers, fallbackHandler));
             GracefulShutdownHandler shutdownHandler = new GracefulShutdownHandler(handler);
             Undertow undertow = Undertow.builder()
-                    .setHandler(new DispatchFromIoThreadHandler(shutdownHandler))
+                    .setHandler(shutdownHandler)
+                    .setWorkerOption(Options.THREAD_DAEMON, true)
                     .addListener(listener())
                     .build();
             Server server = new Server(shutdownHandler, undertow);
