@@ -39,7 +39,7 @@ final class EndpointRuntimeTest {
             .build();
 
     @Test
-    void verifyAuth_missingAuthorizationHeader_returnsUnauthenticated() {
+    void verifyAuth_missingAuthorizationHeader_returnsUnauthorized() {
         HttpServerExchange exchange = createExchangeWithoutAuthHeader();
 
         Result<VerifiedAuthToken, HttpError> result = endpointRuntime.verifyAuth(exchange);
