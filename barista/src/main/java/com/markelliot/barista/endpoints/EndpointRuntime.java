@@ -84,7 +84,7 @@ public final class EndpointRuntime<E> {
 
     public Result<VerifiedAuthToken, HttpError> verifyAuth(HttpServerExchange exchange) {
         HeaderValues authzHeader = exchange.getRequestHeaders().get(Headers.AUTHORIZATION);
-        if (authzHeader.size() != 1) {
+        if (authzHeader == null || authzHeader.size() != 1) {
             return HttpError.unauthenticated("Unauthorized: Missing authorization authToken");
         }
 
