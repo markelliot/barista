@@ -53,6 +53,8 @@ public final class LifeCycleManager {
         ManageBuildStage manage(Scheduled scheduled);
 
         FinalBuildStage stopOnShutdown();
+
+        LifeCycleManager build();
     }
 
     public interface FinalBuildStage {
