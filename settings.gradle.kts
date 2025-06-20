@@ -8,5 +8,6 @@ plugins {
 include("barista")
 include("barista-annotations")
 include("barista-conjure")
+include("barista-lifecycle")
 include("barista-processor")
 include("barista-prometheus")
