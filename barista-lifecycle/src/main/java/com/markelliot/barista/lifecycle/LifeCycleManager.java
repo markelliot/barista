@@ -127,7 +127,7 @@ public final class LifeCycleManager {
     private static class ScheduledLifeCycleAware implements LifeCycleAware {
         private final Scheduled scheduled;
         private final LifeCycleContext context;
-        private ScheduledFuture<?> future;
+        private volatile ScheduledFuture<?> future;
 
         ScheduledLifeCycleAware(Scheduled scheduled, LifeCycleContext context) {
             this.scheduled = scheduled;
