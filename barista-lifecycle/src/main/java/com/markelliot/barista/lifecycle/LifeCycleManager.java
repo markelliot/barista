@@ -63,14 +63,12 @@ public final class LifeCycleManager {
         ManageBuildStage context(LifeCycleContext context);
     }
 
-    public interface ManageBuildStage {
+    public interface ManageBuildStage extends FinalBuildStage {
         ManageBuildStage manage(LifeCycleAware lifeCycleAware);
 
         ManageBuildStage manage(Scheduled scheduled);
 
         FinalBuildStage stopOnShutdown();
-
-        LifeCycleManager build();
     }
 
     public interface FinalBuildStage {
@@ -79,7 +77,7 @@ public final class LifeCycleManager {
 
     public static final class Builder implements ContextBuildStage, ManageBuildStage, FinalBuildStage {
         private LifeCycleContext context;
-        private List<LifeCycleAware> managed = new ArrayList<>();
+        private final List<LifeCycleAware> managed = new ArrayList<>();
         private boolean stopOnShutdown = false;
         private boolean built = false;
 
