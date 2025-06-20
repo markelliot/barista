@@ -1,3 +1,19 @@
+/*
+ * (c) Copyright 2025 Mark Elliot. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.markelliot.barista.lifecycle;
 
 import java.util.ArrayList;
@@ -61,7 +77,7 @@ public final class LifeCycleManager {
         LifeCycleManager build();
     }
 
-    public static class Builder implements ContextBuildStage, ManageBuildStage, FinalBuildStage {
+    public static final class Builder implements ContextBuildStage, ManageBuildStage, FinalBuildStage {
         private LifeCycleContext context;
         private List<LifeCycleAware> managed = new ArrayList<>();
         private boolean stopOnShutdown = false;
@@ -83,7 +99,7 @@ public final class LifeCycleManager {
 
         @Override
         public Builder manage(Scheduled scheduled) {
-            managed.add(new ManagedSchedulable(scheduled, context));
+            managed.add(new ScheduledLifeCycleAware(scheduled, context));
             return this;
         }
 
@@ -108,12 +124,12 @@ public final class LifeCycleManager {
         }
     }
 
-    private static class ManagedSchedulable implements LifeCycleAware {
+    private static class ScheduledLifeCycleAware implements LifeCycleAware {
         private final Scheduled scheduled;
         private final LifeCycleContext context;
         private ScheduledFuture<?> future;
 
-        ManagedSchedulable(Scheduled scheduled, LifeCycleContext context) {
+        ScheduledLifeCycleAware(Scheduled scheduled, LifeCycleContext context) {
             this.scheduled = scheduled;
             this.context = context;
         }
@@ -122,7 +138,9 @@ public final class LifeCycleManager {
         public void start() {
             if (future == null) {
                 Scheduled.Schedule schedule = scheduled.schedule();
-                future = context.executorService().scheduleWithFixedDelay(schedule.runnable(), schedule.initialDelay(), schedule.delay(), schedule.timeUnit());
+                future = context.executorService()
+                        .scheduleWithFixedDelay(
+                                schedule.runnable(), schedule.initialDelay(), schedule.delay(), schedule.timeUnit());
             }
         }
 
@@ -134,5 +152,4 @@ public final class LifeCycleManager {
             }
         }
     }
-
 }
