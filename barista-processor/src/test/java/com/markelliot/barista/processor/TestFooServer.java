@@ -26,6 +26,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,9 @@ public final class TestFooServer {
 
     @AfterAll
     static void afterAll() {
-        server.stop();
+        try (StackTracer _ignore = new StackTracer(Duration.ofSeconds(10))) {
+            server.stop();
+        }
     }
 
     @Test
