@@ -37,7 +37,7 @@ public final class LifeCycleManager {
     private final LifeCycleContext context;
     private final List<LifeCycleAware> managed;
 
-    public LifeCycleManager(LifeCycleContext context, List<LifeCycleAware> managed) {
+    private LifeCycleManager(LifeCycleContext context, List<LifeCycleAware> managed) {
         this.context = context;
         this.managed = managed;
     }
