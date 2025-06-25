@@ -72,10 +72,11 @@ public final class Server {
      */
     public synchronized void stop() {
         shutdownHandler.shutdown();
-        shutdownHandler.addShutdownListener(shutdownSuccessful -> undertow.stop());
         try {
             if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
-                log.warn("Graceful shutdown handler exceeded wait.");
+                log.warn("Graceful shutdown handler exceeded wait");
+            } else {
+                log.info("Graceful shutdown complete");
             }
         } catch (InterruptedException e) {
             log.error("Interrupted while waiting for graceful shutdown", e);
