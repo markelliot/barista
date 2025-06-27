@@ -6,4 +6,4 @@ build
 out
 
 generated_*
-
+buildSrc/.kotlin/
