@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     permissions:
       contents: read
       packages: write
@@ -18,11 +17,14 @@ jobs:
           java-version: "17"
           distribution: "zulu"
       - name: Build
-        run: ./gradlew -i build
+        run: ./gradlew build
       - name: Publish
-        run: ./gradlew -i publishToSonatype closeAndReleaseSonatypeStagingRepository
+        run: |
+          ./gradlew publishMavenPublicationToStagingRepository
+          ./gradlew jreleaserDeploy
         env:
-          MAVEN_CENTRAL_USER: ${{ secrets.MAVEN_CENTRAL_USER }}
-          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_PUBLIC_KEY: ${{ secrets.SIGNING_PUBLIC_KEY }}
+          SIGNING_SECRET_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
