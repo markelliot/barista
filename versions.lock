@@ -24,7 +24,7 @@ com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava (1 c
 com.google.j2objc:j2objc-annotations:3.0.0 (1 constraints: 150aeab4)
 com.google.protobuf:protobuf-java:4.31.0 (1 constraints: 1c1bb431)
 com.jakewharton.nopen:nopen-annotations:1.0.1 (3 constraints: 7d256836)
-com.markelliot.barista.tracing:barista-tracing:0.74.0 (1 constraints: 3d05473b)
+com.markelliot.barista.tracing:barista-tracing:0.119.1 (1 constraints: 6e05a840)
 com.markelliot.result:result:0.119.1 (1 constraints: 6e05a840)
 com.palantir.conjure.java:conjure-java-undertow-runtime:8.47.0 (1 constraints: 4505743b)
 com.palantir.conjure.java:conjure-lib:8.47.0 (2 constraints: 3b2b87b9)
