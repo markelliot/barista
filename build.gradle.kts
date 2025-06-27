@@ -7,9 +7,9 @@ plugins {
     id("com.google.cloud.tools.jib") version "3.4.5" apply false
     id("com.palantir.consistent-versions") version "2.34.0"
     id("com.markelliot.versions") version "0.132.0"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("net.ltgt.errorprone") version "4.3.0" apply false
     id("org.inferred.processors") version "3.7.0" apply false
+    id("org.jreleaser") version "1.18.0"
 }
 
 version = "git describe --tags".runCommand().trim() +
@@ -111,13 +111,31 @@ fun String.runCommand(): String {
     return proc.inputStream.bufferedReader().readText()
 }
 
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(System.getenv("MAVEN_CENTRAL_USER"))
-            password.set(System.getenv("MAVEN_CENTRAL_PASSWORD"))
+jreleaser {
+    signing {
+        active.set(org.jreleaser.model.Active.ALWAYS)
+        armored.set(true)
+        publicKey.set(System.getenv("SIGNING_PUBLIC_KEY"))
+        secretKey.set(System.getenv("SIGNING_SECRET_KEY"))
+        passphrase.set(System.getenv("SIGNING_PASSWORD"))
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                create("sonatype") {
+                    active.set(org.jreleaser.model.Active.ALWAYS)
+                    url.set("https://central.sonatype.com/api/v1/publisher")
+                    username.set(System.getenv("SONATYPE_USERNAME"))
+                    password.set(System.getenv("SONATYPE_PASSWORD"))
+                    stagingRepository("build/staging-deploy")
+
+                    // wait 30s between status checks
+                    retryDelay.set(30)
+
+                    // up to 100 status checks
+                    maxRetries.set(100)
+                }
+            }
         }
     }
 }
