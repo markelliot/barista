@@ -1,6 +1,8 @@
 name: Check PR
-on: [pull_request]
-
+on:
+  push:
+    branches: [develop]
+  pull_request: {}
 jobs:
   build:
     name: Check PR
