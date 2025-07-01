@@ -9,7 +9,7 @@ plugins {
     id("com.markelliot.versions") version "0.133.0"
     id("net.ltgt.errorprone") version "4.3.0" apply false
     id("org.inferred.processors") version "3.7.0" apply false
-    id("org.jreleaser") version "1.18.0"
+    id("org.jreleaser") version "1.19.0"
 }
 
 version = "git describe --tags".runCommand().trim() +
