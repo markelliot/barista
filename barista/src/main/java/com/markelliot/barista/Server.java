@@ -52,6 +52,8 @@ public final class Server {
     private final GracefulShutdownHandler shutdownHandler;
     private final Undertow undertow;
 
+    private boolean started = false;
+
     private Server(GracefulShutdownHandler shutdownHandler, Undertow undertow) {
         this.shutdownHandler = shutdownHandler;
         this.undertow = undertow;
@@ -59,8 +61,11 @@ public final class Server {
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
-    private synchronized void start() {
-        undertow.start();
+    public synchronized void start() {
+        if (!started) {
+            undertow.start();
+            started = true;
+        }
     }
 
     /**
@@ -71,17 +76,20 @@ public final class Server {
      * included automatically.
      */
     public synchronized void stop() {
-        shutdownHandler.shutdown();
-        try {
-            if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
-                log.warn("Graceful shutdown handler exceeded wait");
-            } else {
-                log.info("Graceful shutdown complete");
+        if (started) {
+            shutdownHandler.shutdown();
+            try {
+                if (!shutdownHandler.awaitShutdown(SHUTDOWN_TIMEOUT.toMillis())) {
+                    log.warn("Graceful shutdown handler exceeded wait");
+                } else {
+                    log.info("Graceful shutdown complete");
+                }
+            } catch (InterruptedException e) {
+                log.error("Interrupted while waiting for graceful shutdown", e);
             }
-        } catch (InterruptedException e) {
-            log.error("Interrupted while waiting for graceful shutdown", e);
+            undertow.stop();
+            started = false;
         }
-        undertow.stop();
     }
 
     public static Builder builder() {
@@ -101,6 +109,8 @@ public final class Server {
         private boolean enableTraceLogging = true;
         private RequestLoggingHandler.LogConsumer requestLogConsumer = RequestLoggingHandler.NO_OP_LOG_CONSUMER;
         private RequestLoggingHandler.ErrorConsumer requestErrorConsumer = RequestLoggingHandler.NO_OP_ERROR_CONSUMER;
+
+        private boolean built = false;
 
         private Builder() {}
 
@@ -178,7 +188,11 @@ public final class Server {
             return this;
         }
 
-        public Server start() {
+        /** Builds a Server but does not start it. */
+        public Server build() {
+            Preconditions.checkState(!built, "Cannot build Server#builder more than once");
+            built = true;
+
             if (enableTraceLogging) {
                 // TODO(markelliot): use a custom format, perhaps emit to a specific log file
                 Logger tracing = LoggerFactory.getLogger("tracing");
@@ -197,7 +211,12 @@ public final class Server {
                     .setWorkerOption(Options.THREAD_DAEMON, true)
                     .addListener(listener())
                     .build();
-            Server server = new Server(shutdownHandler, undertow);
+            return new Server(shutdownHandler, undertow);
+        }
+
+        /** Builds and starts a Server. */
+        public Server start() {
+            Server server = build();
             server.start();
             return server;
         }
