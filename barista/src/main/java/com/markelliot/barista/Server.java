@@ -52,7 +52,7 @@ public final class Server {
     private final GracefulShutdownHandler shutdownHandler;
     private final Undertow undertow;
 
-    private volatile boolean started = false;
+    private boolean started = false;
 
     private Server(GracefulShutdownHandler shutdownHandler, Undertow undertow) {
         this.shutdownHandler = shutdownHandler;
