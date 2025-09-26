@@ -17,6 +17,8 @@
 package com.markelliot.barista;
 
 import java.net.URI;
+import java.util.Locale;
+import java.util.Properties;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -36,6 +38,8 @@ final class Logging extends ConfigurationFactory {
 
     static final String DISABLE_LOGGING_DEFAULTS_SYSTEM_PROPERTY = "barista.logging.disableDefaults";
     static final String PATTERN = "%d [%t] %level: %msg%n%throwable";
+    static final String LOGGER_PROP_PREFIX = "log4j2.logger.";
+
     private static final String STDOUT = "stdout";
     private static final String[] SUPPORTED_TYPES = {"*"};
 
@@ -59,7 +63,37 @@ final class Logging extends ConfigurationFactory {
         builder.add(appenderBuilder);
         builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef(appenderBuilder.getName())));
 
+        // Apply logger-level overrides from system properties:
+        applyLoggerOverrides(builder);
+
         return builder.build();
+    }
+
+    private static void applyLoggerOverrides(ConfigurationBuilder<BuiltConfiguration> builder) {
+        Properties props = System.getProperties();
+        for (String key : props.stringPropertyNames()) {
+            if (key.startsWith(LOGGER_PROP_PREFIX)) {
+                String loggerName = key.substring(LOGGER_PROP_PREFIX.length()).trim();
+                String value = props.getProperty(key);
+                Level level = levelOrDefault(value, null);
+                if (loggerName.isEmpty() || level == null) continue;
+
+                // Add or override this logger at the requested level
+                builder.add(builder.newLogger(loggerName, level)
+                        // keep additive so logs still reach the console unless user changes it
+                        .addAttribute("additivity", true)
+                        .add(builder.newAppenderRef(STDOUT)));
+            }
+        }
+    }
+
+    private static Level levelOrDefault(String maybeLevel, Level dflt) {
+        if (maybeLevel == null) return dflt;
+        try {
+            return Level.valueOf(maybeLevel.trim().toUpperCase(Locale.ROOT));
+        } catch (Exception ignored) {
+            return dflt;
+        }
     }
 
     @Override
