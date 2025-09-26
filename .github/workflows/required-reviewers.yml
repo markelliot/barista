@@ -1,7 +1,7 @@
 name: Required Reviewers
-on:
-  pull_request: {}
-  pull_request_review: {}
+on: {}
+  # pull_request: {}
+  # pull_request_review: {}
 jobs:
   required-reviewers:
     name: Required Reviewers
