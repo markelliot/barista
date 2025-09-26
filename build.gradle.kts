@@ -139,3 +139,7 @@ jreleaser {
         }
     }
 }
+
+tasks.updateGradleWrapper {
+    enabled = false
+}
