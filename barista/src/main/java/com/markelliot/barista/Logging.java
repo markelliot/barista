@@ -78,12 +78,10 @@ final class Logging extends ConfigurationFactory {
                 if (loggerName.isEmpty() || level == null) continue;
 
                 // Add or override this logger at the requested level
-                builder.add(
-                    builder.newLogger(loggerName, level)
-                           // keep additive so logs still reach the console unless user changes it
-                           .addAttribute("additivity", true)
-                           .add(builder.newAppenderRef(STDOUT))
-                );
+                builder.add(builder.newLogger(loggerName, level)
+                        // keep additive so logs still reach the console unless user changes it
+                        .addAttribute("additivity", true)
+                        .add(builder.newAppenderRef(STDOUT)));
             }
         }
     }
