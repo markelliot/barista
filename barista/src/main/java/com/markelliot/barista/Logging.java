@@ -17,6 +17,7 @@
 package com.markelliot.barista;
 
 import java.net.URI;
+import java.util.Locale;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
