@@ -190,20 +190,20 @@ net.bytebuddy:byte-buddy:1.17.7 (2 constraints: 9d1841cb)
 
 org.assertj:assertj-core:3.27.6 (2 constraints: 6112841e)
 
-org.junit:junit-bom:5.14.0 (7 constraints: cd75cd0a)
+org.junit:junit-bom:6.0.0 (7 constraints: 61740c74)
 
-org.junit.jupiter:junit-jupiter:5.14.0 (2 constraints: 7c0ecc71)
+org.junit.jupiter:junit-jupiter:6.0.0 (2 constraints: 140e5458)
 
-org.junit.jupiter:junit-jupiter-api:5.14.0 (4 constraints: 373998e4)
+org.junit.jupiter:junit-jupiter-api:6.0.0 (4 constraints: 67385d2a)
 
-org.junit.jupiter:junit-jupiter-engine:5.14.0 (2 constraints: 77172864)
+org.junit.jupiter:junit-jupiter-engine:6.0.0 (2 constraints: 0f17403b)
 
-org.junit.jupiter:junit-jupiter-params:5.14.0 (2 constraints: 77172864)
+org.junit.jupiter:junit-jupiter-params:6.0.0 (2 constraints: 0f17403b)
 
-org.junit.platform:junit-platform-commons:1.14.0 (3 constraints: 6f2a2290)
+org.junit.platform:junit-platform-commons:6.0.0 (3 constraints: df292429)
 
-org.junit.platform:junit-platform-engine:1.14.0 (3 constraints: 872c957f)
+org.junit.platform:junit-platform-engine:6.0.0 (3 constraints: f72bf313)
 
-org.junit.platform:junit-platform-launcher:1.14.0 (1 constraints: 3d09a99e)
+org.junit.platform:junit-platform-launcher:6.0.0 (1 constraints: 0d097895)
 
 org.opentest4j:opentest4j:1.3.0 (2 constraints: cf209249)
