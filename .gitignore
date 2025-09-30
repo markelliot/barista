@@ -3,6 +3,7 @@ build
 *.iml
 *.ipr
 *.iws
+.idea
 out
 
 generated_*
