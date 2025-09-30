@@ -20,10 +20,6 @@ tasks.register("printVersion") {
     }
 }
 
-tasks.updateGradleWrapper {
-    enabled = true
-}
-
 allprojects {
     group = "com.markelliot.barista"
     version = rootProject.version
