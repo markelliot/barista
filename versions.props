@@ -15,5 +15,5 @@ io.prometheus:prometheus-metrics-* = 1.4.1
 io.undertow:undertow-core = 2.3.19.Final
 org.apache.logging.log4j:* = 2.25.2
 org.assertj:assertj-core = 3.27.6
-org.junit.jupiter:junit-jupiter = 5.13.4
+org.junit.jupiter:junit-jupiter = 5.14.0
 org.slf4j:* = 2.0.17
