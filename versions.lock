@@ -50,7 +50,7 @@ com.jakewharton.nopen:nopen-annotations:1.0.1 (3 constraints: 7d256836)
 
 com.markelliot.barista.tracing:barista-tracing:0.124.0 (1 constraints: 69059c40)
 
-com.markelliot.result:result:0.126.0 (1 constraints: 6b05a240)
+com.markelliot.result:result:0.127.0 (1 constraints: 6c05a540)
 
 com.palantir.conjure.java:conjure-java-undertow-runtime:8.57.0 (1 constraints: 4605783b)
 
@@ -186,9 +186,9 @@ org.yaml:snakeyaml:2.4 (1 constraints: 3e178d10)
 
 [Test dependencies]
 
-net.bytebuddy:byte-buddy:1.17.7 (2 constraints: 9d1841cb)
+net.bytebuddy:byte-buddy:1.17.7 (2 constraints: 741893b8)
 
-org.assertj:assertj-core:3.27.6 (2 constraints: 6112841e)
+org.assertj:assertj-core:3.27.6 (2 constraints: 6412871e)
 
 org.junit:junit-bom:6.0.0 (7 constraints: 61740c74)
 
