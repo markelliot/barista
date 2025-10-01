@@ -11,10 +11,10 @@ jobs:
     steps:
       - name: Generate token
         id: token
-        uses: tibdex/github-app-token@v1
+        uses: actions/create-github-app-token@v1
         with:
-          app_id: ${{ secrets.MELLBOT_APP_ID }}
-          private_key: ${{ secrets.MELLBOT_PK }}
+          app-id: ${{ secrets.MELLBOT_APP_ID }}
+          private-key: ${{ secrets.MELLBOT_PK }}
       - name: autorelease
         uses: markelliot/autorelease@v2
         with:
