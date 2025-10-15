@@ -1,6 +1,15 @@
 import com.google.cloud.tools.jib.gradle.JibExtension
 import net.ltgt.gradle.errorprone.errorprone
 
+buildscript {
+    configurations.classpath {
+        resolutionStrategy {
+            // Fix https://github.com/jreleaser/jreleaser/issues/1643
+            force("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r")
+        }
+    }
+}
+
 plugins {
     idea
     id("com.diffplug.spotless") version "8.0.0"
