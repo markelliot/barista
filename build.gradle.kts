@@ -5,7 +5,7 @@ buildscript {
     configurations.classpath {
         resolutionStrategy {
             // Fix https://github.com/jreleaser/jreleaser/issues/1643
-            force("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r")
+            force("org.eclipse.jgit:org.eclipse.jgit:7.4.0.202509020913-r")
         }
     }
 }
