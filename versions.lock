@@ -36,7 +36,7 @@ com.google.code.findbugs:jsr305:3.0.2 (6 constraints: 617e958b)
 
 com.google.errorprone:error_prone_annotations:2.41.0 (16 constraints: 8a0b4ee0)
 
-com.google.googlejavaformat:google-java-format:1.28.0 (1 constraints: 3d05453b)
+com.google.googlejavaformat:google-java-format:1.30.0 (1 constraints: 3605313b)
 
 com.google.guava:failureaccess:1.0.3 (1 constraints: 160ae3b4)
 
