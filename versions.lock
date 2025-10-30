@@ -102,25 +102,25 @@ com.palantir.tritium:tritium-registry:0.109.0 (3 constraints: a43bfe95)
 
 io.dropwizard.metrics:metrics-core:4.2.37 (4 constraints: ef4b7b8f)
 
-io.prometheus:prometheus-metrics-config:1.4.1 (3 constraints: 4d39032d)
+io.prometheus:prometheus-metrics-config:1.4.2 (3 constraints: 5039a42d)
 
-io.prometheus:prometheus-metrics-core:1.4.1 (1 constraints: 0805fd35)
+io.prometheus:prometheus-metrics-core:1.4.2 (1 constraints: 0905fe35)
 
-io.prometheus:prometheus-metrics-exporter-common:1.4.1 (1 constraints: 0805fd35)
+io.prometheus:prometheus-metrics-exporter-common:1.4.2 (1 constraints: 0905fe35)
 
-io.prometheus:prometheus-metrics-exposition-formats:1.4.1 (1 constraints: f614868f)
+io.prometheus:prometheus-metrics-exposition-formats:1.4.2 (1 constraints: f714878f)
 
-io.prometheus:prometheus-metrics-exposition-textformats:1.4.1 (2 constraints: 372ba451)
+io.prometheus:prometheus-metrics-exposition-textformats:1.4.2 (2 constraints: 392be251)
 
-io.prometheus:prometheus-metrics-model:1.4.1 (3 constraints: 6b3df979)
+io.prometheus:prometheus-metrics-model:1.4.2 (3 constraints: 6e3db57a)
 
-io.prometheus:prometheus-metrics-tracer-common:1.4.1 (3 constraints: a53eb1d4)
+io.prometheus:prometheus-metrics-tracer-common:1.4.2 (3 constraints: a83e5fd5)
 
-io.prometheus:prometheus-metrics-tracer-initializer:1.4.1 (1 constraints: 70102ca8)
+io.prometheus:prometheus-metrics-tracer-initializer:1.4.2 (1 constraints: 71102da8)
 
-io.prometheus:prometheus-metrics-tracer-otel:1.4.1 (1 constraints: 191608d4)
+io.prometheus:prometheus-metrics-tracer-otel:1.4.2 (1 constraints: 1a1609d4)
 
-io.prometheus:prometheus-metrics-tracer-otel-agent:1.4.1 (1 constraints: 191608d4)
+io.prometheus:prometheus-metrics-tracer-otel-agent:1.4.2 (1 constraints: 1a1609d4)
 
 io.smallrye.common:smallrye-common-annotation:2.6.0 (1 constraints: c30d1c36)
 
