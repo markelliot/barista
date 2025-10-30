@@ -4,11 +4,11 @@ com.auth0:java-jwt:4.5.0 (1 constraints: 0b050e36)
 
 com.fasterxml.jackson:jackson-bom:2.20.0 (9 constraints: 54c428d7)
 
-com.fasterxml.jackson.core:jackson-annotations:2.20 (10 constraints: 92accff2)
+com.fasterxml.jackson.core:jackson-annotations:2.20 (10 constraints: 5aab0128)
 
-com.fasterxml.jackson.core:jackson-core:2.20.0 (13 constraints: af0e4ee9)
+com.fasterxml.jackson.core:jackson-core:2.20.0 (13 constraints: 9b0e2ee1)
 
-com.fasterxml.jackson.core:jackson-databind:2.20.0 (16 constraints: dc3b7c72)
+com.fasterxml.jackson.core:jackson-databind:2.20.0 (16 constraints: be3b5f5d)
 
 com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.20.0 (2 constraints: 372b2086)
 
@@ -52,11 +52,11 @@ com.markelliot.barista.tracing:barista-tracing:0.124.0 (1 constraints: 69059c40)
 
 com.markelliot.result:result:0.130.0 (1 constraints: 66059440)
 
-com.palantir.conjure.java:conjure-java-undertow-runtime:8.58.0 (1 constraints: 47057b3b)
+com.palantir.conjure.java:conjure-java-undertow-runtime:8.59.0 (1 constraints: 48057e3b)
 
-com.palantir.conjure.java:conjure-lib:8.58.0 (3 constraints: c747918c)
+com.palantir.conjure.java:conjure-lib:8.59.0 (3 constraints: c9476b8d)
 
-com.palantir.conjure.java:conjure-undertow-lib:8.58.0 (1 constraints: 6e179937)
+com.palantir.conjure.java:conjure-undertow-lib:8.59.0 (1 constraints: 6f179c37)
 
 com.palantir.conjure.java.api:errors:2.65.0 (2 constraints: 8a27f32c)
 
@@ -82,7 +82,7 @@ com.palantir.safe-logging:preconditions:3.9.0 (15 constraints: 10fb3e4e)
 
 com.palantir.safe-logging:safe-logging:3.9.0 (15 constraints: 1efdc6e2)
 
-com.palantir.tokens:auth-tokens:3.19.0 (3 constraints: 533b8c35)
+com.palantir.tokens:auth-tokens:3.20.0 (3 constraints: 3b3b4f30)
 
 com.palantir.tracing:tracing:6.28.0 (3 constraints: 3e36a3ff)
 
@@ -138,7 +138,7 @@ io.smallrye.common:smallrye-common-os:2.4.0 (1 constraints: b10e835a)
 
 io.smallrye.common:smallrye-common-ref:2.4.0 (1 constraints: b10e835a)
 
-io.undertow:undertow-core:2.3.20.Final (4 constraints: 4249b26f)
+io.undertow:undertow-core:2.3.20.Final (4 constraints: 44496870)
 
 joda-time:joda-time:2.12.7 (1 constraints: 2f16b1f1)
 
