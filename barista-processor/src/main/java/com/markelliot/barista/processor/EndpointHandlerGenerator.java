@@ -162,24 +162,26 @@ public final class EndpointHandlerGenerator {
         CodeBlock returnStatement =
                 switch (definition.returnType()) {
                     case BYTE_STREAM -> throw new IllegalStateException("Unsupported");
-                    case EMPTY, OBJECT -> CodeBlock.builder()
-                            .addStatement(
-                                    "$N.handle(() -> $N.$N($L), $N)",
-                                    "runtime",
-                                    "delegate",
-                                    definition.methodName(),
-                                    argumentList(definition),
-                                    "exchange")
-                            .build();
-                    case REDIRECT -> CodeBlock.builder()
-                            .addStatement(
-                                    "$N.redirect(() -> $N.$N($L), $N)",
-                                    "runtime",
-                                    "delegate",
-                                    definition.methodName(),
-                                    argumentList(definition),
-                                    "exchange")
-                            .build();
+                    case EMPTY, OBJECT ->
+                        CodeBlock.builder()
+                                .addStatement(
+                                        "$N.handle(() -> $N.$N($L), $N)",
+                                        "runtime",
+                                        "delegate",
+                                        definition.methodName(),
+                                        argumentList(definition),
+                                        "exchange")
+                                .build();
+                    case REDIRECT ->
+                        CodeBlock.builder()
+                                .addStatement(
+                                        "$N.redirect(() -> $N.$N($L), $N)",
+                                        "runtime",
+                                        "delegate",
+                                        definition.methodName(),
+                                        argumentList(definition),
+                                        "exchange")
+                                .build();
                 };
 
         CodeBlock.Builder handler = CodeBlock.builder();
@@ -282,9 +284,10 @@ public final class EndpointHandlerGenerator {
                         .map(param -> switch (param.type()) {
                             case TOKEN -> CodeBlock.of("$N.unwrap()", param.argumentName());
                             case BODY -> CodeBlock.of("$N", param.argumentName());
-                            default -> isOptional(param.className())
-                                    ? CodeBlock.of("$N", param.argumentName())
-                                    : CodeBlock.of("$N.get()", param.argumentName());
+                            default ->
+                                isOptional(param.className())
+                                        ? CodeBlock.of("$N", param.argumentName())
+                                        : CodeBlock.of("$N.get()", param.argumentName());
                         })
                         .collect(Collectors.toList()),
                 ", ");
