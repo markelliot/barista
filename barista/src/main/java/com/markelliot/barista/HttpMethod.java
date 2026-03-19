@@ -23,6 +23,7 @@ import io.undertow.util.Methods;
 public enum HttpMethod {
     GET(Methods.GET),
     PUT(Methods.PUT),
+    PATCH(Methods.PATCH),
     POST(Methods.POST),
     DELETE(Methods.DELETE);
 

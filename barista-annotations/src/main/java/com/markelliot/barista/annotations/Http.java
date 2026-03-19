@@ -29,6 +29,10 @@ public @interface Http {
         String value();
     }
 
+    @interface Patch {
+        String value();
+    }
+
     @interface Delete {
         String value();
     }
