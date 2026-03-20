@@ -50,7 +50,7 @@ com.jakewharton.nopen:nopen-annotations:1.0.1 (3 constraints: 7d256836)
 
 com.markelliot.barista.tracing:barista-tracing:0.131.0 (1 constraints: 67059740)
 
-com.markelliot.result:result:0.133.0 (1 constraints: 69059d40)
+com.markelliot.result:result:0.134.0 (1 constraints: 6a05a040)
 
 com.palantir.conjure.java:conjure-java-undertow-runtime:8.74.0 (1 constraints: 4505773b)
 
