@@ -34,6 +34,7 @@ public final class AnnotationHelpers {
             new EndpointAnnotation(Http.Get.class, HttpMethod.GET, a -> ((Http.Get) a).value()),
             new EndpointAnnotation(Http.Post.class, HttpMethod.POST, a -> ((Http.Post) a).value()),
             new EndpointAnnotation(Http.Put.class, HttpMethod.PUT, a -> ((Http.Put) a).value()),
+            new EndpointAnnotation(Http.Patch.class, HttpMethod.PATCH, a -> ((Http.Patch) a).value()),
             new EndpointAnnotation(Http.Delete.class, HttpMethod.DELETE, a -> ((Http.Delete) a).value()));
 
     private static Set<Class<? extends Annotation>> ENDPOINT_ANNOTATION_CLASSES = ENDPOINT_ANNOTATIONS.stream()

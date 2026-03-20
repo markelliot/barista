@@ -31,7 +31,7 @@ public final class CorsHandler implements HttpHandler {
     private static final String ORIGIN_ALL = "*";
 
     private static final HttpString ACCESS_CONTROL_ALLOW_METHODS = new HttpString("Access-Control-Allow-Methods");
-    private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE";
+    private static final String ALLOWED_METHODS = "GET, PUT, PATCH, POST, DELETE";
 
     private static final HttpString ACCESS_CONTROL_MAX_AGE = new HttpString("Access-Control-Max-Age");
     private static final String ONE_DAY_IN_SECONDS = "86400";
