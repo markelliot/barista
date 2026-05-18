@@ -24,7 +24,7 @@ com.fasterxml.jackson.datatype:jackson-datatype-joda:2.21.3 (2 constraints: 332b
 
 com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.3 (3 constraints: 6c30a03a)
 
-com.github.ben-manes.caffeine:caffeine:3.2.3 (1 constraints: 0a050336)
+com.github.ben-manes.caffeine:caffeine:3.2.4 (1 constraints: 0b050436)
 
 com.google.auto:auto-common:1.2.1 (1 constraints: 9d0f6d86)
 
@@ -34,7 +34,7 @@ com.google.auto.service:auto-service-annotations:1.1.1 (1 constraints: 9c0f6a86)
 
 com.google.code.findbugs:jsr305:3.0.2 (6 constraints: 617e958b)
 
-com.google.errorprone:error_prone_annotations:2.47.0 (16 constraints: 990b3046)
+com.google.errorprone:error_prone_annotations:2.49.0 (16 constraints: 9f0b2257)
 
 com.google.googlejavaformat:google-java-format:1.28.0 (1 constraints: 3d05453b)
 
