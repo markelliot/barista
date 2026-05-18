@@ -34,13 +34,13 @@ com.google.auto.service:auto-service-annotations:1.1.1 (1 constraints: 9c0f6a86)
 
 com.google.code.findbugs:jsr305:3.0.2 (6 constraints: 617e958b)
 
-com.google.errorprone:error_prone_annotations:2.43.0 (16 constraints: 7f0bae16)
+com.google.errorprone:error_prone_annotations:2.47.0 (16 constraints: 850be026)
 
 com.google.googlejavaformat:google-java-format:1.28.0 (1 constraints: 3d05453b)
 
 com.google.guava:failureaccess:1.0.3 (1 constraints: 160ae3b4)
 
-com.google.guava:guava:33.5.0-jre (14 constraints: ea026d63)
+com.google.guava:guava:33.6.0-jre (14 constraints: eb023e66)
 
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava (1 constraints: bd17c918)
 
