@@ -66,7 +66,7 @@ com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:8.33.0 (1 c
 
 com.palantir.deadlines:deadlines:0.20.0 (1 constraints: 5b174537)
 
-com.palantir.javapoet:javapoet:0.12.0 (1 constraints: 3505293b)
+com.palantir.javapoet:javapoet:0.15.0 (1 constraints: 3805323b)
 
 com.palantir.nylon:nylon-threads:0.8.0 (1 constraints: 10100692)
 
