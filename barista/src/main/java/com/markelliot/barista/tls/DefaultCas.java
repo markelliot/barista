@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,22 +52,35 @@ final class DefaultCas {
     }
 
     private static Map<String, X509Certificate> getTrustedCertificates() {
-        ImmutableMap.Builder<String, X509Certificate> certificateMap = ImmutableMap.builder();
         try {
             List<X509Certificate> caCertificates =
                     TransportLayerSecurity.readX509Certificates(new FileInputStream(CA_PEM_FILE)).stream()
                             .map(cert -> (X509Certificate) cert)
                             .collect(Collectors.toList());
-            for (X509Certificate cert : caCertificates) {
-                String certificateCommonName =
-                        cert.getSubjectX500Principal().getName().toLowerCase(Locale.ENGLISH);
-                certificateMap.put(certificateCommonName, cert);
-            }
+            return getTrustedCertificates(caCertificates);
         } catch (CertificateException | IOException e) {
             throw new RuntimeException("Could not read file as an X.509 certificate", e);
         }
+    }
 
+    static Map<String, X509Certificate> getTrustedCertificates(List<X509Certificate> caCertificates) {
+        ImmutableMap.Builder<String, X509Certificate> certificateMap = ImmutableMap.builder();
+        Map<String, Long> subjectCounts = caCertificates.stream()
+                .collect(Collectors.groupingBy(DefaultCas::certificateAlias, Collectors.counting()));
+        Map<String, Integer> duplicateSubjectIndexes = new HashMap<>();
+        for (X509Certificate cert : caCertificates) {
+            String certificateAlias = certificateAlias(cert);
+            if (subjectCounts.get(certificateAlias) > 1) {
+                int index = duplicateSubjectIndexes.merge(certificateAlias, 1, Integer::sum);
+                certificateAlias = certificateAlias + "-" + index;
+            }
+            certificateMap.put(certificateAlias, cert);
+        }
         return certificateMap.build();
+    }
+
+    private static String certificateAlias(X509Certificate cert) {
+        return cert.getSubjectX500Principal().getName().toLowerCase(Locale.ENGLISH);
     }
 
     private DefaultCas() {}
