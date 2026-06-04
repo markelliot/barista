@@ -44,15 +44,15 @@ final class DefaultCasTest {
 
     @Test
     void allowsMultipleCertificatesWithTheSameSubject() {
-        X509Certificate firstCertificate = new TestCertificate("CN=rubix-tenant-ca");
-        X509Certificate secondCertificate = new TestCertificate("CN=rubix-tenant-ca");
+        X509Certificate firstCertificate = new TestCertificate("CN=tenant");
+        X509Certificate secondCertificate = new TestCertificate("CN=tenant");
 
         Map<String, X509Certificate> certificates =
                 DefaultCas.getTrustedCertificates(List.of(firstCertificate, secondCertificate));
 
-        assertThat(certificates.keySet()).containsExactly("cn=rubix-tenant-ca-1", "cn=rubix-tenant-ca-2");
-        assertThat(certificates.get("cn=rubix-tenant-ca-1")).isSameAs(firstCertificate);
-        assertThat(certificates.get("cn=rubix-tenant-ca-2")).isSameAs(secondCertificate);
+        assertThat(certificates.keySet()).containsExactly("cn=tenant-1", "cn=tenant-2");
+        assertThat(certificates.get("cn=tenant-1")).isSameAs(firstCertificate);
+        assertThat(certificates.get("cn=tenant-2")).isSameAs(secondCertificate);
     }
 
     private static final class TestCertificate extends X509Certificate {
