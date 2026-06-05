@@ -16,7 +16,7 @@ jobs:
           app-id: ${{ secrets.MELLBOT_APP_ID }}
           private-key: ${{ secrets.MELLBOT_PK }}
       - name: autorelease
-        uses: markelliot/autorelease@v2
+        uses: markelliot/autorelease@v3
         with:
           github-token: ${{ steps.token.outputs.token }}
           # maximum number of days since last release
