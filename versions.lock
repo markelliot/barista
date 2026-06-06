@@ -48,7 +48,7 @@ com.google.j2objc:j2objc-annotations:3.1 (1 constraints: b809f1a0)
 
 com.jakewharton.nopen:nopen-annotations:1.0.1 (3 constraints: 7d256836)
 
-com.markelliot.barista.tracing:barista-tracing:0.136.0 (1 constraints: 6c05a640)
+com.markelliot.barista.tracing:barista-tracing:0.137.0 (1 constraints: 6d05a940)
 
 com.markelliot.result:result:0.139.0 (1 constraints: 6f05af40)
 
