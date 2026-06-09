@@ -34,7 +34,7 @@ com.google.auto.service:auto-service-annotations:1.1.1 (1 constraints: 9c0f6a86)
 
 com.google.code.findbugs:jsr305:3.0.2 (6 constraints: 617e958b)
 
-com.google.errorprone:error_prone_annotations:2.49.0 (16 constraints: bd0b6276)
+com.google.errorprone:error_prone_annotations:2.49.0 (16 constraints: c90b427f)
 
 com.google.googlejavaformat:google-java-format:1.28.0 (1 constraints: 3d05453b)
 
@@ -52,55 +52,55 @@ com.markelliot.barista.tracing:barista-tracing:0.137.0 (1 constraints: 6d05a940)
 
 com.markelliot.result:result:0.139.0 (1 constraints: 6f05af40)
 
-com.palantir.conjure.java:conjure-java-undertow-runtime:8.78.0 (1 constraints: 4905833b)
+com.palantir.conjure.java:conjure-java-undertow-runtime:8.79.0 (1 constraints: 4a05863b)
 
-com.palantir.conjure.java:conjure-lib:8.78.0 (3 constraints: ce47548e)
+com.palantir.conjure.java:conjure-lib:8.79.0 (3 constraints: d147318f)
 
-com.palantir.conjure.java:conjure-undertow-lib:8.78.0 (1 constraints: 7017a137)
+com.palantir.conjure.java:conjure-undertow-lib:8.79.0 (1 constraints: 7117a437)
 
-com.palantir.conjure.java.api:errors:2.72.0 (2 constraints: 86278b2c)
+com.palantir.conjure.java.api:errors:2.73.0 (2 constraints: 8827c02c)
 
-com.palantir.conjure.java.runtime:conjure-java-jackson-optimizations:8.34.0 (1 constraints: 851cc8a4)
+com.palantir.conjure.java.runtime:conjure-java-jackson-optimizations:8.36.0 (1 constraints: 871ccea4)
 
-com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:8.34.0 (1 constraints: 68178537)
+com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:8.36.0 (1 constraints: 6a178b37)
 
-com.palantir.deadlines:deadlines:0.21.0 (1 constraints: 5c174837)
+com.palantir.deadlines:deadlines:0.22.0 (1 constraints: 5d174b37)
 
 com.palantir.javapoet:javapoet:0.16.0 (1 constraints: 3905353b)
 
-com.palantir.nylon:nylon-threads:0.9.0 (1 constraints: 11100992)
+com.palantir.nylon:nylon-threads:0.10.0 (1 constraints: 39102ca2)
 
 com.palantir.ri:resource-identifier:2.17.0 (3 constraints: 4a3b8b33)
 
-com.palantir.safe-logging:logger:3.15.0 (10 constraints: a7a9c65b)
+com.palantir.safe-logging:logger:3.15.0 (10 constraints: afa9c461)
 
 com.palantir.safe-logging:logger-slf4j:3.15.0 (1 constraints: 340e9650)
 
 com.palantir.safe-logging:logger-spi:3.15.0 (2 constraints: 771ee2b0)
 
-com.palantir.safe-logging:preconditions:3.15.0 (15 constraints: a9fdc8d7)
+com.palantir.safe-logging:preconditions:3.15.0 (15 constraints: b3fdcae1)
 
-com.palantir.safe-logging:safe-logging:3.15.0 (15 constraints: baffbb87)
+com.palantir.safe-logging:safe-logging:3.15.0 (15 constraints: c2ff978f)
 
-com.palantir.tokens:auth-tokens:4.4.0 (3 constraints: b43adc9a)
+com.palantir.tokens:auth-tokens:4.5.0 (3 constraints: b73a819b)
 
-com.palantir.tracing:tracing:6.34.0 (3 constraints: 3436c1fd)
+com.palantir.tracing:tracing:6.35.0 (3 constraints: 373652fe)
 
-com.palantir.tracing:tracing-api:6.34.0 (3 constraints: b3346d1c)
+com.palantir.tracing:tracing-api:6.35.0 (3 constraints: b634fa1c)
 
-com.palantir.tracing:tracing-undertow:6.34.0 (1 constraints: 66177937)
+com.palantir.tracing:tracing-undertow:6.35.0 (1 constraints: 67177c37)
 
-com.palantir.tritium:tritium-api:0.127.0 (2 constraints: 951f83f4)
+com.palantir.tritium:tritium-api:0.130.0 (2 constraints: 891f47f3)
 
-com.palantir.tritium:tritium-core:0.127.0 (1 constraints: 7210b4b2)
+com.palantir.tritium:tritium-core:0.130.0 (1 constraints: 6c10a3b2)
 
-com.palantir.tritium:tritium-ids:0.127.0 (1 constraints: fd0f97a6)
+com.palantir.tritium:tritium-ids:0.128.0 (1 constraints: fe0f9aa6)
 
-com.palantir.tritium:tritium-metrics:0.127.0 (1 constraints: 840ea161)
+com.palantir.tritium:tritium-metrics:0.130.0 (1 constraints: 7e0e9061)
 
-com.palantir.tritium:tritium-registry:0.127.0 (3 constraints: a33ba795)
+com.palantir.tritium:tritium-registry:0.131.0 (3 constraints: 933bf892)
 
-io.dropwizard.metrics:metrics-core:4.2.38 (4 constraints: f34b9290)
+io.dropwizard.metrics:metrics-core:4.2.39 (4 constraints: f54b1b91)
 
 io.prometheus:prometheus-metrics-config:1.7.0 (3 constraints: 5339572e)
 
@@ -158,7 +158,7 @@ org.eclipse.collections:eclipse-collections-api:13.0.0 (2 constraints: fa22df26)
 
 org.hdrhistogram:HdrHistogram:2.2.2 (1 constraints: 0e100092)
 
-org.immutables:value:2.12.1 (1 constraints: c90f9796)
+org.immutables:value:2.12.2 (1 constraints: ca0f9896)
 
 org.jboss.logging:jboss-logging:3.6.2.Final (7 constraints: c583ffcc)
 
