@@ -142,13 +142,13 @@ io.undertow:undertow-core:2.4.2.Final (4 constraints: 1549f247)
 
 joda-time:joda-time:2.12.7 (1 constraints: 2f16b1f1)
 
-org.apache.logging.log4j:log4j-api:2.26.0 (3 constraints: 222e4d3d)
+org.apache.logging.log4j:log4j-api:2.26.1 (3 constraints: 252ee43d)
 
-org.apache.logging.log4j:log4j-core:2.26.0 (2 constraints: 4316af3a)
+org.apache.logging.log4j:log4j-core:2.26.1 (2 constraints: 4516e53a)
 
-org.apache.logging.log4j:log4j-jul:2.26.0 (1 constraints: 3c05453b)
+org.apache.logging.log4j:log4j-jul:2.26.1 (1 constraints: 3d05463b)
 
-org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0 (1 constraints: 3c05453b)
+org.apache.logging.log4j:log4j-slf4j2-impl:2.26.1 (1 constraints: 3d05463b)
 
 org.checkerframework:checker-qual:3.49.1 (1 constraints: 6a177b37)
 
