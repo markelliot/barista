@@ -52,13 +52,13 @@ com.markelliot.barista.tracing:barista-tracing:0.141.0 (1 constraints: 68059b40)
 
 com.markelliot.result:result:0.143.0 (1 constraints: 6a05a140)
 
-com.palantir.conjure.java:conjure-java-undertow-runtime:8.81.0 (1 constraints: 4305723b)
+com.palantir.conjure.java:conjure-java-undertow-runtime:8.82.0 (1 constraints: 4405753b)
 
-com.palantir.conjure.java:conjure-lib:8.81.0 (3 constraints: bc472989)
+com.palantir.conjure.java:conjure-lib:8.82.0 (3 constraints: be47038a)
 
-com.palantir.conjure.java:conjure-undertow-lib:8.81.0 (1 constraints: 6a179037)
+com.palantir.conjure.java:conjure-undertow-lib:8.82.0 (1 constraints: 6b179337)
 
-com.palantir.conjure.java.api:errors:2.74.0 (2 constraints: 8a27f52c)
+com.palantir.conjure.java.api:errors:2.75.0 (2 constraints: 8c272a2d)
 
 com.palantir.conjure.java.runtime:conjure-java-jackson-optimizations:8.38.0 (1 constraints: 891cd4a4)
 
@@ -70,7 +70,7 @@ com.palantir.javapoet:javapoet:0.17.0 (1 constraints: 3a05383b)
 
 com.palantir.nylon:nylon-threads:0.11.0 (1 constraints: 3a102fa2)
 
-com.palantir.ri:resource-identifier:2.19.0 (3 constraints: 503bdb34)
+com.palantir.ri:resource-identifier:2.20.0 (3 constraints: 383b9e2f)
 
 com.palantir.safe-logging:logger:3.17.0 (10 constraints: b5a97569)
 
@@ -78,9 +78,9 @@ com.palantir.safe-logging:logger-slf4j:3.17.0 (1 constraints: 360e9c50)
 
 com.palantir.safe-logging:logger-spi:3.17.0 (2 constraints: 7b1e4eb1)
 
-com.palantir.safe-logging:preconditions:3.17.0 (15 constraints: c0fd38fa)
+com.palantir.safe-logging:preconditions:3.17.0 (15 constraints: c2fd6dfd)
 
-com.palantir.safe-logging:safe-logging:3.17.0 (15 constraints: d4ff95ac)
+com.palantir.safe-logging:safe-logging:3.17.0 (15 constraints: d6ffd8af)
 
 com.palantir.tokens:auth-tokens:4.7.0 (3 constraints: bd3acb9c)
 
