@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     idea
-    id("com.diffplug.spotless") version "8.8.0"
+    id("com.diffplug.spotless") version "8.9.0"
     id("com.google.cloud.tools.jib") version "3.5.4" apply false
     id("com.palantir.consistent-versions") version "3.16.0"
     id("net.ltgt.errorprone") version "5.1.0" apply false
