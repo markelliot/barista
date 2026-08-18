@@ -40,7 +40,7 @@ com.google.googlejavaformat:google-java-format:1.28.0 (1 constraints: 3d05453b)
 
 com.google.guava:failureaccess:1.0.3 (1 constraints: 160ae3b4)
 
-com.google.guava:guava:33.7.0-jre (14 constraints: f5026d70)
+com.google.guava:guava:33.7.1-jre (14 constraints: f6023c73)
 
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava (1 constraints: bd17c918)
 
