@@ -138,7 +138,7 @@ io.smallrye.common:smallrye-common-os:2.4.0 (1 constraints: b10e835a)
 
 io.smallrye.common:smallrye-common-ref:2.4.0 (1 constraints: b10e835a)
 
-io.undertow:undertow-core:2.4.2.Final (4 constraints: 1549f247)
+io.undertow:undertow-core:2.4.3.Final (4 constraints: 1649b348)
 
 joda-time:joda-time:2.12.7 (1 constraints: 2f16b1f1)
 
