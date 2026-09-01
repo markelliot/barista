@@ -4,25 +4,25 @@ com.auth0:java-jwt:4.6.0 (1 constraints: 0c051136)
 
 com.fasterxml.jackson:jackson-bom:2.22.2 (9 constraints: 78c41cfb)
 
-com.fasterxml.jackson.core:jackson-annotations:2.22 (11 constraints: 22c77e94)
+com.fasterxml.jackson.core:jackson-annotations:2.22 (11 constraints: 25c7fa94)
 
-com.fasterxml.jackson.core:jackson-core:2.22.2 (13 constraints: ba0efd10)
+com.fasterxml.jackson.core:jackson-core:2.22.2 (13 constraints: b80efd10)
 
-com.fasterxml.jackson.core:jackson-databind:2.22.2 (16 constraints: d83bc39e)
+com.fasterxml.jackson.core:jackson-databind:2.22.2 (16 constraints: d03bf99b)
 
-com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.22.2 (2 constraints: 362b4e87)
+com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.22.2 (2 constraints: 342b4e87)
 
-com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.22.2 (2 constraints: 362b4e87)
+com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.22.2 (2 constraints: 342b4e87)
 
 com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.2 (2 constraints: f1138382)
 
-com.fasterxml.jackson.datatype:jackson-datatype-guava:2.22.2 (3 constraints: 6f30a73a)
+com.fasterxml.jackson.datatype:jackson-datatype-guava:2.22.2 (3 constraints: 6d30a73a)
 
-com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.22.2 (3 constraints: 6f30a73a)
+com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.22.2 (3 constraints: 6d30a73a)
 
-com.fasterxml.jackson.datatype:jackson-datatype-joda:2.22.2 (2 constraints: 362b4e87)
+com.fasterxml.jackson.datatype:jackson-datatype-joda:2.22.2 (2 constraints: 342b4e87)
 
-com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.2 (3 constraints: 6f30a73a)
+com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.2 (3 constraints: 6d30a73a)
 
 com.github.ben-manes.caffeine:caffeine:3.2.4 (1 constraints: 0b050436)
 
@@ -34,13 +34,13 @@ com.google.auto.service:auto-service-annotations:1.1.1 (1 constraints: 9c0f6a86)
 
 com.google.code.findbugs:jsr305:3.0.2 (6 constraints: 617e958b)
 
-com.google.errorprone:error_prone_annotations:2.50.0 (16 constraints: c30b116f)
+com.google.errorprone:error_prone_annotations:2.50.0 (16 constraints: 9b0b961e)
 
 com.google.googlejavaformat:google-java-format:1.28.0 (1 constraints: 3d05453b)
 
 com.google.guava:failureaccess:1.0.3 (1 constraints: 160ae3b4)
 
-com.google.guava:guava:33.7.1-jre (14 constraints: f6023c73)
+com.google.guava:guava:33.7.1-jre (14 constraints: fb02b67a)
 
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava (1 constraints: bd17c918)
 
@@ -52,53 +52,53 @@ com.markelliot.barista.tracing:barista-tracing:0.147.0 (1 constraints: 6e05ad40)
 
 com.markelliot.result:result:0.150.0 (1 constraints: 68059c40)
 
-com.palantir.conjure.java:conjure-java-undertow-runtime:8.84.0 (1 constraints: 46057b3b)
+com.palantir.conjure.java:conjure-java-undertow-runtime:8.85.0 (1 constraints: 47057e3b)
 
-com.palantir.conjure.java:conjure-lib:8.84.0 (3 constraints: c447bd8b)
+com.palantir.conjure.java:conjure-lib:8.85.0 (3 constraints: c8479d8c)
 
-com.palantir.conjure.java:conjure-undertow-lib:8.84.0 (1 constraints: 6d179937)
+com.palantir.conjure.java:conjure-undertow-lib:8.85.0 (1 constraints: 6e179c37)
 
-com.palantir.conjure.java.api:errors:2.76.0 (2 constraints: 8e275f2d)
+com.palantir.conjure.java.api:errors:2.77.0 (2 constraints: 9027942d)
 
-com.palantir.conjure.java.runtime:conjure-java-jackson-optimizations:8.39.0 (1 constraints: 8a1cd7a4)
+com.palantir.conjure.java.runtime:conjure-java-jackson-optimizations:8.41.0 (1 constraints: 831cc3a4)
 
-com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:8.39.0 (1 constraints: 6d179437)
+com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:8.41.0 (1 constraints: 66178037)
 
-com.palantir.deadlines:deadlines:0.25.0 (1 constraints: 60175437)
+com.palantir.deadlines:deadlines:0.26.0 (1 constraints: 61175737)
 
 com.palantir.javapoet:javapoet:0.19.0 (1 constraints: 3c053e3b)
 
-com.palantir.nylon:nylon-threads:0.12.0 (1 constraints: 3b1032a2)
+com.palantir.nylon:nylon-threads:0.14.0 (1 constraints: 3d1038a2)
 
-com.palantir.ri:resource-identifier:2.20.0 (3 constraints: 383b9e2f)
+com.palantir.ri:resource-identifier:2.21.0 (3 constraints: 3b3b4630)
 
-com.palantir.safe-logging:logger:3.17.0 (10 constraints: bea9d36f)
+com.palantir.safe-logging:logger:3.18.0 (10 constraints: c5a93c76)
 
-com.palantir.safe-logging:logger-slf4j:3.17.0 (1 constraints: 360e9c50)
+com.palantir.safe-logging:logger-slf4j:3.18.0 (1 constraints: 370e9f50)
 
-com.palantir.safe-logging:logger-spi:3.17.0 (2 constraints: 7b1e4eb1)
+com.palantir.safe-logging:logger-spi:3.18.0 (2 constraints: 7d1e84b1)
 
-com.palantir.safe-logging:preconditions:3.17.0 (15 constraints: ccfd0b06)
+com.palantir.safe-logging:preconditions:3.18.0 (15 constraints: d6fda113)
 
-com.palantir.safe-logging:safe-logging:3.17.0 (15 constraints: deff36b6)
+com.palantir.safe-logging:safe-logging:3.18.0 (15 constraints: eaff65c5)
 
-com.palantir.tokens:auth-tokens:4.7.0 (3 constraints: bd3acb9c)
+com.palantir.tokens:auth-tokens:4.8.0 (3 constraints: c03a709d)
 
-com.palantir.tracing:tracing:6.38.0 (3 constraints: 40361400)
+com.palantir.tracing:tracing:6.40.0 (3 constraints: 3336a0fd)
 
-com.palantir.tracing:tracing-api:6.38.0 (3 constraints: bf34a11e)
+com.palantir.tracing:tracing-api:6.40.0 (3 constraints: aa34c91a)
 
-com.palantir.tracing:tracing-undertow:6.38.0 (1 constraints: 6a178537)
+com.palantir.tracing:tracing-undertow:6.40.0 (1 constraints: 63177137)
 
-com.palantir.tritium:tritium-api:0.134.0 (2 constraints: 911f1bf4)
+com.palantir.tritium:tritium-api:0.136.0 (2 constraints: 951f85f4)
 
-com.palantir.tritium:tritium-core:0.134.0 (1 constraints: 7010afb2)
+com.palantir.tritium:tritium-core:0.136.0 (1 constraints: 7210b5b2)
 
 com.palantir.tritium:tritium-ids:0.128.0 (1 constraints: fe0f9aa6)
 
-com.palantir.tritium:tritium-metrics:0.134.0 (1 constraints: 820e9c61)
+com.palantir.tritium:tritium-metrics:0.136.0 (1 constraints: 840ea261)
 
-com.palantir.tritium:tritium-registry:0.134.0 (3 constraints: 9e3be394)
+com.palantir.tritium:tritium-registry:0.136.0 (3 constraints: a43b0796)
 
 io.dropwizard.metrics:metrics-core:4.2.39 (4 constraints: f74ba991)
 
