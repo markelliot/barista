@@ -36,7 +36,7 @@ com.google.code.findbugs:jsr305:3.0.2 (6 constraints: 617e958b)
 
 com.google.errorprone:error_prone_annotations:2.50.0 (16 constraints: 9b0b961e)
 
-com.google.googlejavaformat:google-java-format:1.28.0 (1 constraints: 3d05453b)
+com.google.googlejavaformat:google-java-format:1.36.1 (1 constraints: 3d05443b)
 
 com.google.guava:failureaccess:1.0.3 (1 constraints: 160ae3b4)
 
@@ -151,6 +151,10 @@ org.apache.logging.log4j:log4j-jul:2.26.1 (1 constraints: 3d05463b)
 org.apache.logging.log4j:log4j-slf4j2-impl:2.26.1 (1 constraints: 3d05463b)
 
 org.checkerframework:checker-qual:3.49.1 (1 constraints: 6a177b37)
+
+org.commonmark:commonmark:0.28.0 (2 constraints: 4425082c)
+
+org.commonmark:commonmark-ext-gfm-tables:0.28.0 (1 constraints: ce13da63)
 
 org.eclipse.collections:eclipse-collections:13.0.0 (1 constraints: 1c1091a9)
 
