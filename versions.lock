@@ -52,17 +52,17 @@ com.markelliot.barista.tracing:barista-tracing:0.151.0 (1 constraints: 69059f40)
 
 com.markelliot.result:result:0.153.0 (1 constraints: 6b05a540)
 
-com.palantir.conjure.java:conjure-java-undertow-runtime:8.93.0 (1 constraints: 46057c3b)
+com.palantir.conjure.java:conjure-java-undertow-runtime:8.95.0 (1 constraints: 4805823b)
 
-com.palantir.conjure.java:conjure-lib:8.93.0 (3 constraints: c547c38b)
+com.palantir.conjure.java:conjure-lib:8.95.0 (3 constraints: ca477a8d)
 
-com.palantir.conjure.java:conjure-undertow-lib:8.93.0 (1 constraints: 6d179a37)
+com.palantir.conjure.java:conjure-undertow-lib:8.95.0 (1 constraints: 6f17a037)
 
 com.palantir.conjure.java.api:errors:2.81.0 (2 constraints: 86278d2c)
 
-com.palantir.conjure.java.runtime:conjure-java-jackson-optimizations:8.44.0 (1 constraints: 861ccca4)
+com.palantir.conjure.java.runtime:conjure-java-jackson-optimizations:8.45.0 (1 constraints: 871ccfa4)
 
-com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:8.44.0 (1 constraints: 69178937)
+com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:8.45.0 (1 constraints: 6a178c37)
 
 com.palantir.deadlines:deadlines:0.28.0 (1 constraints: 63175d37)
 
@@ -70,7 +70,7 @@ com.palantir.javapoet:javapoet:0.20.0 (1 constraints: 3405273b)
 
 com.palantir.nylon:nylon-threads:0.15.0 (1 constraints: 3e103ba2)
 
-com.palantir.ri:resource-identifier:2.24.0 (3 constraints: 443b3e32)
+com.palantir.ri:resource-identifier:2.25.0 (3 constraints: 473be632)
 
 com.palantir.safe-logging:logger:3.20.0 (10 constraints: b7a9f65f)
 
