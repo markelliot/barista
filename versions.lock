@@ -1,14 +1,14 @@
 # Run ./gradlew writeVersionsLocks to regenerate this file. Blank lines are to minimize merge conflicts.
 
-com.auth0:java-jwt:4.6.1 (1 constraints: 0d051236)
+com.auth0:java-jwt:4.6.2 (1 constraints: 0e051336)
 
 com.fasterxml.jackson:jackson-bom:2.22.3 (9 constraints: 81c41f04)
 
 com.fasterxml.jackson.core:jackson-annotations:2.22 (11 constraints: 25c7fa94)
 
-com.fasterxml.jackson.core:jackson-core:2.22.3 (13 constraints: c90efd27)
+com.fasterxml.jackson.core:jackson-core:2.22.3 (13 constraints: ca0ede2a)
 
-com.fasterxml.jackson.core:jackson-databind:2.22.3 (16 constraints: e73b1cbf)
+com.fasterxml.jackson.core:jackson-databind:2.22.3 (16 constraints: e83b6dc2)
 
 com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.22.3 (2 constraints: 372b9f87)
 
