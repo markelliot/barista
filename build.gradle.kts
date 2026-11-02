@@ -79,6 +79,7 @@ allprojects {
 
         tasks.withType<JavaCompile> {
             options.errorprone.disable("UnusedVariable")
+            options.release = 17
         }
 
         tasks.withType<Javadoc> {
@@ -87,7 +88,7 @@ allprojects {
 
         java {
             toolchain {
-                languageVersion = JavaLanguageVersion.of(17)
+                languageVersion = JavaLanguageVersion.of(21)
             }
         }
 
