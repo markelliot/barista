@@ -159,30 +159,29 @@ public final class EndpointHandlerGenerator {
     }
 
     private static CodeBlock generateHttpHandler(EndpointHandlerDefinition definition) {
-        CodeBlock returnStatement =
-                switch (definition.returnType()) {
-                    case BYTE_STREAM -> throw new IllegalStateException("Unsupported");
-                    case EMPTY, OBJECT ->
-                        CodeBlock.builder()
-                                .addStatement(
-                                        "$N.handle(() -> $N.$N($L), $N)",
-                                        "runtime",
-                                        "delegate",
-                                        definition.methodName(),
-                                        argumentList(definition),
-                                        "exchange")
-                                .build();
-                    case REDIRECT ->
-                        CodeBlock.builder()
-                                .addStatement(
-                                        "$N.redirect(() -> $N.$N($L), $N)",
-                                        "runtime",
-                                        "delegate",
-                                        definition.methodName(),
-                                        argumentList(definition),
-                                        "exchange")
-                                .build();
-                };
+        CodeBlock returnStatement = switch (definition.returnType()) {
+            case BYTE_STREAM -> throw new IllegalStateException("Unsupported");
+            case EMPTY, OBJECT ->
+                CodeBlock.builder()
+                        .addStatement(
+                                "$N.handle(() -> $N.$N($L), $N)",
+                                "runtime",
+                                "delegate",
+                                definition.methodName(),
+                                argumentList(definition),
+                                "exchange")
+                        .build();
+            case REDIRECT ->
+                CodeBlock.builder()
+                        .addStatement(
+                                "$N.redirect(() -> $N.$N($L), $N)",
+                                "runtime",
+                                "delegate",
+                                definition.methodName(),
+                                argumentList(definition),
+                                "exchange")
+                        .build();
+        };
 
         CodeBlock.Builder handler = CodeBlock.builder();
 
@@ -256,14 +255,13 @@ public final class EndpointHandlerGenerator {
     }
 
     private static CodeBlock paramBlock(ParameterDefinition param) {
-        String methodName =
-                switch (param.type()) {
-                    case PATH -> "pathParameter";
-                    case QUERY -> "queryParameter";
-                    case HEADER -> "headerParameter";
-                    case COOKIE -> "cookieParameter";
-                    default -> throw new IllegalStateException("Processor invariant failed due to programmer error");
-                };
+        String methodName = switch (param.type()) {
+            case PATH -> "pathParameter";
+            case QUERY -> "queryParameter";
+            case HEADER -> "headerParameter";
+            case COOKIE -> "cookieParameter";
+            default -> throw new IllegalStateException("Processor invariant failed due to programmer error");
+        };
         return CodeBlock.builder()
                 .addStatement(
                         "$T $N = $N.$N($S, $N)",
