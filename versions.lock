@@ -2,27 +2,27 @@
 
 com.auth0:java-jwt:4.6.2 (1 constraints: 0e051336)
 
-com.fasterxml.jackson:jackson-bom:2.22.4 (9 constraints: 8ac4130d)
+com.fasterxml.jackson:jackson-bom:2.23.0 (9 constraints: 6fc43af2)
 
-com.fasterxml.jackson.core:jackson-annotations:2.22 (11 constraints: 25c7fa94)
+com.fasterxml.jackson.core:jackson-annotations:2.23 (11 constraints: 2bc7a89e)
 
-com.fasterxml.jackson.core:jackson-core:2.22.4 (13 constraints: d60e4e3b)
+com.fasterxml.jackson.core:jackson-core:2.23.0 (13 constraints: bb0e7a0c)
 
-com.fasterxml.jackson.core:jackson-databind:2.22.4 (16 constraints: f73b6edb)
+com.fasterxml.jackson.core:jackson-databind:2.23.0 (16 constraints: dc3bfd9a)
 
-com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.22.4 (2 constraints: 392bef87)
+com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.23.0 (2 constraints: 362b0487)
 
-com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.22.4 (2 constraints: 392bef87)
+com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.23.0 (2 constraints: 362b0487)
 
-com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.4 (2 constraints: f513dd82)
+com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.23.0 (2 constraints: ef135a82)
 
-com.fasterxml.jackson.datatype:jackson-datatype-guava:2.22.4 (3 constraints: 74303c3c)
+com.fasterxml.jackson.datatype:jackson-datatype-guava:2.23.0 (3 constraints: 6e30e539)
 
-com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.22.4 (3 constraints: 74303c3c)
+com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.23.0 (3 constraints: 6e30e539)
 
-com.fasterxml.jackson.datatype:jackson-datatype-joda:2.22.4 (2 constraints: 392bef87)
+com.fasterxml.jackson.datatype:jackson-datatype-joda:2.23.0 (2 constraints: 362b0487)
 
-com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.4 (3 constraints: 74303c3c)
+com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.23.0 (3 constraints: 6e30e539)
 
 com.github.ben-manes.caffeine:caffeine:3.3.1 (1 constraints: 09050436)
 
